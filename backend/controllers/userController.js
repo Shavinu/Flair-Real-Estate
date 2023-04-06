@@ -29,14 +29,35 @@ const getaUser = async (req, res) => {
 
 //create new user
 const createUser = async (req, res) =>{
-    const {fistName, lastName, email} = req.body
+    const {accType, fistName, lastName, phoneNo, email} = req.body
 
     try{
-        const user = await User.create({fistName, lastName, email})
+        const user = await User.create({accType, fistName, lastName, phoneNo, email})
+        user.password = user.generateHash(req.body.password)
+        user.save()
         res.status(200).json(user)
     }catch (error){
-        res.status(400).json({error: error.message})
+        res.status(400).json({error: 'cannot create user'})
     }
+}
+
+//verfiy login for user
+const loginUser = async (req, res) => {
+
+    const user = await User.findOne({email: req.body.email}, function(err, user){
+        //if email dosent match
+        if(!user){
+            return res.status(404).json({error: 'email not found'})
+        }
+
+        if (!user.validPassword(req.body.password)){
+            //passwords dont match
+            return res.status(404).json({error: 'incorrect password'})
+        } else{
+            //passwords match
+            res.status(200).json(user)
+        }
+    })  
 }
 
 //delete user
@@ -80,6 +101,7 @@ module.exports = {
     getUsers,
     getaUser,
     createUser,
+    loginUser,
     deleteUser,
     updateUser
 }

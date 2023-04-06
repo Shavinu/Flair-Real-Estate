@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
+const bcrypt = require('bcrypt-nodejs');
 
 /*  A user is anyone who is logged in, admins, devlopers, agents, etc
 *   the accType or account type feild dictates the privlges that user has
@@ -25,13 +26,22 @@ const userSchema = new Schema({
         type: String,
         required: true 
     },
-    //is the licensing feild a number or string??
-    licensingNo: {
-        type: Number,
-        required: false
+    password: {
+        type: String,
+        required: true
     }
 
 }, { timestamps: true})
+
+// hash the password
+userSchema.methods.generateHash = function(password) {
+    return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+};
+  
+// checking if password is valid
+userSchema.methods.validPassword = function(password) {
+    return bcrypt.compareSync(password, this.password);
+};
 
 module.exports = mongoose.model('User', userSchema)
 
