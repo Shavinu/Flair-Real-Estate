@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
-const bcrypt = require('bcrypt-nodejs');
+const bcrypt = require('bcrypt');
 
 /*  A user is anyone who is logged in, admins, devlopers, agents, etc
 *   the accType or account type feild dictates the privlges that user has
