@@ -9,13 +9,13 @@ const {
 //Get all users
 router.get('/', getUsers)
 
-//Get singal users
+//Get single users
 router.get('/:id', getaUser)
 
 //post a new user
 router.post('/', createUser)
 
-//delelete a user
+//delete a user
 router.delete('/:id', (req, res) =>{
     res.json({mssg: "DELETE USER"})
 })

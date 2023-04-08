@@ -4,14 +4,16 @@ const mongoose = require('mongoose')
 
 //get all users
 const getUsers = async (req, res) =>{
+    // res.json({msg: "GET all users"})
     const users = await User.find().sort({CreateAt: -1})
 
     res.status(200).json(users)
 }
 
 
-//get singal user
+//get single user
 const getaUser = async (req, res) => {
+  // res.json({msg: "GET a user"})
     const { id } = req.params
 if(!mongoose.Types.ObjectId.isValid(id)){
     return res.status(404).json({error: 'NoT a Vaild id'})
@@ -29,6 +31,7 @@ if(!mongoose.Types.ObjectId.isValid(id)){
 
 //create new user
 const createUser = async (req, res) =>{
+  // res.json({msg: "POST a user"})
     const {fistName, lastName, email} = req.body
 
     try{
