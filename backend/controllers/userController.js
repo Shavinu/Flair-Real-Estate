@@ -28,25 +28,20 @@ const getaUser = async (req, res) => {
 };
 
 //create new user
-const createUser = async (req, res) => {
-  // res.json({msg: 'registered user'})
-  const { accType, firstName, lastName, phoneNo, email } = req.body;
+const createUser = async (req, res) =>{
+    const {accType, fistName, lastName, phoneNo, email, password} = req.body
 
-  try {
-    const user = await User.create({
-      accType,
-      firstName,
-      lastName,
-      phoneNo,
-      email,
-    });
-    user.password = user.generateHash(req.body.password);
-    user.save();
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(400).json({ error: 'cannot create user' });
-  }
-};
+    try{
+        const user = await User.create({accType, fistName, lastName, phoneNo, email, password})
+        user.password = user.generateHash(req.body.password)
+        user.save()
+        res.status(200).json(user)
+    }catch (error){
+        res.status(400).json({error: 'cannot create user'})
+        console.log(error)
+    }
+}
+
 
 //verfiy login for user
 const loginUser = async (req, res) => {
