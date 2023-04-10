@@ -4,8 +4,6 @@ const {
     getUsers,
     getaUser,
     createUser,
-    loginUser,
-    signupUser
 } = require('../controllers/userController')
 
 //Get all users
