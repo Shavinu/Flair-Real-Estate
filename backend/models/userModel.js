@@ -11,7 +11,7 @@ const userSchema = new Schema({
         required: true
     },
 
-    fistName: {
+    firstName: {
       type: String,
       required: true,
     },
@@ -20,12 +20,12 @@ const userSchema = new Schema({
       required: true,
     },
     phoneNo: {
-        type: Number,
+        type: String,
         required: true
     },
     email: {
         type: String,
-        required: true 
+        required: true
     },
     password: {
         type: String,
@@ -34,11 +34,22 @@ const userSchema = new Schema({
 
 }, { timestamps: true})
 
+//static signup method
+userSchema.statics.signup = async ( accType, firstName, lastName, phoneNo, email, password ) => {
+  const exists = await this.findOne({ email })
+
+  if(exists){
+    throw Error('Email already in use')
+  }
+
+  
+}
+
 // hash the password
 userSchema.methods.generateHash = function(password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 };
-  
+
 // checking if password is valid
 userSchema.methods.validPassword = function(password) {
     return bcrypt.compareSync(password, this.password);
