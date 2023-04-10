@@ -16,13 +16,13 @@ router.get('/:id', getaUser)
 router.post('/', createUser)
 
 //delete a user
-router.delete('/:id', (req, res) =>{
-    res.json({mssg: "DELETE USER"})
+router.delete('/:id', (req, res) => {
+    res.json({ mssg: "DELETE USER" })
 })
 
 //UPDATE a user
-router.patch('/:id', (req, res) =>{
-    res.json({mssg: "UPDATE USER"})
+router.patch('/:id', (req, res) => {
+    res.json({ mssg: "UPDATE USER" })
 })
 
 module.exports = router
