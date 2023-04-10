@@ -3,26 +3,31 @@ const router = express.Router()
 const {
     getUsers,
     getaUser,
-    createUser
+    createUser,
+    loginUser,
+    deleteUser,
+    updateUser
 } = require('../controllers/userController')
 
 //Get all users
 router.get('', getUsers)
 
-//Get single users
+//Get single user
 router.get('/:id', getaUser)
 
-//post a new user
-router.post('/', createUser)
+//register a new user
+router.post('/register', createUser)
+
+//login a user
+router.post('/login', loginUser)
+
+//verify login
+
 
 //delete a user
-router.delete('/:id', (req, res) => {
-    res.json({ mssg: "DELETE USER" })
-})
+router.delete('/:id', deleteUser)
 
 //UPDATE a user
-router.patch('/:id', (req, res) => {
-    res.json({ mssg: "UPDATE USER" })
-})
+router.patch('/:id', updateUser)
 
 module.exports = router;
