@@ -12,7 +12,7 @@ const {
 //Get all users
 router.get('/', getUsers)
 
-//Get singal users
+//Get single users
 router.get('/:id', getaUser)
 
 //post a new user

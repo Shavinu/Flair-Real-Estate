@@ -10,13 +10,14 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
+
     fistName: {
-        type: String,
-        required: true 
+      type: String,
+      required: true,
     },
     lastName: {
-        type: String,
-        required: true 
+      type: String,
+      required: true,
     },
     phoneNo: {
         type: Number,
@@ -45,3 +46,5 @@ userSchema.methods.validPassword = function(password) {
 
 module.exports = mongoose.model('User', userSchema)
 
+
+module.exports = mongoose.model('User', userSchema);
