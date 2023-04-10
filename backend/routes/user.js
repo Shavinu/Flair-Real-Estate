@@ -12,16 +12,19 @@ const {
 //Get all users
 router.get('/', getUsers)
 
-//Get single users
+//Get single user
 router.get('/:id', getaUser)
 
-//post a new user
-router.post('/', createUser)
+//register a new user
+router.post('/register', createUser)
 
 //login a user
-router.get('/:email', loginUser)
+router.post('/login', loginUser)
 
-//delelete a user
+//verify login
+
+
+//delete a user
 router.delete('/:id', deleteUser)
 
 //UPDATE a user
