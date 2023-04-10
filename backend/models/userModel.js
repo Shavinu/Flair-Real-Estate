@@ -34,17 +34,6 @@ const userSchema = new Schema({
 
 }, { timestamps: true})
 
-//static signup method
-userSchema.statics.signup = async ( accType, firstName, lastName, phoneNo, email, password ) => {
-  const exists = await this.findOne({ email })
-
-  if(exists){
-    throw Error('Email already in use')
-  }
-
-  
-}
-
 // hash the password
 userSchema.methods.generateHash = function(password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
