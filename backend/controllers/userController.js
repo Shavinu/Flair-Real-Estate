@@ -31,15 +31,16 @@ const getaUser = async (req, res) => {
 
 //create new user
 const createUser = async (req, res) =>{
-    const {accType, fistName, lastName, phoneNo, email} = req.body
+    const {accType, fistName, lastName, phoneNo, email, password} = req.body
 
     try{
-        const user = await User.create({accType, fistName, lastName, phoneNo, email})
+        const user = await User.create({accType, fistName, lastName, phoneNo, email, password})
         user.password = user.generateHash(req.body.password)
         user.save()
         res.status(200).json(user)
     }catch (error){
         res.status(400).json({error: 'cannot create user'})
+        console.log(error)
     }
 }
 
