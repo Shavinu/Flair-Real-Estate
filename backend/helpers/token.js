@@ -4,13 +4,12 @@ const createError = require('http-errors');
 const signAccessToken = (userId) => {
     return new Promise((resolve, reject) => {
         const payload = {
-            name: "",
+            _id: userId,
         };
 
         const secret = process.env.ACCESS_TOKEN_SECRET;
         const options = {
             expiresIn: '1d',
-            audience: userId,
         };
 
         JWT.sign(payload, secret, options, (err, token) => {
@@ -24,7 +23,7 @@ const signAccessToken = (userId) => {
 }
 
 const verifyAccessToken = async (req, res, next) => {
-    if (!req.headers['authorization']) return next(createError.Unauthorized());
+    if (!req.headers || !req.headers['authorization']) return next(createError.Unauthorized());
 
     const authHeader = req.headers['authorization'];
     const bearerToken = authHeader.split(' ');
@@ -37,7 +36,7 @@ const verifyAccessToken = async (req, res, next) => {
 
         req.payload = payload;
         next();
-    })
+    });
 }
 
 module.exports = {

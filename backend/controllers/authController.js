@@ -1,7 +1,8 @@
 const createError = require('http-errors');
+const JWT = require('jsonwebtoken');
 const User = require('../models/userModel');
 const { userSchema, authSchema } = require('../helpers/validation');
-const { signAccessToken } = require('../helpers/token');
+const { signAccessToken, verifyAccessToken } = require('../helpers/token');
 
 const register = async (req, res, next) => {
     try {
@@ -41,6 +42,33 @@ const login = async (req, res, next) => {
     }
 }
 
+const getCurrentUser = async (req, res, next) => {
+    try {
+        if (!req.headers || !req.headers['authorization']) {
+            throw createError.Unauthorized();
+        }
+
+        const authHeader = req.headers['authorization'];
+        const bearerToken = authHeader.split(' ');
+        const token = bearerToken[1];
+
+        const payload = await JWT.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, payload) => {
+            if (err) {
+                console.log(err);
+                return next(createError.Unauthorized());
+            }
+
+            return payload;
+        });
+
+        const user = await User.findOne({ _id: payload._id })
+        res.json(user)
+
+    } catch (error) {
+        next(error);
+    }
+}
+
 const logout = async (req, res, next) => {
     try {
         const { accessToken } = req.body;
@@ -54,4 +82,5 @@ const logout = async (req, res, next) => {
 module.exports = {
     register,
     login,
+    getCurrentUser,
 }
