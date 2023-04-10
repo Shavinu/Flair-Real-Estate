@@ -7,7 +7,7 @@ const {
 } = require('../controllers/userController')
 
 //Get all users
-router.get('/', getUsers)
+router.get('', getUsers)
 
 //Get single users
 router.get('/:id', getaUser)
@@ -25,4 +25,4 @@ router.patch('/:id', (req, res) => {
     res.json({ mssg: "UPDATE USER" })
 })
 
-module.exports = router
+module.exports = router;

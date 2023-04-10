@@ -1,15 +1,15 @@
 require('dotenv').config();
 const express = require('express');
 const app = express();
-const userRoutes = require('./routes/users');
 const mongoose = require('mongoose');
 const createError = require('http-errors');
+const routes = require('./routes');
 
 //middleware
 app.use(express.json());
 
-//routeS
-app.use('/api/users', userRoutes);
+//init routes
+app.use('/', routes);
 
 app.use((req, res, next) => {
     next(createError.NotFound('This route does not exist'));

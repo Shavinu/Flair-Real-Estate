@@ -16,3 +16,5 @@ router.post('/refresh-token', async (req, res, next) => {
 router.delete('/logout', async (req, res, next) => {
     res.send('This is logout route');
 });
+
+module.exports = router;
