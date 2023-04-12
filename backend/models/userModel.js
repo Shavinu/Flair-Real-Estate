@@ -1,15 +1,16 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const bcrypt = require('bcrypt');
+const Joi = require('@hapi/joi');
 
 /*  A user is anyone who is logged in, admins, devlopers, agents, etc
 *   the accType or account type feild dictates the privlges that user has
 */
 const userSchema = new Schema({
-    // accType: {
-    //     type: String,
-    //     required: true
-    // },
+    accType: {
+         type: String,
+         required: true
+    },
     firstName: {
         type: String,
         required: true,

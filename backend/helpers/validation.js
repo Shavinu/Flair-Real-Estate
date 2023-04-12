@@ -1,5 +1,5 @@
 const Joi = require('@hapi/joi');
-
+/** 
 const userSchema = Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string().min(6).required(),
@@ -7,6 +7,7 @@ const userSchema = Joi.object({
     lastName: Joi.string().required(),
     phoneNo: Joi.string().required(),
 });
+*/
 
 const authSchema = Joi.object({
     email: Joi.string().email().required(),
@@ -15,6 +16,6 @@ const authSchema = Joi.object({
 
 
 module.exports = {
-    userSchema,
+    //userSchema,
     authSchema,
 }
