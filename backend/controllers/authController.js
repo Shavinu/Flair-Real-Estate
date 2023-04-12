@@ -1,4 +1,4 @@
-const createError = require('http-errors');
+/*const createError = require('http-errors');
 const JWT = require('jsonwebtoken');
 const User = require('../models/userModel');
 const { userSchema, authSchema } = require('../helpers/validation');
@@ -84,3 +84,4 @@ module.exports = {
   login,
   getCurrentUser,
 }
+*/
