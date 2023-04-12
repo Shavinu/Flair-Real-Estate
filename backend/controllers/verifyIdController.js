@@ -41,20 +41,48 @@ async function getAccessToken() {
   }
 }
 
-async function verifyLicense() {
+async function verifyLicense(req, res) {
   try {
     const token = await getAccessToken();
+    const id = req.params.id;
+    const idType = req.params.idType;
 
     const verifyResponse = await axios.get('https://api.onegov.nsw.gov.au/propertyregister/v1/verify', {
-      params: { licenceNumber: '10055055' },
+      params: { licenceNumber: id },
       headers: {
-        'Authorization': `Bearer {${token}}`,
+        'Authorization': `Bearer ${token}`,
         'apikey': NSW_API_KEY,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
       }
     });
 
-    console.log(verifyResponse.data);
+    const results = verifyResponse.data;
+    console.log(results);
+
+    if (results.length === 0) {
+      res.status(404).json({ message: 'License not found' });
+      return;
+    }
+
+    const status = results[0].status;
+    const licenseType = results[0].licenceType;
+
+    if (licenseType != idType) {
+      res.status(404).json({ message: 'License type is not matching' });
+      return;
+    }
+
+    if (status === 'Expired') {
+        res.status(404).json({ message: 'License expired' });
+        return;
+    }
+
+    if (status === 'Current' && licenseType === idType) {
+        res.status(200).json({ message: 'License is valid' });
+        return;
+    }
+
   } catch (error) {
     if( error.response ){
         console.log(error.response.data);
