@@ -35,12 +35,12 @@ const createUser = async (req, res) =>{
     try{
         const user = await User.create({accType, firstName, lastName, phoneNo, email, password})
 
-        const existingUser = await User.findOne(user.email)
-        if (existingUser) throw createError.BadRequest(`${req.body.password} is already registered!`)
+        const existingUser = await User.findOne({email:user.email})
+        if (!existingUser) throw createError.BadRequest(`${req.body.password} is already registered!`)
 
         user.password = user.generateHash(req.body.password)
         user.save()
-        const { accessToken, payload } = await signAccessToken(savedUser.id, savedUser.email);
+        const { accessToken, payload } = await signAccessToken(user.id, user.email);
         res.status(200).json({ user, accessToken, payload })
     } catch (error) {
         res.status(400).json({ error: 'cannot create user' })
