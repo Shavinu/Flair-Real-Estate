@@ -1,18 +1,32 @@
 require('dotenv').config();
 const express = require('express');
 const app = express();
-const userRoutes = require('./routes/user');
 const mongoose = require('mongoose');
+const createError = require('http-errors');
+const routes = require('./routes');
+const cors = require('cors');
+
+app.use(cors({ credentials: true, origin: true }));
 
 //middleware
 app.use(express.json());
+
+//init routes
+app.use('/', routes);
+
 app.use((req, res, next) => {
-  console.log(req.path, req.method);
-  next();
+  next(createError.NotFound('This route does not exist'));
 });
 
-//routes
-app.use('/api/user', userRoutes);
+app.use((err, req, res, next) => {
+  res.status(err.status || 500)
+  res.send({
+    error: {
+      status: err.status || 500,
+      message: err.message,
+    }
+  })
+});
 
 //connect to db
 mongoose

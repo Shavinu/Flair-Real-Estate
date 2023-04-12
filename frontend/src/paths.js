@@ -73,11 +73,10 @@ export const AuthViews = [
 ]
 
 export const api = {
-  // auth: {
-  //   login: '/api/v1/auth/login',
-  //   logout: '/api/v1/auth/logout',
-  //   user: '/api/v1/user',
-  // },
+  auth: {
+    login: '/api/auth/login',
+    register: '/api/auth/register',
+  },
   // categories: {
   //   list: '/api/v1/categories',
   //   create: '/api/v1/categories',

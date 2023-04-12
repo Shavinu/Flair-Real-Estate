@@ -2,12 +2,12 @@ import { Outlet } from "react-router-dom"
 
 const Auth = () => {
   return <>
-    <div id="#body" class="vertical-layout vertical-menu-modern 1-column  navbar-floating footer-static bg-full-screen-image blank-page blank-page" data-open="click" data-menu="vertical-menu-modern" data-col="1-column">
-      <div class="app-content content">
-        <div class="content-overlay"></div>
-        <div class="header-navbar-shadow"></div>
-        <div class="content-wrapper">
-          <div class="content-body">
+    <div id="#body" className="vertical-layout vertical-menu-modern 1-column  navbar-floating footer-static bg-full-screen-image blank-page blank-page" data-open="click" data-menu="vertical-menu-modern" data-col="1-column">
+      <div className="app-content content">
+        <div className="content-overlay"></div>
+        <div className="header-navbar-shadow"></div>
+        <div className="content-wrapper">
+          <div className="content-body">
             <Outlet />
           </div>
         </div>

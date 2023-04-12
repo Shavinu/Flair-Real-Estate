@@ -10,7 +10,7 @@ const {
 } = require('../controllers/userController')
 
 //Get all users
-router.get('/', getUsers)
+router.get('', getUsers)
 
 //Get single user
 router.get('/:id', getaUser)
@@ -30,4 +30,4 @@ router.delete('/:id', deleteUser)
 //UPDATE a user
 router.patch('/:id', updateUser)
 
-module.exports = router
+module.exports = router;
