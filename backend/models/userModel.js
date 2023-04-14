@@ -33,6 +33,10 @@ const userSchema = new Schema({
     password: {
         type: String,
         required: true
+    },
+    group: {
+        type: Schema.Types.ObjectId,
+        ref: 'Group'
     }
 
 }, { timestamps: true })
