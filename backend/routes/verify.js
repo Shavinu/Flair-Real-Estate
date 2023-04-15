@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { verifyLicense } = require('../controllers/verifyIdController');
-// const { altVerifyLicense } = require('../controllers/altVerifyIdController');
+const { verifyLicence } = require('../controllers/verifyLicenceController');
 
 //verify license
-router.get('/verifyid/:id/:idType', verifyLicense)
-// router.get('/altVerifyLicense/:idType/:id', altVerifyLicense)
+//id is the licence number
+//idType can be 'agent', 'agency', 'builder', 'developer'
+router.get('/:id/:idType', verifyLicence)
 
 module.exports = router;
