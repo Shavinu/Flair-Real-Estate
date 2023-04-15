@@ -58,14 +58,4 @@ userSchema.methods.validPassword = function (password) {
     return bcrypt.compareSync(password, this.password);
 };
 
-userSchema.pre('save', async function (next) {
-    try {
-        const hashedPassword = await this.generateHash(this.password);
-        this.password = hashedPassword;
-        next();
-    } catch (error) {
-        next(error);
-    }
-})
-
 module.exports = mongoose.model('User', userSchema)

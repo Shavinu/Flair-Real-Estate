@@ -1,4 +1,4 @@
-/*const createError = require('http-errors');
+const createError = require('http-errors');
 const JWT = require('jsonwebtoken');
 const User = require('../models/userModel');
 const { userSchema, authSchema } = require('../helpers/validation');
@@ -12,6 +12,7 @@ const register = async (req, res, next) => {
     if (existingUser) throw createError.BadRequest(`${validatedResult.email} is already registered!`);
 
     const user = new User(validatedResult);
+    user.password = user.generateHash(validatedResult.password)
     const savedUser = await user.save();
     const { accessToken, payload } = await signAccessToken(savedUser.id, savedUser.email);
 
@@ -84,4 +85,3 @@ module.exports = {
   login,
   getCurrentUser,
 }
-*/
