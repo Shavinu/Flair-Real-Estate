@@ -13,6 +13,7 @@ const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
+  const [accType, setAccType] = useState('user');
 
   const [alertMessage, setAlertMessage] = useState('');
   const [errors, setErrors] = useState();
@@ -82,6 +83,7 @@ const Register = () => {
       phoneNo: phoneNo,
       email: email,
       password: password,
+      accType: accType,
     })
       .then((response) => {
         setAlertMessage();
