@@ -12,11 +12,10 @@ const Register = ({ type }) => {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [agency, setAgency] = useState('')
-  const [licence, setLicence] = useState('')
+  const [license, setLicense] = useState('')
   const [phoneNo, setPhoneNo] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
-  // const [accType, setAccType] = useState(type);
 
   const [alertMessage, setAlertMessage] = useState('');
   const [errors, setErrors] = useState();
@@ -56,8 +55,8 @@ const Register = ({ type }) => {
       isValid = false;
     }
 
-    if (!licence) {
-      errors = { ...errors, licence: 'Please provide licence' };
+    if (!license) {
+      errors = { ...errors, license: 'Please provide license' };
       isValid = false;
     }
 
@@ -96,7 +95,7 @@ const Register = ({ type }) => {
       email: email,
       password: password,
       agency: agency,
-      licence: licence,
+      license: license,
       accType: type,
     })
       .then((response) => {
@@ -201,11 +200,11 @@ const Register = ({ type }) => {
                         </Group>
                         <Group className='form-label-group'>
                           <Input
-                            name='licence'
-                            value={licence}
-                            placeholder='Licence Number'
+                            name='license'
+                            value={license}
+                            placeholder='License Number'
                             onChange={(e) => setEmail(e.target.value)} // need to wait till it is verified
-                            error={errors?.licence}
+                            error={errors?.license}
                           />
                           <Label for='email'>Email</Label>
                         </Group>
@@ -264,7 +263,7 @@ const Register = ({ type }) => {
                           Register
                         </Button>
                       </form>
-                    </div>
+                    </div>s
                   </div>
                 </div>
               </div>
