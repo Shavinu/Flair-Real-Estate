@@ -1,9 +1,9 @@
 import React from 'react'
 import Loader from './Loader';
-import { ComponentProps } from "../index";
+import { ComponentProps } from "./index";
+import classNames from 'classnames';
 
 interface ButtonProps extends ComponentProps {
-  id?: string;
   isLoading?: boolean;
   onClick?: Function;
   disabled?: boolean;
@@ -15,7 +15,7 @@ const Button: React.FunctionComponent<ButtonProps> = (props) => {
   return <React.Fragment>
     <button type={props.type ?? 'button'}
       id={props.id}
-      className={props.className}
+      className={classNames('waves-effect waves-light', props.className)}
       disabled={props.disabled || props.isLoading}
       onClick={props.onClick}
       style={props.style}
