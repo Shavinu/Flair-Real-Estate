@@ -77,11 +77,12 @@ async function verifyLicence(req, res) {
       return;
     }
 
+    let licenceTypeInput = idType == 'agent' ? 'Property - Individual' : 'Property - Corporation';
     const status = results[0].status;
     const licenceType = results[0].licenceType;
 
     if (idType == 'agent' || idType == 'agency') {
-      if (licenceType != idType) {
+      if (licenceType != licenceTypeInput) {
         res.status(404).json({ message: 'Licence type is not matching' });
         return;
       }
