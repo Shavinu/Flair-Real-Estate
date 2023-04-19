@@ -2,6 +2,8 @@ const Joi = require('@hapi/joi');
 
 const userSchema = Joi.object({
   accType: Joi.string().required(),
+  license: Joi.string().required(),
+  agency: Joi.string().required(),
   email: Joi.string().email().required(),
   password: Joi.string().min(6).required(),
   firstName: Joi.string().required(),

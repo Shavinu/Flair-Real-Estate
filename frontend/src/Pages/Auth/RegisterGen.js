@@ -13,9 +13,9 @@ const RegisterGen = () => {
 
   return <>
     {
-      page == 2 && <Register type={type}/>
-    }
-    <section class='row flexbox-container'>
+      page === 2 ? <Register type={type}/>:
+
+      <section class='row flexbox-container'>
       <div class='col-xl-8 col-10 d-flex justify-content-center'>
         <div class='card bg-authentication rounded-0 mb-0'>
           <div class='row m-0'>
@@ -43,7 +43,7 @@ const RegisterGen = () => {
                     }} class='btn btn-outline-primary float-right btn-inline mb-50'>Real Estate Agent</Button>
 
                     <Button onClick={() =>{
-                      setType('dev')
+                      setType('contractor')
                       setPage(2)
                     }} class='btn btn-outline-primary float-left btn-inline mb-50'>Builder</Button>
                   </div>
@@ -54,6 +54,7 @@ const RegisterGen = () => {
         </div>
       </div>
     </section>
+    }
     </>
 }
 

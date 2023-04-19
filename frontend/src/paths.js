@@ -76,8 +76,6 @@ export const api = {
   auth: {
     login: '/api/auth/login',
     register: '/api/auth/register',
-  },
-  verify: {
     verify: '/api/verify',
   }
   // categories: {

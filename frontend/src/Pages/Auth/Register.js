@@ -170,16 +170,6 @@ const Register = ({ type }) => {
                         </Group>
                         <Group className='form-label-group'>
                           <Input
-                            name='phone'
-                            value={phoneNo}
-                            placeholder='Phone Number'
-                            onChange={(e) => setPhoneNo(e.target.value)}
-                            error={errors?.phoneNo}
-                          />
-                          <Label for='phone'>Phone Number</Label>
-                        </Group>
-                        <Group className='form-label-group'>
-                          <Input
                             name='email'
                             value={email}
                             placeholder='Email'
@@ -190,23 +180,33 @@ const Register = ({ type }) => {
                         </Group>
                         <Group className='form-label-group'>
                           <Input
+                            name='phone'
+                            value={phoneNo}
+                            placeholder='Phone Number'
+                            onChange={(e) => setPhoneNo(e.target.value)}
+                            error={errors?.phoneNo}
+                          />
+                          <Label for='phone'>Phone Number</Label>
+                        </Group>
+                        <Group className='form-label-group'>
+                          <Input
                             name='agency'
                             value={agency}
                             placeholder='Agency'
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={(e) => setAgency(e.target.value)}
                             error={errors?.agency}
                           />
-                          <Label for='email'>Email</Label>
+                          <Label for='agency'>Agency</Label>
                         </Group>
                         <Group className='form-label-group'>
                           <Input
                             name='license'
                             value={license}
                             placeholder='License Number'
-                            onChange={(e) => setEmail(e.target.value)} // need to wait till it is verified
+                            onChange={(e) => setLicense(e.target.value)} // need to wait till it is verified
                             error={errors?.license}
                           />
-                          <Label for='email'>Email</Label>
+                          <Label for='license'>License Number</Label>
                         </Group>
                         <Group className='form-label-group'>
                           <Input

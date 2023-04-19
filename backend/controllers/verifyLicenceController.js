@@ -4,7 +4,7 @@ const { config } = require('dotenv')
 config();
 
 async function getAccessToken(idType) {
-  
+
   let access_token = idType == 'agent' || idType == 'agency' ? process.env.NSW_API_PROPERTY_ACCESS_TOKEN : process.env.NSW_API_CONTRACTOR_ACCESS_TOKEN;
   let accessTokenExpiration = idType == 'agent' || idType == 'agency' ? (process.env.NSW_API_PROPERTY_ACCESS_TOKEN_EXPIRATION ? new Date(process.env.NSW_API_PROPERTY_ACCESS_TOKEN_EXPIRATION) : null) : (process.env.NSW_API_CONTRACTOR_ACCESS_TOKEN_EXPIRATION ? new Date(process.env.NSW_API_CONTRACTOR_ACCESS_TOKEN_EXPIRATION) : null);
   let NSW_API_AUTHORIZATION_HEADER = idType === 'agent' || idType === 'agency' ? process.env.NSW_API_PROPERTY_AUTHORIZATION_HEADER : process.env.NSW_API_CONTRACTOR_AUTHORIZATION_HEADER;
@@ -37,13 +37,13 @@ async function getAccessToken(idType) {
     console.log('New access token obtained and stored to environment variables');
 
     return access_token;
-    
+
   } catch (error) {
     if( error.response ){
         console.log(error.response.data);
     }
   }
-}        
+}
 
 async function verifyLicence(req, res) {
   try {
@@ -73,6 +73,7 @@ async function verifyLicence(req, res) {
     console.log(results);
 
     if (results.length === 0) {
+      console.log("License not found")
       res.status(404).json({ message: 'Licence not found' });
       return;
     }
@@ -83,17 +84,20 @@ async function verifyLicence(req, res) {
 
     if (idType == 'agent' || idType == 'agency') {
       if (licenceType != licenceTypeInput) {
+        console.log("Licence type is not matching")
         res.status(404).json({ message: 'Licence type is not matching' });
         return;
       }
     }
 
     if (status === 'Expired') {
+      console.log("Licence expired")
         res.status(404).json({ message: 'Licence expired' });
         return;
     }
 
     if (status === 'Current') {
+        console.log("Licence is valid")
         res.status(200).json({ message: 'Licence is valid' });
         return;
     }

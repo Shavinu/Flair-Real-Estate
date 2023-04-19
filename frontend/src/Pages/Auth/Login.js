@@ -58,7 +58,7 @@ const Login = () => {
         navigate('/');
       })
       .catch((response) => {
-        if (response.response.data?.error && response.response.data?.error.message) {
+        if (response.response?.data?.error && response.response?.data?.error.message) {
           setAlertMessage(response.response.data.error.message);
         }
         Toast('Login failed!', 'warning');
