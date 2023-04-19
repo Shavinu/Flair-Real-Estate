@@ -1,7 +1,7 @@
 import Dashboard from "./Pages/Admin/Dashboard"
 
 import Login from "./Pages/Auth/Login"
-import Register from "./Pages/Auth/Register"
+import Register from "./Pages/Auth/RegisterGen"
 
 export const views = [
   {
@@ -77,6 +77,9 @@ export const api = {
     login: '/api/auth/login',
     register: '/api/auth/register',
   },
+  verify: {
+    verify: '/api/verify',
+  }
   // categories: {
   //   list: '/api/v1/categories',
   //   create: '/api/v1/categories',

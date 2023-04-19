@@ -263,7 +263,7 @@ const Register = ({ type }) => {
                           Register
                         </Button>
                       </form>
-                    </div>s
+                    </div>
                   </div>
                 </div>
               </div>
