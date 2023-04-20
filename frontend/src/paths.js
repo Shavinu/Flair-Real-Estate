@@ -1,4 +1,5 @@
 import Dashboard from "./Pages/Admin/Dashboard"
+import * as Users from "./Pages/Admin/Users"
 
 import Login from "./Pages/Auth/Login"
 import Register from "./Pages/Auth/RegisterGen"
@@ -7,25 +8,38 @@ export const views = [
   {
     name: 'Dashboard',
     action: '/',
-    icon: "feather icon-home",
+    icon: 'feather icon-home',
     element: <Dashboard />
   },
   {
-    name: 'Menu',
-    icon: 'feather icon-menu',
-    children: [
-      {
-        name: 'Second Level',
-        action: '/second-level',
-        element: <Dashboard />
-      },
-      {
-        name: 'Second Level',
-        action: '/second-level2',
-        element: <Dashboard />
-      }
-    ],
-  }
+    name: 'Users',
+    action: '/users',
+    icon: 'feather icon-user',
+    element: <Users.List />
+  },
+  {
+    name: 'Create Users',
+    action: '/users/create',
+    icon: 'feather icon-user',
+    element: <Users.Create />,
+    isRoute: true,
+  },
+  // {
+  //   name: 'Menu',
+  //   icon: 'feather icon-menu',
+  //   children: [
+  //     {
+  //       name: 'Second Level',
+  //       action: '/second-level',
+  //       element: <Dashboard />
+  //     },
+  //     {
+  //       name: 'Second Level',
+  //       action: '/second-level2',
+  //       element: <Dashboard />
+  //     }
+  //   ],
+  // }
   // {
   //   name: 'Products',
   //   isRoute: false,
@@ -108,4 +122,10 @@ export const api = {
   //   edit: '/api/v1/users/{{id}}',
   //   deleteMany: '/api/v1/users/delete-many',
   // },
-}
+  users: {
+    list: '/api/users',
+    create: '/api/users',
+    edit: '/api/users/{{id}}',
+    delete: '/api/users/{{id}}',
+  },
+  },

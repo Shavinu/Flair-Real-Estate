@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import * as AuthServices from '../Services/AuthServices';
+import * as AuthServices from '../Services/AuthService';
 
 const Navbar = () => {
   const [user, setUser] = useState();

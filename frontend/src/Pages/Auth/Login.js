@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
 import { useState } from 'react';
 import { Group, Input, Label } from '../../Components/Form';
-import * as AuthServices from '../../Services/AuthServices';
+import * as AuthServices from '../../Services/AuthService';
 import utils from '../../Utils';
 import Toast from '../../Components/Toast';
 import { Alert, Button } from '../../Components';
@@ -91,7 +91,7 @@ const Login = () => {
                     Welcome back, please login to your account.
                   </p>
                   {alertMessage &&
-                    <Alert className="mx-2" type="danger" message={alertMessage} icon={<i class="feather icon-info mr-1 align-middle"></i>} />
+                    <Alert className="mx-2" type="danger" message={alertMessage} icon={<i className="feather icon-info mr-1 align-middle"></i>} />
                   }
                   <div className='card-content'>
                     <div className='card-body pt-0'>
