@@ -1,317 +1,361 @@
-const File = require('../models/file');
-const fs = require('fs');
-const path = require('path');
 const mongoose = require('mongoose');
 
-//gridfs bucket for file storage in mongodb database
-const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
-    bucketName: 'uploads'
-});
-
-//create file in database and upload file to server storage folder (uploads) under the user's id
-const upload = async (req, res, next) => {
+const uploadSingle = async (req, res, next) => {
     try {
-        const uploadStream = bucket.openUploadStream(req.file.filename, {
+      const files = req.files.files[0];
+      const userId = req.body.userIds[0];
+      const label = req.body.labels[0];
+  
+      if (!files) {
+        return res.status(400).json({ error: 'No file provided' });
+      }
+  
+      const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
+        bucketName: 'uploads',
+      });
+  
+      const uploadStream = bucket.openUploadStreamWithId(new mongoose.Types.ObjectId(), files.originalname, {
+        metadata: {
+          createdBy: userId,
+          label: label,
+        },
+        contentType: files.mimetype,
+      });
+  
+      uploadStream.on('error', (err) => {
+        return res.status(500).json({ error: 'Error occurred while uploading file' });
+      });
+  
+      uploadStream.on('finish', () => {
+        res.status(201).json({
+          message: 'File uploaded successfully',
+          file: {
+            _id: uploadStream.id,
+            filename: files.originalname,
+            contentType: files.mimetype,
             metadata: {
-                createdBy: req.body.userId,
-                //use label to specify usecase of file
-                label: req.body.label
-            }
-        });
-        fs.createReadStream(req.file.path).pipe(uploadStream);
-        uploadStream.on('error', (err) => {
-            return next({
-                log: `Error uploading file: ${err}`,
-                message: { err: 'Error occurred while uploading file' }
-            });
-        });
-        uploadStream.on('finish', async () => {
-            try {
-                const file = new File({
-                    filename: req.file.filename,
-                    contentType: req.file.mimetype,
-                    metadata: {
-                        createdBy: req.body.userId,
-                        label: req.body.label
-                    },
-                    length: req.file.size,
-                    chunkSize: req.file.size,
-                    uploadDate: Date.now(),
-                    md5: uploadStream.adapter.fileId.toHexString()
-                });
-                await file.save();
-                fs.unlinkSync(req.file.path);
-                res.status(201).json({
-                    message: 'File uploaded successfully',
-                    file: file
-                });
-            } catch (err) {
-                next(err);
-            }
-        });
-    } catch (err) {
-        next(err);
-    }
-}
-
-//upload multiple files to server storage folder (uploads)
-const uploadMultiple = async (req, res, next) => {
-    try {
-      const uploadPromises = req.files.map(file => {
-        return new Promise((resolve, reject) => {
-          const uploadStream = bucket.openUploadStream(file.filename, {
-            metadata: {
-              createdBy: req.body.userId,
-              label: file.label
-            }
-          });
-          const id = uploadStream.id;
-          fs.createReadStream(file.path).pipe(uploadStream);
-          uploadStream.on('error', (err) => {
-            reject({
-              log: `Error uploading file: ${err}`,
-              message: { err: 'Error occurred while uploading file' }
-            });
-          });
-          uploadStream.on('finish', async () => {
-            try {
-              const fileObj = new File({
-                filename: file.filename,
-                contentType: file.mimetype,
-                metadata: {
-                  createdBy: req.body.userId,
-                  label: file.label
-                },
-                length: file.size,
-                chunkSize: file.size,
-                uploadDate: Date.now(),
-                md5: uploadStream.adapter.fileId.toHexString()
-              });
-              await fileObj.save();
-              fs.unlinkSync(file.path);
-              resolve(fileObj);
-            } catch (err) {
-              reject(err);
-            }
-          });
+              createdBy: userId,
+              label: label,
+            },
+          },
         });
       });
   
-      const uploadedFiles = await Promise.all(uploadPromises);
+      uploadStream.end(files.buffer);
+  
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  const uploadMultiple = async (req, res, next) => {
+    try {
+      const { files } = req.files;
+      const userIds = req.body.userIds;
+      const labels = req.body.labels;
+  
+      if (!files || files.length === 0) {
+        return res.status(400).json({ error: 'No files provided' });
+      }
+  
+      const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
+        bucketName: 'uploads',
+      });
+  
+      let uploadedFiles = [];
+  
+      const uploadFile = (file, userId, label) => {
+        return new Promise((resolve, reject) => {
+          const uploadStream = bucket.openUploadStreamWithId(
+            new mongoose.Types.ObjectId(),
+            file.originalname,
+            {
+              metadata: {
+                createdBy: userId,
+                label: label,
+              },
+              contentType: file.mimetype,
+            }
+          );
+  
+          uploadStream.on('error', (err) => {
+            reject(err);
+          });
+  
+          uploadStream.on('finish', () => {
+            uploadedFiles.push({
+              _id: uploadStream.id,
+              filename: file.originalname,
+              contentType: file.mimetype,
+              metadata: {
+                createdBy: userId,
+                label: label,
+              },
+            });
+            resolve();
+          });
+  
+          uploadStream.end(file.buffer);
+        });
+      };
+  
+      const uploadPromises = files.map((file, index) =>
+        uploadFile(file, userIds[index], labels[index])
+      );
+  
+      await Promise.all(uploadPromises);
+  
       res.status(201).json({
         message: 'Files uploaded successfully',
-        files: uploadedFiles
+        files: uploadedFiles,
+      });
+    } catch (err) {
+      next(err);
+    }
+};  
+
+const updateFile = async (req, res, next) => {
+    try {
+      const { filesToUpdate, body: { userId, label } } = req;
+  
+      if (!filesToUpdate || filesToUpdate.length === 0) {
+        return res.status(400).json({ error: 'No files provided for update' });
+      }
+  
+      const updatedFiles = await File.updateMany(
+        { _id: { $in: filesToUpdate.map(file => file._id) } },
+        { $set: { 'metadata.label': label } }
+      );
+  
+      res.status(200).json({
+        message: 'Files updated successfully',
+        updatedFilesCount: updatedFiles.nModified,
+      });
+    } catch (err) {
+      next(err);
+    }
+};  
+
+//update file's metadata
+const updateFileMetadata = async (req, res, next) => {
+    try {
+      const { fileId } = req.params;
+      const { userId, label } = req.body;
+      const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
+        bucketName: 'uploads',
+      });
+  
+      const file = await bucket.find({ _id: new mongoose.Types.ObjectId(fileId) }).next();
+  
+      if (!file) {
+        return res.status(404).json({ error: 'File not found' });
+      }
+  
+      const updatedMetadata = {
+        ...file.metadata,
+        createdBy: userId || file.metadata.createdBy,
+        label: label || file.metadata.label,
+      };
+  
+      await bucket.rename(file._id, file.filename, { metadata: updatedMetadata });
+  
+      res.status(200).json({
+        message: 'File metadata updated successfully',
+        file: {
+          ...file,
+          metadata: updatedMetadata,
+        },
       });
     } catch (err) {
       next(err);
     }
 };
 
-//update file in database and server storage folder (uploads) under the user's id
-const updateFile = async (req, res, next) => {
-    const fileId = req.params.fileId;
-    const label = req.body.label;
-    const file = await File.findById(fileId);
-  
-    if (!file) {
-        return res.status(404).json({
-            message: `File not found with id: ${fileId}`,
-        });
-    }
-  
-    const uploadStream = bucket.openUploadStreamWithId(file.md5, req.file.filename, {
-      metadata: {
-        createdBy: req.body.userId,
-        label: label || file.metadata.label // if label not specified in request, use the existing label
-      }
-    });
-  
-    fs.createReadStream(req.file.path).pipe(uploadStream);
-  
-    uploadStream.on('error', (err) => {
-      return next({
-        log: `Error uploading file: ${err}`,
-        message: { err: 'Error occurred while uploading file' }
-      });
-    });
-  
-    uploadStream.on('finish', async () => {
-      try {
-        const updatedFile = await File.findByIdAndUpdate(fileId, {
-          filename: req.file.filename,
-          contentType: req.file.mimetype,
-          metadata: {
-            createdBy: req.body.userId,
-            label: label || file.metadata.label // if label not specified in request, use the existing label
-          },
-          length: req.file.size,
-          chunkSize: req.file.size,
-          uploadDate: Date.now(),
-          md5: uploadStream.adapter.fileId.toHexString()
-        }, { new: true });
-        fs.unlinkSync(req.file.path);
-        res.status(200).json({
-          message: 'File updated successfully',
-          file: updatedFile
-        });
-      } catch (err) {
-        next(err);
-      }
-    });
-};
-
 //search for files in database by any of the following: filename, label, or user id
 const searchFiles = async (req, res, next) => {
     try {
-        const query = req.query.q;
-        const files = await File.find({
-            $or: [
-                { filename: { $regex: query, $options: 'i' } },
-                { 'metadata.label': { $regex: query, $options: 'i' } },
-                { 'metadata.createdBy': { $regex: query, $options: 'i' } }
-            ]
-        });
-        res.status(200).json({
-            message: 'Files retrieved successfully',
-            files: files
-        });
+      const { fileId, createdBy, label } = req.query;
+  
+      const searchQuery = {
+        $or: [
+          ...(fileId ? [{ _id: fileId }] : []),
+          ...(createdBy ? [{ "metadata.createdBy": createdBy }] : []),
+          ...(label ? [{ "metadata.label": label }] : []),
+        ],
+      };
+  
+      const files = await File.find(searchQuery);
+      if (!files || files.length === 0) {
+        return res.status(404).json({ message: "No files found" });
+      }
+  
+      res.status(200).json({ files });
     } catch (err) {
-        next(err);
+      next(err);
     }
-};
+};  
 
 
 //stream file from database to client
 const streamFile = async (req, res, next) => {
     try {
-        const file = await File.findById(req.params.id);
-        if (!file) {
-            const error = new Error('File not found');
-            error.statusCode = 404;
-            throw error;
-        }
-        const downloadStream = bucket.openDownloadStream(file.md5);
-        res.set('Content-Type', file.contentType);
-        res.set('Content-Disposition', `attachment; filename="${file.filename}"`);
-        downloadStream.on('data', (chunk) => {
-            res.write(chunk);
-        });
-        downloadStream.on('error', (err) => {
-            next(err);
-        });
-        downloadStream.on('end', () => {
-            res.end();
-        });
+      const { fileId } = req.params;
+      console.log({ fileId });
+      const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
+        bucketName: 'uploads',
+      });
+  
+      const fileInfo = await bucket.find({ _id: new mongoose.Types.ObjectId(fileId) }).toArray();
+  
+      if (!fileInfo || fileInfo.length === 0) {
+        return res.status(404).json({ error: 'File not found' });
+      }
+  
+      const downloadStream = bucket.openDownloadStream(new mongoose.Types.ObjectId(fileId));
+  
+      res.set('Content-Type', fileInfo[0].contentType);
+      res.set('Content-Disposition', `inline; filename="${fileInfo[0].filename}"`);
+  
+      downloadStream.pipe(res);
+  
+      downloadStream.on('error', (err) => {
+        res.status(500).json({ error: 'Error occurred while streaming file' });
+      });
     } catch (err) {
-        next(err);
+      next(err);
     }
-}
+};
+  
 
 //download file from database and server storage folder
-const download = async (req, res, next) => {
+const downloadFile = async (req, res, next) => {
     try {
-        const file = await File.findById(req.params.id);
-        if (!file) {
-            const error = new Error('File not found');
-            error.statusCode = 404;
-            throw error;
-        }
-        const downloadStream = bucket.openDownloadStreamByName(file.filename);
-        downloadStream.pipe(res);
+      const { fileId } = req.params;
+      const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
+        bucketName: 'uploads',
+      });
+  
+      const fileInfo = await bucket.find({ _id: new mongoose.Types.ObjectId(fileId) }).toArray();
+  
+      if (!fileInfo || fileInfo.length === 0) {
+        return res.status(404).json({ error: 'File not found' });
+      }
+  
+      const downloadStream = bucket.openDownloadStream(new mongoose.Types.ObjectId(fileId));
+  
+      res.set('Content-Type', fileInfo[0].contentType);
+      res.set('Content-Disposition', `attachment; filename="${fileInfo[0].filename}"`);
+  
+      downloadStream.pipe(res);
+  
+      downloadStream.on('error', (err) => {
+        res.status(500).json({ error: 'Error occurred while downloading file' });
+      });
     } catch (err) {
-        return next({
-            log: `Error downloading file: ${err}`,
-            message: { err: 'Error downloading file.' }
-        });
+      next(err);
     }
-}
-
-//get all files from database for a specific user
-const getAll = async (req, res, next) => {
-    try {
-        const files = await File.find({ 'metadata.createdBy': req.body.userId });
-        if (files.length === 0) {
-            const error = new Error('Files not found');
-            error.statusCode = 404;
-            throw error;
-        }
-        res.status(200).json({
-            message: 'Files fetched successfully',
-            files: files
-        });
-    } catch (err) {
-        next(err);
-    }
-}
+};
 
 //get file from database by id
-const getById = async (req, res, next) => {
+const getFileById = async (req, res, next) => {
     try {
-        const file = await File.findById(req.params.id);
-        if (!file) {
-            const error = new Error('File not found');
-            error.statusCode = 404;
-            throw error;
-        }
-        res.status(200).json({
-            message: 'File fetched successfully',
-            file: file
-        });
+      const { fileId } = req.params;
+      const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
+        bucketName: 'uploads',
+      });
+  
+      const fileInfo = await bucket.find({ _id: new mongoose.Types.ObjectId(fileId) }).toArray();
+  
+      if (!fileInfo || fileInfo.length === 0) {
+        return res.status(404).json({ error: 'File not found' });
+      }
+  
+      res.status(200).json(fileInfo[0]);
     } catch (err) {
-        next(err);
+      next(err);
+    }
+};  
+
+//get all files from database for a specific user
+const getAllFilesByUser = async (req, res, next) => {
+    try {
+      const { userId } = req.query;
+      const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
+        bucketName: 'uploads',
+      });
+  
+      const files = await bucket.find({ 'metadata.createdBy': userId }).toArray();
+  
+      res.status(200).json(files);
+    } catch (err) {
+      next(err);
     }
 };
 
-//delete file from database and server storage folder (uploads) under the user's id
-const deleteFile = async (req, res, next) => {
+//get all files under a certain label
+const getAllFilesByLabel = async (req, res, next) => {
     try {
-        const file = await File.findById(req.params.id);
-        if (!file) {
-            const error = new Error('File not found');
-            error.statusCode = 404;
-            throw error;
-        }
-        await File.findByIdAndDelete(req.params.id);
-        await bucket.delete(file._id);
-        res.status(200).json({
-            message: 'File deleted successfully'
-        });
+      const { label } = req.query;
+      const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
+        bucketName: 'uploads',
+      });
+  
+      const files = await bucket.find({ 'metadata.label': label }).toArray();
+  
+      res.status(200).json(files);
     } catch (err) {
-        next(err);
+      next(err);
     }
-}
+};  
 
-//delete all files from database and delete all files from server storage folder (uploads) under the user's id
-const deleteAll = async (req, res, next) => {
+//delete files from database provided with fileIds
+const deleteFiles = async (req, res, next) => {
     try {
-        const files = await File.find({ 'metadata.createdBy': req.body.userId });
-        if (files.length === 0) {
-            const error = new Error('Files not found');
-            error.statusCode = 404;
-            throw error;
-        }
-        await File.deleteMany({ 'metadata.createdBy': req.body.userId });
-        for (let file of files) {
-            await bucket.delete(file._id);
-        }
-        res.status(200).json({
-            message: 'Files deleted successfully'
+      const { fileIds } = req.body;
+      const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
+        bucketName: 'uploads',
+      });
+  
+      if (!fileIds || fileIds.length === 0) {
+        return res.status(400).json({ error: 'No file IDs provided for deletion' });
+      }
+  
+      const deleteFile = (fileId) => {
+        return new Promise((resolve, reject) => {
+          bucket.delete(new mongoose.Types.ObjectId(fileId), (err) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve();
+            }
+          });
         });
+      };
+  
+      const deletePromises = fileIds.map(deleteFile);
+  
+      await Promise.all(deletePromises);
+  
+      res.status(200).json({
+        message: 'Files deleted successfully',
+        deletedFilesCount: fileIds.length,
+      });
     } catch (err) {
-        next(err);
+      next(err);
     }
-}
+};
 
 module.exports = {
-    upload,
+    uploadSingle,
     uploadMultiple,
     updateFile,
-    streamFile,
-    download,
+    updateFileMetadata,
     searchFiles,
-    getAll,
-    getById,
-    deleteFile,
-    deleteAll
-};
+    streamFile,
+    downloadFile,
+    getFileById,
+    getAllFilesByUser,
+    getAllFilesByLabel,
+    deleteFiles,
+  };
 

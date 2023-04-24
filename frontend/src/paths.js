@@ -4,6 +4,9 @@ import * as Users from "./Pages/Admin/Users"
 import Login from "./Pages/Auth/Login"
 import Register from "./Pages/Auth/Register"
 
+import FileUpload from "./Pages/File/Upload"
+import FileStream from "./Pages/File/Stream"
+
 export const views = [
   {
     name: 'Dashboard',
@@ -22,6 +25,18 @@ export const views = [
     action: '/users/create',
     icon: 'feather icon-user',
     element: <Users.Create />,
+    isRoute: true,
+  },
+  {
+    name : 'Upload File',
+    action: '/files/upload',
+    element: <FileUpload />,
+    isRoute: true,
+  },
+  {
+    name : 'Stream File',
+    action: '/files/stream',
+    element: <FileStream />,
     isRoute: true,
   },
   // {
@@ -97,4 +112,9 @@ export const api = {
     edit: '/api/users/{{id}}',
     delete: '/api/users/{{id}}',
   },
+  files: {
+    upload: '/api/files/upload',
+    stream: '/api/files/stream',
+    download: '/api/files/download',
+  }
 }
