@@ -1,118 +1,117 @@
 const mongoose = require('mongoose');
 
 const uploadSingle = async (req, res, next) => {
-    try {
-      const files = req.files.files[0];
-      const userId = req.body.userIds[0];
-      const label = req.body.labels[0];
-  
-      if (!files) {
-        return res.status(400).json({ error: 'No file provided' });
-      }
-  
-      const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
-        bucketName: 'uploads',
-      });
-  
-      const uploadStream = bucket.openUploadStreamWithId(new mongoose.Types.ObjectId(), files.originalname, {
-        metadata: {
-          createdBy: userId,
-          label: label,
+  try {
+    const file = req.file;
+    const userId = req.body.userId;
+    const label = req.body.label;
+
+    if (!file) {
+      return res.status(400).json({ error: 'No file provided' });
+    }
+
+    const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
+      bucketName: 'uploads',
+    });
+
+    const uploadStream = bucket.openUploadStreamWithId(new mongoose.Types.ObjectId(), file.originalname, {
+      metadata: {
+        createdBy: userId,
+        label: label,
+      },
+      contentType: file.mimetype,
+    });
+
+    uploadStream.on('error', (err) => {
+      return res.status(500).json({ error: 'Error occurred while uploading file' });
+    });
+
+    uploadStream.on('finish', () => {
+      res.status(201).json({
+        message: 'File uploaded successfully',
+        file: {
+          _id: uploadStream.id,
+          filename: file.originalname,
+          contentType: file.mimetype,
+          metadata: {
+            createdBy: userId,
+            label: label,
+          },
         },
-        contentType: files.mimetype,
       });
-  
-      uploadStream.on('error', (err) => {
-        return res.status(500).json({ error: 'Error occurred while uploading file' });
-      });
-  
-      uploadStream.on('finish', () => {
-        res.status(201).json({
-          message: 'File uploaded successfully',
-          file: {
-            _id: uploadStream.id,
-            filename: files.originalname,
-            contentType: files.mimetype,
+    });
+
+    uploadStream.end(file.buffer);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const uploadMultiple = async (req, res, next) => {
+  try {
+    const files = req.files;
+    const userIds = req.body.userIds;
+    const labels = req.body.labels;
+
+    if (!files || files.length === 0) {
+      return res.status(400).json({ error: 'No files provided' });
+    }
+
+    const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
+      bucketName: 'uploads',
+    });
+
+    let uploadedFiles = [];
+
+    const uploadFile = (file, userId, label) => {
+      return new Promise((resolve, reject) => {
+        const uploadStream = bucket.openUploadStreamWithId(
+          new mongoose.Types.ObjectId(),
+          file.originalname,
+          {
             metadata: {
               createdBy: userId,
               label: label,
             },
-          },
-        });
-      });
-  
-      uploadStream.end(files.buffer);
-  
-    } catch (err) {
-      next(err);
-    }
-  };
+            contentType: file.mimetype,
+          }
+        );
 
-  const uploadMultiple = async (req, res, next) => {
-    try {
-      const { files } = req.files;
-      const userIds = req.body.userIds;
-      const labels = req.body.labels;
-  
-      if (!files || files.length === 0) {
-        return res.status(400).json({ error: 'No files provided' });
-      }
-  
-      const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
-        bucketName: 'uploads',
-      });
-  
-      let uploadedFiles = [];
-  
-      const uploadFile = (file, userId, label) => {
-        return new Promise((resolve, reject) => {
-          const uploadStream = bucket.openUploadStreamWithId(
-            new mongoose.Types.ObjectId(),
-            file.originalname,
-            {
-              metadata: {
-                createdBy: userId,
-                label: label,
-              },
-              contentType: file.mimetype,
-            }
-          );
-  
-          uploadStream.on('error', (err) => {
-            reject(err);
-          });
-  
-          uploadStream.on('finish', () => {
-            uploadedFiles.push({
-              _id: uploadStream.id,
-              filename: file.originalname,
-              contentType: file.mimetype,
-              metadata: {
-                createdBy: userId,
-                label: label,
-              },
-            });
-            resolve();
-          });
-  
-          uploadStream.end(file.buffer);
+        uploadStream.on('error', (err) => {
+          reject(err);
         });
-      };
-  
-      const uploadPromises = files.map((file, index) =>
-        uploadFile(file, userIds[index], labels[index])
-      );
-  
-      await Promise.all(uploadPromises);
-  
-      res.status(201).json({
-        message: 'Files uploaded successfully',
-        files: uploadedFiles,
+
+        uploadStream.on('finish', () => {
+          uploadedFiles.push({
+            _id: uploadStream.id,
+            filename: file.originalname,
+            contentType: file.mimetype,
+            metadata: {
+              createdBy: userId,
+              label: label,
+            },
+          });
+          resolve();
+        });
+
+        uploadStream.end(file.buffer);
       });
-    } catch (err) {
-      next(err);
-    }
-};  
+    };
+
+    const uploadPromises = files.map((file, index) =>
+      uploadFile(file, userIds[index], labels[index])
+    );
+
+    await Promise.all(uploadPromises);
+
+    res.status(201).json({
+      message: 'Files uploaded successfully',
+      files: uploadedFiles,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
 const updateFile = async (req, res, next) => {
     try {

@@ -33,18 +33,25 @@ const FileUploadModal = () => {
     setUploading(true);
 
     try {
-      const formData = new FormData();
-      files.forEach((fileData, index) => {
-        formData.append('files', fileData.file);
-        formData.append(`userIds[${index}]`, fileData.userId);
-        formData.append(`labels[${index}]`, fileData.label);
+      const formDataSingle = new FormData();
+      const formDataMultiple = new FormData();
+
+      files.forEach((file) => {
+        if (files.length === 1) {
+          formDataSingle.append('file', file.file);
+          formDataSingle.append('userId', file.userId);
+          formDataSingle.append('label', file.label);
+        } else {
+          formDataMultiple.append('files', file.file);
+          formDataMultiple.append('userIds', file.userId);
+          formDataMultiple.append('labels', file.label);
+        }
       });
 
-      formData.forEach((value, key) => {
-        console.log(`FormData key: ${key}, value: ${value}`);
-      });
+      const endpoint =
+        files.length > 1 ? api.files.uploadMultiple : api.files.uploadSingle;
 
-      const endpoint = api.files.upload;
+      const formData = files.length > 1 ? formDataMultiple : formDataSingle;
 
       axios.defaults.baseURL = process.env.REACT_APP_API_URL;
       const response = await axios.post(endpoint, formData, {

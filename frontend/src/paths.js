@@ -113,7 +113,8 @@ export const api = {
     delete: '/api/users/{{id}}',
   },
   files: {
-    upload: '/api/files/upload',
+    uploadSingle: '/api/files/uploadSingle',
+    uploadMultiple: '/api/files/uploadMultiple',
     stream: '/api/files/stream',
     download: '/api/files/download',
   }

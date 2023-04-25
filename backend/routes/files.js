@@ -17,14 +17,11 @@ const {
     deleteFiles,
 } = require('../controllers/fileController');
 
+// Request body: userId (string), label(string), file (single file). (file should be multipart/form-data)
+router.post('/uploadSingle', upload.single('file'), uploadSingle);
+
 // Request body: userIds (array), labels(array), files (array). (files should be multipart/form-data)
-router.post('/upload', upload.fields([{ name: 'files' }, { name: 'userIds' }, { name: 'labels' }]), (req, res, next) => {
-    if (req.files.files.length === 1) {
-        uploadSingle(req, res, next);
-    } else {
-        uploadMultiple(req, res, next);
-    }
-});
+router.post('/uploadMultiple', upload.array('files'), uploadMultiple);
 
 // Request body: userId, label
 // Request params: fileId
