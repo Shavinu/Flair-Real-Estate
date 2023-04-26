@@ -7,7 +7,8 @@ const upload = multer({ storage: storage });
 const {
     uploadSingle,
     uploadMultiple,
-    updateFileMetadata,
+    updateFile,
+    updateFiles,
     searchFiles,
     streamFile,
     downloadFile,
@@ -23,9 +24,17 @@ router.post('/uploadSingle', upload.single('file'), uploadSingle);
 // Request body: userIds (array), labels(array), files (array). (files should be multipart/form-data)
 router.post('/uploadMultiple', upload.array('files'), uploadMultiple);
 
-// Request body: userId, label
-// Request params: fileId
-router.put('/update/:fileId', updateFileMetadata);
+// Request params: fileId (ObjectId, required)
+// Request body: userId (string, optional), label (string, optional), filename (string, optional), file (file, optional)
+// file should be sent as multipart/form-data
+router.patch('/update/:fileId', upload.single('file'), updateFile);
+
+// Request body:
+    // updates (JSON stringified array of objects with fields:
+        // fileId (required), userId (optional), label (optional), filename (optional)),
+    // files (array, optional)
+        // files should be sent as multipart/form-data with the same order as updates
+router.patch('/update', upload.array('files'), updateFiles);
 
 // Query parameters: fileId, createdBy, and/or label
 // Example: /search?fileId=123&createdBy=user1&label=report

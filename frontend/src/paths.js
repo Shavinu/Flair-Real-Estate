@@ -6,6 +6,7 @@ import Register from "./Pages/Auth/Register"
 
 import FileUpload from "./Pages/File/Upload"
 import FileStream from "./Pages/File/Stream"
+import FileUpdates from "./Pages/File/Update"
 
 export const views = [
   {
@@ -37,6 +38,12 @@ export const views = [
     name : 'Stream File',
     action: '/files/stream',
     element: <FileStream />,
+    isRoute: true,
+  },
+  {
+    name : 'Update Files',
+    action: '/files/update',
+    element: <FileUpdates />,
     isRoute: true,
   },
   // {
@@ -115,6 +122,9 @@ export const api = {
   files: {
     uploadSingle: '/api/files/uploadSingle',
     uploadMultiple: '/api/files/uploadMultiple',
+    search: '/api/files/search',
+    updateSingle: '/api/files/update',
+    updateMultiple: '/api/files/update',
     stream: '/api/files/stream',
     download: '/api/files/download',
   }
