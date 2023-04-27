@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import React from 'react';
 import { ComponentProps } from "../index";
 
-interface InputProps extends ComponentProps {
+export interface InputProps extends ComponentProps {
   value?: any;
   defaultValue?: any;
   type: 'text' | 'password' | 'email' | 'hidden' | 'number';
@@ -15,8 +15,8 @@ interface InputProps extends ComponentProps {
   readonly?: boolean;
   autoFocus?: boolean;
   icon?: string;
-  onChange?: Function;
-  onBlur?: Function;
+  onChange?: (event: any) => void;
+  onBlur?: (event: any) => void;
 }
 
 const Input: React.FunctionComponent<InputProps> = (props) => {

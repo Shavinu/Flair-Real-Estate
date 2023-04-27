@@ -5,6 +5,7 @@ const createError = require('http-errors');
 const JWT = require('jsonwebtoken');
 const { authSchema } = require('../helpers/validation');
 const { signAccessToken, verifyAccessToken } = require('../helpers/token');
+const { userSchema } = require('../helpers/validation');
 
 //get all users
 const getUsers = async (req, res) => {
@@ -31,17 +32,16 @@ const getaUser = async (req, res) => {
 
 //create/register a new user
 const createUser = async (req, res) => {
-  const { accType, firstName, lastName, phoneNo, email, password } = req.body
   try {
-    const existingUser = await User.findOne({ email: user.email })
-    if (!existingUser) throw createError.BadRequest(`${req.body.password} is already registered!`)
+    const validatedResult = await userSchema.validateAsync(req.body);
 
-    const user = await User.create({ accType, firstName, lastName, phoneNo, email, password })
+    const existingUser = await User.findOne({ email: validatedResult.email })
+    if (existingUser) throw createError.BadRequest(`${validatedResult.email} is already registered!`)
 
-    user.password = user.generateHash(req.body.password)
-    user.save()
-    const { accessToken, payload } = await signAccessToken(user.id, user.email);
-    res.status(200).json({ user, accessToken, payload })
+    const user = new User(validatedResult);
+    user.password = user.generateHash(validatedResult.password)
+    const savedUser = await user.save();
+    res.status(200).json(savedUser)
   } catch (error) {
     res.status(400).json({ error: 'cannot create user' })
     console.log(error)
@@ -70,7 +70,7 @@ const updateUser = async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ error: 'NoT a Vaild id' });
+    return res.status(404).json({ error: 'Not a valid id' });
   }
 
   const user = await User.findOneAndUpdate(
@@ -84,8 +84,19 @@ const updateUser = async (req, res) => {
     return res.status(404).json({ error: 'no user found' });
   }
 
+  if (req.body.password) {
+    user.password = user.generateHash(req.body.password)
+    user.save();
+  }
+
   res.status(200).json(user);
 };
+
+const deleteManyUsers = async (req, res) => {
+  const { ids } = req.body;
+  const users = await User.deleteMany({ _id: { $in: ids } });
+  res.status(200).json(users);
+}
 
 module.exports = {
   getUsers,
@@ -93,4 +104,5 @@ module.exports = {
   createUser,
   deleteUser,
   updateUser,
+  deleteManyUsers,
 };

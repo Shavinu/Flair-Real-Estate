@@ -7,6 +7,7 @@ import ContentHeader from './ContentHeader';
 import Dropdown from './Dropdown';
 import Modal from './Modal';
 import ConfirmModal from './ConfirmModal';
+import DatePicker from './DatePicker';
 import { Col, Container, Row } from "./Grid";
 
 export interface ComponentProps {
@@ -28,4 +29,5 @@ export {
   Container,
   Row,
   Col,
+  DatePicker,
 }

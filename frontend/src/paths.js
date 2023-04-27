@@ -46,6 +46,13 @@ export const views = [
     element: <FileUpdates />,
     isRoute: true,
   },
+  {
+    name: 'Edit Users',
+    action: '/users/:id',
+    icon: 'feather icon-user',
+    element: <Users.Edit />,
+    isRoute: true,
+  },
   // {
   //   name: 'Menu',
   //   icon: 'feather icon-menu',
@@ -115,9 +122,10 @@ export const api = {
   },
   users: {
     list: '/api/users',
-    create: '/api/users',
+    create: '/api/users/create',
     edit: '/api/users/{{id}}',
     delete: '/api/users/{{id}}',
+    deleteMany: '/api/users/delete-many',
   },
   files: {
     uploadSingle: '/api/files/uploadSingle',

@@ -5,6 +5,7 @@ const {
   getaUser,
   createUser,
   deleteUser,
+  deleteManyUsers,
   updateUser
 } = require('../controllers/userController')
 
@@ -15,7 +16,7 @@ router.get('', getUsers)
 router.get('/:id', getaUser)
 
 //register a new user
-router.post('/register', createUser)
+router.post('/create', createUser)
 
 //Refresh token
 router.post('/refresh-token', async (req, res, next) => {
@@ -27,9 +28,12 @@ router.delete('/logout', async (req, res, next) => {
   res.send('This is logout route');
 });
 
+//delete many user
+router.post('/delete-many', deleteManyUsers)
 
 //delete a user
 router.delete('/:id', deleteUser)
+
 
 //UPDATE a user
 router.patch('/:id', updateUser)

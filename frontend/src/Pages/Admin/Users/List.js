@@ -5,6 +5,8 @@ import DataTable from 'react-data-table-component';
 import * as UserService from '../../../Services/UserService';
 import moment from "moment";
 import { Link } from "react-router-dom";
+import Toast from "../../../Components/Toast";
+import utils from "../../../Utils";
 
 const List = () => {
   const [users, setUsers] = useState([]);
@@ -48,16 +50,16 @@ const List = () => {
     {
       name: 'Last Modified At',
       selector: row => row.updatedAt,
-      cell: row => row.updatedAt ? moment(row.updatedAt).format('YYYY-MM-DD hh:mm:ss A').toLocaleString() : '--',
+      cell: row => row.updatedAt ? utils.dateFormat(row.updatedAt) : '--',
       sortable: true,
     },
     {
       name: "Actions",
       button: true,
       cell: row => (<>
-        <Button className="btn btn-icon btn-sm btn-flat-primary my-1">
+        <Link className="btn btn-icon btn-sm btn-flat-primary my-1" to={`/users/${row._id}`}>
           <i className="feather icon-edit"></i>
-        </Button>
+        </Link>
         <Button className="btn btn-icon btn-sm btn-flat-danger my-1" onClick={() => onSelectDelete(row)}>
           <i className="feather icon-trash"></i>
         </Button>
@@ -75,22 +77,18 @@ const List = () => {
   }
 
   const onConfirmDeleteUsers = () => {
-    let updatedUsers = [...users];
+    const ids = selectedUsers.map(user => user._id);
 
-    selectedUsers.forEach(user => {
-      UserService.deleteUser(user._id)
-        .then(() => {
-        })
-        .catch(() => { })
-
-      const u = updatedUsers.find(u => user._id === u._id)
-      const index = updatedUsers.indexOf(u)
-      if (index > -1) {
-        updatedUsers.splice(index, 1)
-      }
-    })
-
-    setUsers(updatedUsers);
+    UserService.deleteManyUser({ ids: ids })
+      .then(() => {
+        setSelectedUsers([]);
+        Toast('Delete successfully', 'success');
+        getUserList();
+      })
+      .catch(() => {
+        Toast('Failed to delete users!', 'danger');
+      })
+      .finally(() => setShowConfirmDeleteModal(false))
     setShowConfirmDeleteModal(false);
   }
 
