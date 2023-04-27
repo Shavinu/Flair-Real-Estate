@@ -32,8 +32,16 @@ export const httpPut = (url, body) => {
     )
 }
 
-export const httpDelete = (url) => {
-  return http.delete(url)
+export const httpPatch = (url, body) => {
+  return http.patch(url, body)
+    .then(
+      response => response.data
+    )
+}
+
+
+export const httpDelete = (url, body) => {
+  return http.delete(url, body)
     .then(
       response => response.data
     )

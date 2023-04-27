@@ -24,6 +24,13 @@ export const views = [
     element: <Users.Create />,
     isRoute: true,
   },
+  {
+    name: 'Edit Users',
+    action: '/users/:id',
+    icon: 'feather icon-user',
+    element: <Users.Edit />,
+    isRoute: true,
+  },
   // {
   //   name: 'Menu',
   //   icon: 'feather icon-menu',
@@ -94,39 +101,10 @@ export const api = {
   },
   users: {
     list: '/api/users',
-    create: '/api/users',
+    create: '/api/users/create',
     edit: '/api/users/{{id}}',
     delete: '/api/users/{{id}}',
-  }
-  // categories: {
-  //   list: '/api/v1/categories',
-  //   create: '/api/v1/categories',
-  //   edit: '/api/v1/categories/{{id}}',
-  //   restoreMany: '/api/v1/categories/restore-many',
-  //   deleteMany: '/api/v1/categories/delete-many',
-  //   permanentDeleteMany: '/api/v1/categories/permanent-delete-many',
-  // },
-  // products: {
-  //   list: '/api/v1/products',
-  //   create: '/api/v1/products',
-  //   edit: '/api/v1/products/{{id}}',
-  //   deleteMany: '/api/v1/products/delete-many',
-  //   status: '/api/v1/products/status',
-  // },
-  // roles: {
-  //   list: '/api/v1/roles',
-  //   create: '/api/v1/roles',
-  //   edit: '/api/v1/roles/{{id}}',
-  //   deleteMany: '/api/v1/roles/delete-many',
-  // },
-  // permissions: {
-  //   list: '/api/v1/permissions',
-  // },
-  // users: {
-  //   list: '/api/v1/users',
-  //   create: '/api/v1/users',
-  //   edit: '/api/v1/users/{{id}}',
-  //   deleteMany: '/api/v1/users/delete-many',
-  // },
+    deleteMany: '/api/users/delete-many',
+  },
+}
 
-  }

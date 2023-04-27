@@ -8,8 +8,8 @@ const Joi = require('@hapi/joi');
 */
 const userSchema = new Schema({
     accType: {
-         type: String,
-         required: true
+        type: String,
+        required: true
     },
     firstName: {
         type: String,
@@ -37,8 +37,28 @@ const userSchema = new Schema({
     group: {
         type: Schema.Types.ObjectId,
         ref: 'Group'
+    },
+    birthday: {
+        type: Date,
+    },
+    company: {
+        type: String,
+    },
+    addressLine1: {
+        type: String,
+    },
+    addressLine1: {
+        type: String,
+    },
+    city: {
+        type: String,
+    },
+    country: {
+        type: String,
+    },
+    postcode: {
+        type: String,
     }
-
 }, { timestamps: true })
 
 //static signup method
