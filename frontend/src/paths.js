@@ -2,7 +2,7 @@ import Dashboard from "./Pages/Admin/Dashboard"
 import * as Users from "./Pages/Admin/Users"
 
 import Login from "./Pages/Auth/Login"
-import Register from "./Pages/Auth/Register"
+import Register from "./Pages/Auth/RegisterGen"
 
 export const views = [
   {
@@ -97,6 +97,7 @@ export const api = {
   auth: {
     login: '/api/auth/login',
     register: '/api/auth/register',
+    verify: '/api/verify',
   },
   users: {
     list: '/api/users',
@@ -106,3 +107,4 @@ export const api = {
     deleteMany: '/api/users/delete-many',
   },
 }
+

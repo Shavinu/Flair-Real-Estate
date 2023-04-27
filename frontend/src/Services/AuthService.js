@@ -11,7 +11,7 @@ export const login = (credentials) => {
 }
 
 export const register = (credentials) => {
-  return utils.fetch.httpPost(api.auth.register, credentials)
+  return utils.fetch.httpPost(api.auth.register/*api.auth.verify*/, credentials)
     .then((response) => {
       let user = response;
       localStorage.setItem('user', JSON.stringify(user));
