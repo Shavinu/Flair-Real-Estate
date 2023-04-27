@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { Group, Input, Label } from "../../Components/Form";
 import utils from "../../Utils";
-import * as AuthServices from '../../Services/AuthServices';
+import * as AuthServices from '../../Services/AuthService';
 import Toast from "../../Components/Toast";
 import { Alert, Button } from "../../Components";
 import Register from "./Register";
@@ -13,7 +13,7 @@ const RegisterGen = () => {
 
   return <>
     {
-      page === 2 ? <Register type={type}/>:
+      page === 2 ? <Register type={type} page={setPage}/>:
 
       <section class='row flexbox-container'>
       <div class='col-xl-8 col-10 d-flex justify-content-center'>
@@ -45,7 +45,7 @@ const RegisterGen = () => {
                     <Button onClick={() =>{
                       setType('contractor')
                       setPage(2)
-                    }} class='btn btn-outline-primary float-left btn-inline mb-50'>Builder</Button>
+                    }} class='btn btn-outline-primary float-left btn-inline mb-50'>Contractor</Button>
                   </div>
                 </div>
               </div>

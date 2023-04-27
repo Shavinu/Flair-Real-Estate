@@ -2,17 +2,17 @@ import { Suspense, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Group, Input, Label } from '../../Components/Form';
 import utils from '../../Utils';
-import * as AuthServices from '../../Services/AuthServices';
+import * as AuthServices from '../../Services/AuthService';
 import Toast from '../../Components/Toast';
 import { Alert, Button } from '../../Components';
 import RegisterGen from './RegisterGen';
 
-const Register = ({ type }) => {
+const Register = ({ type, page }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
-  const [agency, setAgency] = useState('');
-  const [license, setLicense] = useState('');
+  const [company, setCompany] = useState('');
+  // const [license, setLicense] = useState('');
   const [phoneNo, setPhoneNo] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
@@ -50,15 +50,15 @@ const Register = ({ type }) => {
       isValid = false;
     }
 
-    if (!agency) {
-      errors = { ...errors, agency: 'Please provide real estate agency' };
+    if (!company) {
+      errors = { ...errors, company: 'Please provide your company' };
       isValid = false;
     }
 
-    if (!license) {
-      errors = { ...errors, license: 'Please provide license' };
-      isValid = false;
-    }
+    // if (!license) {
+    //   errors = { ...errors, license: 'Please provide license' };
+    //   isValid = false;
+    // }
 
     if (!password) {
       errors = { ...errors, password: 'Please provide a password' };
@@ -80,6 +80,10 @@ const Register = ({ type }) => {
     return isValid;
   };
 
+  const onReset = (e) =>{
+    page(1);
+  }
+
   const onSubmit = (e) => {
     setIsLoading(true);
     e.preventDefault();
@@ -94,8 +98,8 @@ const Register = ({ type }) => {
       phoneNo: phoneNo,
       email: email,
       password: password,
-      agency: agency,
-      license: license,
+      company: company,
+      // license: license,
       accType: type,
     })
       .then((response) => {
@@ -135,7 +139,7 @@ const Register = ({ type }) => {
                     </div>
                   </div>
                   <p class='px-2'>
-                    Fill the form below to create a new account.
+                    Fill the form below to create a new {type} account.
                   </p>
                   {alertMessage && (
                     <Alert
@@ -190,15 +194,15 @@ const Register = ({ type }) => {
                         </Group>
                         <Group className='form-label-group'>
                           <Input
-                            name='agency'
-                            value={agency}
-                            placeholder='Agency'
-                            onChange={(e) => setAgency(e.target.value)}
-                            error={errors?.agency}
+                            name='company'
+                            value={company}
+                            placeholder='Company'
+                            onChange={(e) => setCompany(e.target.value)}
+                            error={errors?.company}
                           />
-                          <Label for='agency'>Agency</Label>
+                          <Label for='company'>Company</Label>
                         </Group>
-                        <Group className='form-label-group'>
+                        {/* <Group className='form-label-group'>
                           <Input
                             name='license'
                             value={license}
@@ -207,7 +211,7 @@ const Register = ({ type }) => {
                             error={errors?.license}
                           />
                           <Label for='license'>License Number</Label>
-                        </Group>
+                        </Group> */}
                         <Group className='form-label-group'>
                           <Input
                             type='password'
@@ -261,6 +265,12 @@ const Register = ({ type }) => {
                           onClick={onSubmit}
                           isLoading={isLoading}>
                           Register
+                        </Button>
+                        <Button
+                          type='reset'
+                          className=''
+                          onClick={onReset}>
+                          Back
                         </Button>
                       </form>
                     </div>

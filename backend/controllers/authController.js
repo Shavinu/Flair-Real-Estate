@@ -13,13 +13,12 @@ const register = async (req, res, next) => {
     const existingUser = await User.findOne({ email: validatedResult.email })
     if (existingUser) throw createError.BadRequest(`${validatedResult.email} is already registered!`);
 
-    //verify licence number
-    const validLicense = await verifyLicence({ id: validatedResult.license, idType: validatedResult.accType })
-    // console.log(validLicense.res.message)
-    if (!validLicence) {
-      throw createError.BadRequest(`${validatedResult.license} is not a valid ${validatedResult.accType} license number`)
-      console.log(res.message)
-    }
+    // //verify licence number
+    // const validLicense = await verifyLicence({ id: validatedResult.license, idType: validatedResult.accType })
+    // console.log(validLicense)
+    // if (!validLicence) {
+    //   throw createError.BadRequest(`${validatedResult.license} is not a valid ${validatedResult.accType} license number`)
+    // }
     const user = new User(validatedResult);
     user.password = user.generateHash(validatedResult.password)
     const savedUser = await user.save();

@@ -91,6 +91,12 @@ export const api = {
     login: '/api/auth/login',
     register: '/api/auth/register',
     verify: '/api/verify',
+  },
+  users: {
+    list: '/api/users',
+    create: '/api/users',
+    edit: '/api/users/{{id}}',
+    delete: '/api/users/{{id}}',
   }
   // categories: {
   //   list: '/api/v1/categories',
@@ -122,10 +128,5 @@ export const api = {
   //   edit: '/api/v1/users/{{id}}',
   //   deleteMany: '/api/v1/users/delete-many',
   // },
-  users: {
-    list: '/api/users',
-    create: '/api/users',
-    edit: '/api/users/{{id}}',
-    delete: '/api/users/{{id}}',
-  },
-  },
+
+  }
