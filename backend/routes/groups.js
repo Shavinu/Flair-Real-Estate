@@ -11,7 +11,7 @@ const {
     deleteUserFromGroup
 } = require('../controllers/groupController')
 
-// router.get('/', getGroupList);
+router.get('/', getGroup);
 
 //create group
 //body should contain groupType, groupLicence, groupName, groupContact, groupEmail, groupArea in json

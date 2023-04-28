@@ -1,7 +1,7 @@
-import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
-import { Group, Input, Label } from "../../Components/Form";
-import utils from "../../Utils";
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Group, Input, Label } from '../../Components/Form';
+import utils from '../../Utils';
 import * as AuthServices from '../../Services/AuthService';
 import Toast from "../../Components/Toast";
 import { Alert, Button, Card, Col, Row } from "../../Components";
@@ -9,9 +9,9 @@ import CardBody from "../../Components/Card/CardBody";
 import Register from "./Register";
 
 const RegisterGen = () => {
-  const [type, setType] = useState('agent')
-  const [page, setPage] = useState(1)
-
+  const [type, setType] = useState('agent');
+  const [page, setPage] = useState(1);
+  
   return <>
     {
       page === 2 ? <Register type={type} page={setPage}/>:
@@ -62,11 +62,10 @@ const RegisterGen = () => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </section>
-    }
+        </section>
+      )}
     </>
-}
+  );
+};
 
-export default RegisterGen
+export default RegisterGen;
