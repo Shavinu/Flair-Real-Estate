@@ -37,15 +37,25 @@ const RegisterGen = () => {
                 </p>
                 <div class='card-content'>
                   <div class='card-body'>
-                    <Button onClick={() =>{
+                    <Button className="btn btn-primary btn-block mt-0" onClick={() =>{
+                      setType('agency')
+                      setPage(2)
+                    }}>Real Estate Agency</Button>
+
+                    <Button className="btn btn-primary btn-block mb-2" onClick={() =>{
                       setType('agent')
                       setPage(2)
-                    }} class='btn btn-outline-primary float-right btn-inline mb-50'>Real Estate Agent</Button>
+                    }}>Real Estate Agent</Button>
 
-                    <Button onClick={() =>{
-                      setType('contractor')
+                    <Button className="btn btn-primary btn-block" onClick={() =>{
+                      setType('builder')
                       setPage(2)
-                    }} class='btn btn-outline-primary float-left btn-inline mb-50'>Contractor</Button>
+                    }}>Builder</Button>
+
+                    <Button className="btn btn-primary btn-block" onClick={() =>{
+                      setType('developer')
+                      setPage(2)
+                    }}>Developer</Button>
                   </div>
                 </div>
               </div>

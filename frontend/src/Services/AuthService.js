@@ -11,12 +11,28 @@ export const login = (credentials) => {
 }
 
 export const register = (credentials) => {
-  return utils.fetch.httpPost(api.auth.register/*api.auth.verify*/, credentials)
+  return utils.fetch.httpPost(api.auth.register, credentials)
     .then((response) => {
       let user = response;
       localStorage.setItem('user', JSON.stringify(user));
     })
 }
+
+export const verifyLicence = (accType, licence) => {
+  const url = api.auth.verifyLicence.replace(':accType', accType).replace(':licence', licence);
+  
+  return utils.fetch.httpGet(url)
+    .then(response => {
+      return response;
+    })
+    .catch(error => {
+      if (error.response && error.response.data && error.response.data.error) {
+        return Promise.resolve(error.response.data);
+      }
+      console.error(error);
+      return Promise.reject(error);
+    });
+};
 
 export const logout = () => {
   localStorage.clear();

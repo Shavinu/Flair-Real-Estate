@@ -34,6 +34,15 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
+    licence: {
+        type: String,
+        unique: true,
+        required: false
+    },
+    verifiedLicence: {
+        type: Boolean,
+        required: false
+    },
     group: {
         type: Schema.Types.ObjectId,
         ref: 'Group'

@@ -97,7 +97,7 @@ export const api = {
   auth: {
     login: '/api/auth/login',
     register: '/api/auth/register',
-    verify: '/api/verify',
+    verifyLicence: '/api/auth/verify-licence/:accType/:licence',
   },
   users: {
     list: '/api/users',

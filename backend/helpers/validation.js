@@ -2,8 +2,8 @@ const Joi = require('@hapi/joi');
 
 const userSchema = Joi.object({
   accType: Joi.string().required(),
-  license: Joi.string().required(),
-  agency: Joi.string().required(),
+  licence: Joi.string().optional(),
+  verifiedLicence: Joi.boolean().optional(),
   email: Joi.string().email().required(),
   password: Joi.string().required(),
   firstName: Joi.string().required(),
@@ -23,8 +23,14 @@ const authSchema = Joi.object({
   password: Joi.string().required(),
 })
 
+const validateSchema = Joi.object({
+  accType: Joi.string().required(),
+  licence: Joi.string().required(),
+})
+
 
 module.exports = {
   userSchema,
   authSchema,
+  validateSchema,
 }

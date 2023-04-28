@@ -12,7 +12,8 @@ const Register = ({ type, page }) => {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [company, setCompany] = useState('');
-  // const [license, setLicense] = useState('');
+  const [licence, setLicence] = useState('');
+  const [verifiedLicence, setVerifiedLicence] = useState('');
   const [phoneNo, setPhoneNo] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
@@ -55,10 +56,10 @@ const Register = ({ type, page }) => {
       isValid = false;
     }
 
-    // if (!license) {
-    //   errors = { ...errors, license: 'Please provide license' };
-    //   isValid = false;
-    // }
+    if (!licence) {
+      errors = { ...errors, licence: 'Please provide licence number' };
+      isValid = false;
+    }
 
     if (!password) {
       errors = { ...errors, password: 'Please provide a password' };
@@ -91,33 +92,62 @@ const Register = ({ type, page }) => {
       setIsLoading(false);
       return;
     }
-
-    AuthServices.register({
-      firstName: firstName,
-      lastName: lastName,
-      phoneNo: phoneNo,
-      email: email,
-      password: password,
-      company: company,
-      // license: license,
-      accType: type,
-    })
+  
+    AuthServices.verifyLicence(type, licence)
       .then((response) => {
-        setAlertMessage();
-        Toast('Register successfully!', 'success');
-        navigate('/');
-      })
-      .catch((response) => {
-        if (
-          response.response.data?.error &&
-          response.response.data?.error.message
-        ) {
-          setAlertMessage(response.response.data.error.message);
+        console.log(response);
+        if (response?.error) {
+          setAlertMessage(response.error.message);
+          Toast('Licence verification failed!', 'warning');
+          setIsLoading(false);
+          return;
         }
-        Toast('Register failed!', 'warning');
+  
+        if (response?.message === 'Licence is valid') {
+          setAlertMessage();
+          Toast('Licence verified!', 'success');
+          setVerifiedLicence(true);
+  
+          AuthServices.register({
+            firstName: firstName,
+            lastName: lastName,
+            phoneNo: phoneNo,
+            email: email,
+            password: password,
+            company: company,
+            licence: licence,
+            verifiedLicence: true,
+            accType: type,
+          })
+            .then((response) => {
+              setAlertMessage();
+              Toast('Register successfully!', 'success');
+              navigate('/');
+            })
+            .catch((response) => {
+              if (
+                response.response.data?.error &&
+                response.response.data?.error.message
+              ) {
+                setAlertMessage(response.response.data.error.message);
+              }
+              Toast('Register failed!', 'warning');
+            })
+            .finally(() => setIsLoading(false));
+        } else {
+          setAlertMessage(response.data.message);
+          Toast('Licence verification failed!', 'warning');
+          setIsLoading(false);
+          return;
+        }
       })
-      .finally(() => setIsLoading(false));
-  };
+      .catch((error) => {
+        setAlertMessage('An error occurred while verifying the licence.');
+        Toast('Licence verification failed!', 'warning');
+        setIsLoading(false);
+        return;
+      });
+  };  
 
   return (
     <>
@@ -202,16 +232,16 @@ const Register = ({ type, page }) => {
                           />
                           <Label for='company'>Company</Label>
                         </Group>
-                        {/* <Group className='form-label-group'>
+                        <Group className='form-label-group'>
                           <Input
                             name='license'
-                            value={license}
+                            value={licence}
                             placeholder='License Number'
-                            onChange={(e) => setLicense(e.target.value)} // need to wait till it is verified
-                            error={errors?.license}
+                            onChange={(e) => setLicence(e.target.value)}
+                            error={errors?.licence}
                           />
-                          <Label for='license'>License Number</Label>
-                        </Group> */}
+                          <Label for='license'>Licence Number</Label>
+                        </Group>
                         <Group className='form-label-group'>
                           <Input
                             type='password'
@@ -268,7 +298,7 @@ const Register = ({ type, page }) => {
                         </Button>
                         <Button
                           type='reset'
-                          className=''
+                          className='btn btn-secondary float-left btn-inline ml-50 mr-1'
                           onClick={onReset}>
                           Back
                         </Button>
