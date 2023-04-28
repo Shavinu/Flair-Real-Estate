@@ -74,8 +74,7 @@ async function verifyLicence(req, res) {
 
     if (results.length === 0) {
       console.log("License not found")
-      res.status(404).json({ message: 'Licence not found' });
-      return;
+      return res.status(404).json({ message: 'Licence not found' });
     }
 
     let licenceTypeInput = idType == 'agent' ? 'Property - Individual' : 'Property - Corporation';
@@ -85,26 +84,25 @@ async function verifyLicence(req, res) {
     if (idType == 'agent' || idType == 'agency') {
       if (licenceType != licenceTypeInput) {
         console.log("Licence type is not matching")
-        res.status(404).json({ message: 'Licence type is not matching' });
-        return;
+        return res.status(404).json({ message: 'Licence type is not matching' });
       }
     }
 
     if (status === 'Expired') {
       console.log("Licence expired")
-        res.status(404).json({ message: 'Licence expired' });
-        return;
+      return res.status(404).json({ message: 'Licence expired' });
+
     }
 
     if (status === 'Current') {
         console.log("Licence is valid")
-        res.status(200).json({ message: 'Licence is valid' });
-        return;
+        return res.status(200).json({ message: 'Licence is valid' });
     }
 
   } catch (error) {
     if( error.response ){
         console.log(error.response.data);
+        return error;
     }
   }
 }

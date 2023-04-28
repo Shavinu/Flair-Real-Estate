@@ -3,11 +3,14 @@ const router = express.Router();
 const { verifyAccessToken } = require('../helpers/token');
 const {
     register,
+    verifyLicenceNumber,
     login,
     getCurrentUser,
 } = require('../controllers/authController');
 
 router.post('/register', register);
+
+router.get('/verify-licence/:accType/:licence', verifyLicenceNumber)
 
 router.post('/login', login);
 
