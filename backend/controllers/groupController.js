@@ -72,6 +72,16 @@ const getGroup = async (req, res) => {
     }
   }
   
+//get all groups
+const getGroups = async (req, res) => {
+    try {
+        const groups = await Group.find().sort({ CreateAt: -1 });
+        res.status(200).json(groups);
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ error: 'Unable to get groups' });
+    }
+};
 
 //delete group
 const deleteGroup = async (req, res) => {
@@ -186,6 +196,7 @@ module.exports = {
     updateGroup,
     deleteGroup,
     getGroup,
+    getGroups,
     addUserToGroup,
     getGroupsBySearch,
     getUsersInGroup,
