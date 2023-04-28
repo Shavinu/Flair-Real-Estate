@@ -2,7 +2,7 @@ import Dashboard from "./Pages/Admin/Dashboard"
 import * as Users from "./Pages/Admin/Users"
 
 import Login from "./Pages/Auth/Login"
-import Register from "./Pages/Auth/Register"
+import Register from "./Pages/Auth/RegisterGen"
 
 import FileUpload from "./Pages/File/Upload"
 import FileStream from "./Pages/File/Stream"
@@ -128,6 +128,7 @@ export const api = {
   auth: {
     login: '/api/auth/login',
     register: '/api/auth/register',
+    verifyLicence: '/api/auth/verify-licence/:accType/:licence',
   },
   users: {
     list: '/api/users',
@@ -146,3 +147,4 @@ export const api = {
     download: '/api/files/download',
   }
 }
+

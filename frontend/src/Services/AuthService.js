@@ -18,6 +18,22 @@ export const register = (credentials) => {
     })
 }
 
+export const verifyLicence = (accType, licence) => {
+  const url = api.auth.verifyLicence.replace(':accType', accType).replace(':licence', licence);
+  
+  return utils.fetch.httpGet(url)
+    .then(response => {
+      return response;
+    })
+    .catch(error => {
+      if (error.response && error.response.data && error.response.data.error) {
+        return Promise.resolve(error.response.data);
+      }
+      console.error(error);
+      return Promise.reject(error);
+    });
+};
+
 export const logout = () => {
   localStorage.clear();
 }

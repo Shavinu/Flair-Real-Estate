@@ -21,17 +21,17 @@ const Login = () => {
     let errors = {}
 
     if (!email) {
-      errors = { ...errors, email: 'Please provide email address!' }
+      errors = { ...errors, email: 'Please provide email address' }
       isValid = false
     }
 
     if (email && !utils.string.isValidEmail(email)) {
-      errors = { ...errors, email: 'Please provide a valid email address!' }
+      errors = { ...errors, email: 'Please provide a valid email address' }
       isValid = false
     }
 
     if (!password) {
-      errors = { ...errors, password: 'Please provide a password!' }
+      errors = { ...errors, password: 'Please provide a password' }
       isValid = false
     }
 

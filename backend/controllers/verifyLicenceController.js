@@ -4,7 +4,7 @@ const { config } = require('dotenv')
 config();
 
 async function getAccessToken(idType) {
-  
+
   let access_token = idType == 'agent' || idType == 'agency' ? process.env.NSW_API_PROPERTY_ACCESS_TOKEN : process.env.NSW_API_CONTRACTOR_ACCESS_TOKEN;
   let accessTokenExpiration = idType == 'agent' || idType == 'agency' ? (process.env.NSW_API_PROPERTY_ACCESS_TOKEN_EXPIRATION ? new Date(process.env.NSW_API_PROPERTY_ACCESS_TOKEN_EXPIRATION) : null) : (process.env.NSW_API_CONTRACTOR_ACCESS_TOKEN_EXPIRATION ? new Date(process.env.NSW_API_CONTRACTOR_ACCESS_TOKEN_EXPIRATION) : null);
   let NSW_API_AUTHORIZATION_HEADER = idType === 'agent' || idType === 'agency' ? process.env.NSW_API_PROPERTY_AUTHORIZATION_HEADER : process.env.NSW_API_CONTRACTOR_AUTHORIZATION_HEADER;
@@ -37,13 +37,13 @@ async function getAccessToken(idType) {
     console.log('New access token obtained and stored to environment variables');
 
     return access_token;
-    
+
   } catch (error) {
     if( error.response ){
         console.log(error.response.data);
     }
   }
-}        
+}
 
 async function verifyLicence(req, res) {
   try {
@@ -73,8 +73,8 @@ async function verifyLicence(req, res) {
     console.log(results);
 
     if (results.length === 0) {
-      res.status(404).json({ message: 'Licence not found' });
-      return;
+      console.log("License not found")
+      return res.status(404).json({ message: 'Licence not found' });
     }
 
     let licenceTypeInput = idType == 'agent' ? 'Property - Individual' : 'Property - Corporation';
@@ -83,24 +83,26 @@ async function verifyLicence(req, res) {
 
     if (idType == 'agent' || idType == 'agency') {
       if (licenceType != licenceTypeInput) {
-        res.status(404).json({ message: 'Licence type is not matching' });
-        return;
+        console.log("Licence type is not matching")
+        return res.status(404).json({ message: 'Licence type is not matching' });
       }
     }
 
     if (status === 'Expired') {
-        res.status(404).json({ message: 'Licence expired' });
-        return;
+      console.log("Licence expired")
+      return res.status(404).json({ message: 'Licence expired' });
+
     }
 
     if (status === 'Current') {
-        res.status(200).json({ message: 'Licence is valid' });
-        return;
+        console.log("Licence is valid")
+        return res.status(200).json({ message: 'Licence is valid' });
     }
 
   } catch (error) {
     if( error.response ){
         console.log(error.response.data);
+        return error;
     }
   }
 }
