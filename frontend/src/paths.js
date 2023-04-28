@@ -8,6 +8,8 @@ import FileUpload from "./Pages/File/Upload"
 import FileStream from "./Pages/File/Stream"
 import FileUpdates from "./Pages/File/Update"
 
+import CreateProject from "./Pages/Project/Create"
+
 export const views = [
   {
     name: 'Dashboard',
@@ -51,6 +53,13 @@ export const views = [
     action: '/users/:id',
     icon: 'feather icon-user',
     element: <Users.Edit />,
+    isRoute: true,
+  },
+  {
+    name: 'Create Project',
+    action: '/projects/create',
+    icon: 'feather icon-user',
+    element: <CreateProject />,
     isRoute: true,
   },
   // {

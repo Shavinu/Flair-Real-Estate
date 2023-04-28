@@ -6,7 +6,13 @@ const projectSchema = new Schema({
         type: String,
         required: true
     },
+    //Land or Multiple
+    //For listings -> House, House and Land Package, Apartment & Unit, Townhouse, Duplex, Villa, Land, Acreage, Rural
     projectType: {
+        type: String,
+        required: true
+    },
+    projectPriceRange: {
         type: String,
         required: true
     },
@@ -20,30 +26,34 @@ const projectSchema = new Schema({
     },
     projectFiles: [
         {
-          file: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'File'
-          },
-          label: String
+            ref: 'File',
+            required: false,
+            default: []
         }
     ],
+    // optional
     projectListings: {
         type: Array,
-        required: true
+        required: false,
+        default: []
     },
     projectOwner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
+    // Add members of the builder group
     projectMembers: {
         type: Array,
-        required: true
+        required: false,
+        default: this.schema.projectOwner
     },
+    // can be Registered, Unregistered, Off the Plan, Ready to Move In
     projectStatus: {
         type: String,
         required: true
-    }
+    },
 }, { timestamps: true })
 
 const Project = mongoose.model('Project', projectSchema)
