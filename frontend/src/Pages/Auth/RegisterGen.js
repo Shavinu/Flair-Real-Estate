@@ -66,7 +66,7 @@ const RegisterGen = () => {
       </div>
         </section>
     }
-  </>;
+    </>
 };
 
 export default RegisterGen;
