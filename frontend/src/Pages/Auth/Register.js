@@ -4,8 +4,9 @@ import { Group, Input, Label } from '../../Components/Form';
 import utils from '../../Utils';
 import * as AuthServices from '../../Services/AuthService';
 import Toast from '../../Components/Toast';
-import { Alert, Button } from '../../Components';
+import { Alert, Button, Card } from '../../Components';
 import RegisterGen from './RegisterGen';
+import CardBody from '../../Components/Card/CardBody';
 
 const Register = ({ type, page }) => {
   const [firstName, setFirstName] = useState('');
@@ -95,7 +96,6 @@ const Register = ({ type, page }) => {
   
     AuthServices.verifyLicence(type, licence)
       .then((response) => {
-        console.log(response);
         if (response?.error) {
           setAlertMessage(response.error.message);
           Toast('Licence verification failed!', 'warning');
@@ -151,24 +151,24 @@ const Register = ({ type, page }) => {
 
   return (
     <>
-      <section class='row flexbox-container'>
-        <div class='col-xl-8 col-10 d-flex justify-content-center'>
-          <div class='card bg-authentication rounded-0 mb-0'>
-            <div class='row m-0'>
-              <div class='col-lg-6 d-lg-block d-none text-center align-self-center pl-0 pr-3 py-0'>
+      <section className='row flexbox-container'>
+        <div className='col-xl-8 col-10 d-flex justify-content-center'>
+          <div className='card bg-authentication rounded-0 mb-0'>
+            <div className='row m-0'>
+              <div className='col-lg-6 d-lg-block d-none text-center align-self-center pl-0 pr-3 py-0'>
                 <img
                   src={`${process.env.REACT_APP_PUBLIC_URL}/assets/images/pages/register.jpg`}
                   alt='branding logo'
                 />
               </div>
-              <div class='col-lg-6 col-12 p-0'>
-                <div class='card rounded-0 mb-0 p-2'>
-                  <div class='card-header pt-50 pb-1'>
-                    <div class='card-title'>
-                      <h4 class='mb-0'>Create Account</h4>
+              <div className='col-lg-6 col-12 p-0'>
+                <div className='card rounded-0 mb-0 p-2'>
+                  <div className='card-header pt-50 pb-1'>
+                    <div className='card-title'>
+                      <h4 className='mb-0'>Create Account</h4>
                     </div>
                   </div>
-                  <p class='px-2'>
+                  <p className='px-2'>
                     Fill the form below to create a new {type} account.
                   </p>
                   {alertMessage && (
@@ -179,8 +179,8 @@ const Register = ({ type, page }) => {
                       icon={<i class='feather icon-info mr-1 align-middle'></i>}
                     />
                   )}
-                  <div class='card-content'>
-                    <div class='card-body'>
+                  <Card>
+                    <CardBody>
                       <form onSubmit={onSubmit}>
                         <Group className='form-label-group'>
                           <Input
@@ -266,17 +266,17 @@ const Register = ({ type, page }) => {
                           />
                           <Label for='password'>Password</Label>
                         </Group>
-                        <div class='form-group row'>
-                          <div class='col-12'>
-                            <fieldset class='checkbox'>
-                              <div class='vs-checkbox-con vs-checkbox-primary'>
+                        <div className='form-group row'>
+                          <div className='col-12'>
+                            <fieldset className='checkbox'>
+                              <div className='vs-checkbox-con vs-checkbox-primary'>
                                 <input type='checkbox' />
-                                <span class='vs-checkbox'>
-                                  <span class='vs-checkbox--check'>
-                                    <i class='vs-icon feather icon-check'></i>
+                                <span className='vs-checkbox'>
+                                  <span className='vs-checkbox--check'>
+                                    <i className='vs-icon feather icon-check'></i>
                                   </span>
                                 </span>
-                                <span class=''>
+                                <span className=''>
                                   {' '}
                                   I accept the terms & conditions.
                                 </span>
@@ -286,7 +286,7 @@ const Register = ({ type, page }) => {
                         </div>
                         <Link
                           to='/auth/login'
-                          class='btn btn-outline-primary float-left btn-inline mb-50'>
+                          className='btn btn-outline-primary float-left btn-inline mb-50'>
                           Login
                         </Link>
                         <Button
@@ -303,8 +303,8 @@ const Register = ({ type, page }) => {
                           Back
                         </Button>
                       </form>
-                    </div>
-                  </div>
+                    </CardBody>
+                  </Card>
                 </div>
               </div>
             </div>

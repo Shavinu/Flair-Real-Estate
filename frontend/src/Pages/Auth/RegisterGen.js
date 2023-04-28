@@ -4,7 +4,8 @@ import { Group, Input, Label } from "../../Components/Form";
 import utils from "../../Utils";
 import * as AuthServices from '../../Services/AuthService';
 import Toast from "../../Components/Toast";
-import { Alert, Button } from "../../Components";
+import { Alert, Button, Card, Col, Row } from "../../Components";
+import CardBody from "../../Components/Card/CardBody";
 import Register from "./Register";
 
 const RegisterGen = () => {
@@ -15,28 +16,28 @@ const RegisterGen = () => {
     {
       page === 2 ? <Register type={type} page={setPage}/>:
 
-      <section class='row flexbox-container'>
-      <div class='col-xl-8 col-10 d-flex justify-content-center'>
-        <div class='card bg-authentication rounded-0 mb-0'>
-          <div class='row m-0'>
-            <div class='col-lg-6 d-lg-block d-none text-center align-self-center pl-0 pr-3 py-0'>
+      <section className='row flexbox-container'>
+      <div className='col-xl-8 col-10 d-flex justify-content-center'>
+        <div className='card bg-authentication rounded-0 mb-0'>
+          <div className='row m-0'>
+            <div className='col-lg-6 d-lg-block d-none text-center align-self-center pl-0 pr-3 py-0'>
               <img
                 src={`${process.env.REACT_APP_PUBLIC_URL}/assets/images/pages/register.jpg`}
                 alt='branding logo'
               />
             </div>
-            <div class='col-lg-6 col-12 p-0'>
-              <div class='card rounded-0 mb-0 p-2'>
-                <div class='card-header pt-50 pb-1'>
-                  <div class='card-title'>
-                    <h4 class='mb-0'>I AM A...</h4>
+            <div className='col-lg-6 col-12 p-0'>
+              <div className='card rounded-0 mb-0 p-2'>
+                <div className='card-header pt-50 pb-1'>
+                  <div className='card-title'>
+                    <h4 className='mb-0'>I AM A...</h4>
                   </div>
                 </div>
-                <p class='px-2'>
+                <p className='px-2'>
                   Tell us what type of account you would like to create
                 </p>
-                <div class='card-content'>
-                  <div class='card-body'>
+                <Card>
+                  <CardBody>
                     <Button className="btn btn-primary btn-block mt-0" onClick={() =>{
                       setType('agency')
                       setPage(2)
@@ -56,8 +57,8 @@ const RegisterGen = () => {
                       setType('developer')
                       setPage(2)
                     }}>Developer</Button>
-                  </div>
-                </div>
+                  </CardBody>
+                </Card>
               </div>
             </div>
           </div>
