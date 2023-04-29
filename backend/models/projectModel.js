@@ -47,7 +47,9 @@ const projectSchema = new Schema({
     projectMembers: {
         type: Array,
         required: false,
-        default: this.schema.projectOwner
+        default: function() {
+            return [this.projectOwner];
+        }
     },
     // can be Registered, Unregistered, Off the Plan, Ready to Move In
     projectStatus: {
@@ -56,6 +58,4 @@ const projectSchema = new Schema({
     },
 }, { timestamps: true })
 
-const Project = mongoose.model('Project', projectSchema)
-
-module.exports = Project
+module.exports = mongoose.model('Project', projectSchema)
