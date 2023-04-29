@@ -1,15 +1,15 @@
-import Dashboard from "./Pages/Admin/Dashboard"
+import Home from "./Pages/Admin/Home"
 import * as Users from "./Pages/Admin/Users"
-
 import Login from "./Pages/Auth/Login"
 import Register from "./Pages/Auth/RegisterGen"
+import * as Dashboard from "./Pages/ProfileDashboard"
 
 export const views = [
   {
-    name: 'Dashboard',
+    name: 'Home',
     action: '/',
     icon: 'feather icon-home',
-    element: <Dashboard />
+    element: <Home />
   },
   {
     name: 'Users',
@@ -31,6 +31,16 @@ export const views = [
     element: <Users.Edit />,
     isRoute: true,
   },
+  {
+    name:'View Profile',
+    action: '/profile/view/:id',
+    element: <Dashboard.ViewProfile />
+  },
+  {
+    name: 'Edit Profile',
+    action: '/profile/edit/:id',
+    element: <Dashboard.EditProfile />
+  }
   // {
   //   name: 'Menu',
   //   icon: 'feather icon-menu',
@@ -80,6 +90,19 @@ export const views = [
   // },
 ]
 
+// export const pages = [
+//   {
+//     name:'View Profile',
+//     action: '/profile/view',
+//     element: <Dashboard.ViewProfile />
+//   },
+//   {
+//     name: 'Edit Profile',
+//     action: '/:id/profile/edit',
+//     element: <Dashboard.EditProfile />
+//   }
+// ]
+
 export const AuthViews = [
   {
     name: 'Login',
@@ -107,4 +130,3 @@ export const api = {
     deleteMany: '/api/users/delete-many',
   },
 }
-

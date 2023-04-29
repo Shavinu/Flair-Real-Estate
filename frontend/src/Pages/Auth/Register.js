@@ -82,9 +82,9 @@ const Register = ({ type, page }) => {
     return isValid;
   };
 
-  const onReset = (e) =>{
+  const onReset = (e) => {
     page(1);
-  }
+  };
 
   const onSubmit = (e) => {
     setIsLoading(true);
@@ -93,7 +93,7 @@ const Register = ({ type, page }) => {
       setIsLoading(false);
       return;
     }
-  
+
     AuthServices.verifyLicence(type, licence)
       .then((response) => {
         if (response?.error) {
@@ -102,12 +102,12 @@ const Register = ({ type, page }) => {
           setIsLoading(false);
           return;
         }
-  
+
         if (response?.message === 'Licence is valid') {
           setAlertMessage();
           Toast('Licence verified!', 'success');
           setVerifiedLicence(true);
-  
+
           AuthServices.register({
             firstName: firstName,
             lastName: lastName,
@@ -116,7 +116,7 @@ const Register = ({ type, page }) => {
             password: password,
             company: company,
             licence: licence,
-            verifiedLicence: true,
+            verifiedLicence: verifiedLicence,
             accType: type,
           })
             .then((response) => {
@@ -147,7 +147,7 @@ const Register = ({ type, page }) => {
         setIsLoading(false);
         return;
       });
-  };  
+  };
 
   return (
     <>

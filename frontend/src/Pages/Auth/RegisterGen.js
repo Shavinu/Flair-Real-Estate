@@ -11,10 +11,10 @@ import Register from "./Register";
 const RegisterGen = () => {
   const [type, setType] = useState('agent');
   const [page, setPage] = useState(1);
-  
+
   return <>
     {
-      page === 2 ? <Register type={type} page={setPage}/>:
+      page === 2 ? (<Register type={type} page={setPage}/>):(
 
       <section className='row flexbox-container'>
       <div className='col-xl-8 col-10 d-flex justify-content-center'>
@@ -57,15 +57,23 @@ const RegisterGen = () => {
                       setType('developer')
                       setPage(2)
                     }}>Developer</Button>
+
                   </CardBody>
+                  <Link
+                    to='/auth/login'
+                    className=''>
+                    Login instead
+                  </Link>
                 </Card>
               </div>
             </div>
           </div>
+          </div>
+          </div>
         </section>
       )}
     </>
-  );
+  ;
 };
 
 export default RegisterGen;
