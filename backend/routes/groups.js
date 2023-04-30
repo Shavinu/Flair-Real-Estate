@@ -9,7 +9,9 @@ const {
     addUserToGroup,
     getGroupsBySearch,
     getUsersInGroup,
-    deleteUserFromGroup
+    deleteUserFromGroup,
+    getAvailableUsers,
+    removeManyUsersFromGroup
 } = require('../controllers/groupController')
 
 //create group
@@ -18,7 +20,7 @@ router.post('/createGroup', createGroup)
 
 //update group
 //body should contain groupId, and the fields to be updated in json
-router.post('/updateGroup', updateGroup)
+router.put('/updateGroup', updateGroup)
 
 //delete group
 //body should contain groupId
@@ -46,5 +48,9 @@ router.post('/getUsersInGroup', getUsersInGroup)
 //delete user from group
 //body should contain userId
 router.post('/deleteUserFromGroup', deleteUserFromGroup)
+
+router.get('/getAvailableUsers', getAvailableUsers)
+
+router.post('/removeManyUsersFromGroup', removeManyUsersFromGroup)
 
 module.exports = router

@@ -2,6 +2,7 @@ import React from "react";
 import Alert from './Alert';
 import Button from './Button';
 import Card from './Card';
+import CardBody from './Card/CardBody';
 import Loader from './Loader';
 import ContentHeader from './ContentHeader';
 import Dropdown from './Dropdown';
@@ -22,6 +23,7 @@ export {
   Button,
   Loader,
   Card,
+  CardBody,
   ContentHeader,
   Dropdown,
   Modal,

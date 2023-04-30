@@ -335,6 +335,7 @@ const Create = () => {
                   setPassword(e.target.value);
                 }}
                 error={errors?.password}
+                autoComplete={'new-password'}
               />
             </Group>
             <Group>

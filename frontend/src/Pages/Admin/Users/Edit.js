@@ -50,7 +50,6 @@ const Edit = () => {
   }
 
   const onChangeBirthday = (value: any) => {
-    console.log(value);
     setBirthday(moment(value).toISOString());
   }
 
@@ -139,7 +138,7 @@ const Edit = () => {
   }
 
   useEffect(() => {
-    getUserDetailById(id);
+    id && getUserDetailById(id);
   }, [id]);
 
   return <>
@@ -355,6 +354,7 @@ const Edit = () => {
                   setPassword(e.target.value);
                 }}
                 error={errors?.password}
+                autoComplete={'new-password'}
               />
             </Group>
             <Group>

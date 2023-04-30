@@ -14,6 +14,7 @@ export interface InputProps extends ComponentProps {
   disabled?: boolean;
   readonly?: boolean;
   autoFocus?: boolean;
+  autoComplete?: any;
   icon?: string;
   onChange?: (event: any) => void;
   onBlur?: (event: any) => void;
@@ -35,6 +36,7 @@ const Input: React.FunctionComponent<InputProps> = (props) => {
       readOnly={props.readonly}
       style={props.style}
       autoFocus={props.autoFocus ?? false}
+      autoComplete={props.autoComplete}
     />
     {props.icon && <div className="form-control-position">
       <i className={props.icon}></i>

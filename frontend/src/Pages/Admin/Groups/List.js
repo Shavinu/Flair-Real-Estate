@@ -2,48 +2,45 @@ import { useEffect, useMemo, useState } from "react";
 import { Button, Card, ConfirmModal, ContentHeader, Dropdown } from "../../../Components";
 import CardBody from "../../../Components/Card/CardBody";
 import DataTable from 'react-data-table-component';
-import * as UserService from '../../../Services/UserService';
+import * as GroupService from '../../../Services/GroupService';
 import { Link } from "react-router-dom";
 import Toast from "../../../Components/Toast";
 import utils from "../../../Utils";
 
 const List = () => {
-  const [users, setUsers] = useState([]);
-  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [groups, setGroups] = useState([]);
+  const [selectedGroup, setSelectedGroup] = useState();
+  const [selectedGroups, setSelectedGroups] = useState([]);
 
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
+  const [showUsersModal, setShowUsersModal] = useState(false);
 
-  const getUserList = () => {
-    UserService.getUserList()
+  const getGroupList = () => {
+    GroupService.getGroupList()
       .then((response) => {
-        setUsers(response);
+        setGroups(response);
       })
   }
 
   const columns = useMemo(() => [
     {
-      name: 'First Name',
-      selector: row => row.firstName || '--',
-      sortable: true,
-    },
-    {
-      name: 'Last Name',
-      selector: row => row.lastName || '--',
+      name: 'Name',
+      selector: row => row.groupName,
       sortable: true,
     },
     {
       name: 'Email',
-      selector: row => row.email || '--',
+      selector: row => row.groupEmail,
       sortable: true,
     },
     {
-      name: 'Phone Number',
-      selector: row => row.phoneNo || '--',
+      name: 'Contact',
+      selector: row => row.groupContact,
       sortable: true,
     },
     {
-      name: 'Role',
-      selector: row => utils.string.capitalize(row.accType) || '--',
+      name: 'Area',
+      selector: row => row.groupArea,
       sortable: true,
     },
     {
@@ -53,10 +50,17 @@ const List = () => {
       sortable: true,
     },
     {
+      name: 'Users',
+      cell: row => (<Button className="btn btn-icon btn-sm btn-flat-secondary my-1" onClick={onShowUsersModel}>
+        <i className="feather icon-eye"></i>
+      </Button>),
+      button: true,
+    },
+    {
       name: "Actions",
       button: true,
       cell: row => (<>
-        <Link className="btn btn-icon btn-sm btn-flat-primary my-1" to={`/users/${row._id}`}>
+        <Link className="btn btn-icon btn-sm btn-flat-primary my-1" to={`/groups/${row._id}`}>
           <i className="feather icon-edit"></i>
         </Link>
         <Button className="btn btn-icon btn-sm btn-flat-danger my-1" onClick={() => onSelectDelete(row)}>
@@ -67,54 +71,58 @@ const List = () => {
   ], []);
 
   const onSelectedRowsChange = (selected) => {
-    setSelectedUsers(selected.selectedRows);
+    setSelectedGroups(selected.selectedRows);
   }
 
   const onSelectDelete = (user) => {
-    setSelectedUsers([user]);
+    setSelectedGroups([user]);
     setShowConfirmDeleteModal(true);
   }
 
-  const onConfirmDeleteUsers = () => {
-    const ids = selectedUsers.map(user => user._id);
+  const onConfirmDeleteGroups = () => {
+    const ids = selectedGroups.map(group => group._id);
 
-    UserService.deleteManyUser({ ids: ids })
+    GroupService.deleteManyGroups({ ids: ids })
       .then(() => {
-        setSelectedUsers([]);
+        setSelectedGroups([]);
         Toast('Delete successfully', 'success');
-        getUserList();
+        getGroupList();
       })
       .catch(() => {
-        Toast('Failed to delete users!', 'danger');
+        Toast('Failed to delete groups!', 'danger');
       })
       .finally(() => setShowConfirmDeleteModal(false))
     setShowConfirmDeleteModal(false);
   }
 
+  const onShowUsersModel = () => {
+
+  }
+
   useEffect(() => {
-    getUserList()
+    getGroupList()
   }, []);
 
   return <>
-    <ContentHeader headerTitle="User List"
+    <ContentHeader headerTitle="Group List"
       breadcrumb={[
         { name: "Home", link: "/" },
         { name: "Users", active: true },
       ]}
-      options={<Link className="btn btn-primary waves-effect waves-light" to="/users/create">Add User</Link>}
+      options={<Link className="btn btn-primary waves-effect waves-light" to="/groups/create">Add User Group</Link>}
     />
     <Card>
       <CardBody>
-        {selectedUsers.length > 0 && <Dropdown
+        {selectedGroups.length > 0 && <Dropdown
           className="btn btn-outline-success"
-          label={`${selectedUsers.length} items selected`}
+          label={`${selectedGroups.length} items selected`}
           items={[
             { name: "Delete selected items", onClick: () => setShowConfirmDeleteModal(true) },
           ]} />}
 
         <DataTable
           columns={columns}
-          data={users}
+          data={groups}
           selectableRows
           onSelectedRowsChange={onSelectedRowsChange}
           pagination />
@@ -123,7 +131,7 @@ const List = () => {
 
     <ConfirmModal show={showConfirmDeleteModal}
       setShow={setShowConfirmDeleteModal}
-      onSubmit={onConfirmDeleteUsers}
+      onSubmit={onConfirmDeleteGroups}
     />
   </>
 }
