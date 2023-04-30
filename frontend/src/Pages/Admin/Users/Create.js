@@ -3,32 +3,41 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button, Card, Col, ContentHeader, DatePicker, Row } from "../../../Components";
 import CardBody from "../../../Components/Card/CardBody";
 import * as UserService from '../../../Services/UserService';
+import * as GroupService from '../../../Services/GroupService';
 import { Group, Input, Label, Select } from "../../../Components/Form";
 import utils from "../../../Utils";
 import Toast from "../../../Components/Toast";
 import moment from "moment";
 
 const Create = () => {
-  const [user, setUser] = useState();
+  const [groups, setGroups] = useState([]);
 
-  const [firstName, setFirstName] = useState();
-  const [lastName, setLastName] = useState();
-  const [email, setEmail] = useState();
-  const [phoneNo, setPhoneNo] = useState();
-  const [accType, setAccType] = useState();
-  const [birthday, setBirthday] = useState();
-  const [company, setCompany] = useState();
-  const [addressLine1, setAddressLine1] = useState();
-  const [addressLine2, setAddressLine2] = useState();
-  const [city, setCity] = useState();
-  const [country, setCountry] = useState();
-  const [postcode, setPostcode] = useState();
-  const [password, setPassword] = useState();
-  const [confirmationPassword, setConfirmationPassword] = useState();
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phoneNo, setPhoneNo] = useState('');
+  const [accType, setAccType] = useState('');
+  const [birthday, setBirthday] = useState('');
+  const [company, setCompany] = useState('');
+  const [addressLine1, setAddressLine1] = useState('');
+  const [addressLine2, setAddressLine2] = useState('');
+  const [city, setCity] = useState('');
+  const [country, setCountry] = useState('');
+  const [postcode, setPostcode] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmationPassword, setConfirmationPassword] = useState('');
+  const [group, setGroup] = useState('');
 
   const [errors, setErrors] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  const getGroupList = () => {
+    GroupService.getGroupList()
+      .then(response => {
+        setGroups(response);
+      })
+  }
 
   const onChangeBirthday = (value: any) => {
     console.log(value);
@@ -97,7 +106,6 @@ const Create = () => {
       email: email,
       phoneNo: phoneNo,
       accType: accType,
-      birthday: birthday,
       company: company,
       addressLine1: addressLine1,
       addressLine2: addressLine2,
@@ -105,6 +113,14 @@ const Create = () => {
       country: country,
       postcode: postcode,
       password: password,
+    }
+
+    if (birthday) {
+      body.birthday = birthday
+    }
+
+    if (group) {
+      body.group = group
     }
 
     UserService.createUser(body)
@@ -122,6 +138,10 @@ const Create = () => {
         setIsLoading(false)
       )
   }
+
+  useEffect(() => {
+    getGroupList();
+  }, []);
 
   return <>
     <ContentHeader headerTitle="Create User"
@@ -151,7 +171,7 @@ const Create = () => {
                 />
               </div>
               <div className="media-body mt-50">
-                <h4 className="media-heading">{user?.firstName} {user?.lastName}</h4>
+                <h4 className="media-heading">{firstName} {lastName}</h4>
                 <div className="col-12 d-flex mt-1 px-0">
                   <Button className="btn btn-primary mr-75">Change</Button>
                   <Button className="btn btn-outline-danger mr-75">Remove</Button>
@@ -308,7 +328,7 @@ const Create = () => {
         <Card header="Settings">
           <CardBody>
             <Group>
-              <Label for="role">Role</Label>
+              <Label for="role">Role (*)</Label>
               <Select
                 options={[
                   { value: 'admin', label: 'Admin' },
@@ -320,6 +340,16 @@ const Create = () => {
                 value={accType}
                 onChange={(value) => setAccType(value)}
                 error={errors?.accType}
+              />
+            </Group>
+
+            <Group>
+              <Label for="group">Group</Label>
+              <Select
+                options={groups.map(group => ({value: group._id, label: group.groupName}))}
+                value={group}
+                onChange={(value) => setGroup(value)}
+                error={errors?.group}
               />
             </Group>
           </CardBody>

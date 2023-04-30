@@ -128,7 +128,6 @@ const Edit = () => {
   }
 
   const onSelectedRowsChange = (selected) => {
-    console.log(selected);
     setSelectedUsers(selected.selectedRows);
   }
 

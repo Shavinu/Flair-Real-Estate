@@ -36,6 +36,7 @@ const Modal: React.FunctionComponent<ModalProps> = (props) => {
   useEffect(() => {
     if (isStatic) {
       document.getElementById(id)?.setAttribute('data-backdrop', 'false');
+      // $(id).modal({ backdrop: 'static', keyboard: false });
     }
   }, [id, isStatic]);
 

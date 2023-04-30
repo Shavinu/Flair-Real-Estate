@@ -9,13 +9,14 @@ const userSchema = Joi.object({
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
   phoneNo: Joi.string().required(),
-  birthday: Joi.date(),
-  company: Joi.string(),
-  addressLine1: Joi.string(),
-  addressLine1: Joi.string(),
-  city: Joi.string(),
-  country: Joi.string(),
-  postcode: Joi.string()
+  birthday: Joi.date().allow(null).allow(''),
+  company: Joi.string().allow(null).allow(''),
+  addressLine1: Joi.string().allow(null).allow(''),
+  addressLine2: Joi.string().allow(null).allow(''),
+  city: Joi.string().allow(null).allow(''),
+  country: Joi.string().allow(null).allow(''),
+  postcode: Joi.string().allow(null).allow(''),
+  group: Joi.object().keys({_id: Joi.string()}).allow(null).allow(''),
 });
 
 const authSchema = Joi.object({

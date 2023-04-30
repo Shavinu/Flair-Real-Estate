@@ -11,7 +11,8 @@ const {
     getUsersInGroup,
     deleteUserFromGroup,
     getAvailableUsers,
-    removeManyUsersFromGroup
+    removeManyUsersFromGroup,
+    deleteManyGroups
 } = require('../controllers/groupController')
 
 //create group
@@ -52,5 +53,7 @@ router.post('/deleteUserFromGroup', deleteUserFromGroup)
 router.get('/getAvailableUsers', getAvailableUsers)
 
 router.post('/removeManyUsersFromGroup', removeManyUsersFromGroup)
+
+router.post('/deleteManyGroups', deleteManyGroups)
 
 module.exports = router

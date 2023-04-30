@@ -10,7 +10,6 @@ import Modal from './Modal';
 import ConfirmModal from './ConfirmModal';
 import DatePicker from './DatePicker';
 import { Col, Container, Row } from "./Grid";
-
 export interface ComponentProps {
   id?: any;
   className?: string;

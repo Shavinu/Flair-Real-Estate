@@ -207,6 +207,17 @@ const removeManyUsersFromGroup = async (req, res) => {
   }
 }
 
+const deleteManyGroups = async (req, res) => {
+  try {
+    const { ids } = req.body;
+    const groups = await Group.updateMany({ _id: { $in: ids } });
+    return res.status(200).json(groups);
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ error: 'Unable to delete groups' });
+  }
+}
+
 module.exports = {
   createGroup,
   updateGroup,
@@ -219,4 +230,5 @@ module.exports = {
   deleteUserFromGroup,
   getAvailableUsers,
   removeManyUsersFromGroup,
+  deleteManyGroups,
 }

@@ -130,7 +130,7 @@ export const api = {
     create: '/api/groups/createGroup',
     detail: '/api/groups/getGroup/{{id}}',
     update: '/api/groups/updateGroup',
-    deleteMany: '/api/groups/delete-many',
+    deleteMany: '/api/groups/deleteManyGroups',
     users: '/api/groups/getUsersInGroup',
     availableUsers: '/api/groups/getAvailableUsers',
     addUserToGroup: '/api/groups/addUserToGroup',
