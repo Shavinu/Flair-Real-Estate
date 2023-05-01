@@ -4,11 +4,21 @@ import { useNavigate } from "react-router-dom";
 import { Button, Card, Col, ContentHeader, Row } from "../../Components";
 import CardBody from "../../Components/Card/CardBody";
 import { Group, Input, Label, Select } from "../../Components/Form";
+import ReactQuill from 'react-quill';
+import LocationAutocomplete from '../../Components/Maps/LocationAutoComplete';
+import 'react-quill/dist/quill.snow.css';
 import utils from "../../Utils";
 import Toast from "../../Components/Toast";
+import {
+    FileWithCategoryBrowser,
+    uploadFilesAndGetFileIds
+} from "../../Components/Files/FileWithCategoryBrowser";
+import {
+    TitleSlideImageBrowser,
+    uploadTitleImageAndGetId,
+    uploadSlideshowImagesAndGetIds
+} from '../../Components/Images/TitleSlideImageBrowser';
 
-import FileWithCategoryBrowser from "../../Components/Files/FileWithCategoryBrowser";
-import TitleSlideImageBrowser from "../../Components/Images/TitleSlideImageBrowser";
 import PriceRangeInput from "../../Components/Form/PriceRangeInput";
 
 //create component
@@ -20,6 +30,7 @@ const Create = () => {
         const user = JSON.parse(localStorage.getItem('user'));
         if (user) {
             setUser(user.payload._id);
+            setProjectOwner(user.payload.email)
         }
       }, []);
 
@@ -52,13 +63,13 @@ const Create = () => {
         setProjectName(e.target.value);
     }
 
-    const handleProjectDescriptionChange = (e) => {
-        setProjectDescription(e.target.value);
-    }
+    const handleProjectDescriptionChange = (value) => {
+        setProjectDescription(value);
+      };      
 
-    const handleProjectLocationChange = (e) => {
-        setProjectLocation(e.target.value);
-    }
+    const handleProjectLocationChange = (newLocation) => {
+        setProjectLocation(newLocation);
+    };
 
     const handleProjectOwnerChange = (e) => {
         setProjectOwner(e.target.value);
@@ -78,10 +89,10 @@ const Create = () => {
         if (projectPriceRange[1] <= projectPriceRange[0]) {
             errors.projectPriceRange = 'Upper bound must be greater than lower bound';
         }
-        if (!projectDescription) {
+        if (projectDescription.trim() === '' || projectDescription === '<p><br></p>') {
             errors.projectDescription = "Project description is required";
         }
-        if (!projectLocation) {
+        if (projectLocation.trim() === "") {
             errors.projectLocation = "Project location is required";
         }
         if (!projectOwner) {
@@ -111,67 +122,28 @@ const Create = () => {
                 for (const [key, value] of formData.entries()) {
                   console.log(`${key}: ${value}`);
                 }
-              };              
+            };
+
             // Upload title image and get its ID
             let titleImageId = null;
             if (titleImage) {
-                const titleImageData = new FormData();
-                titleImageData.append('file', titleImage);
-                titleImageData.append('label', 'titleImage');
-                // const titleImageResponse = await utils.uploadFile(titleImageData);
-                // titleImageId = titleImageResponse.data._id;
-                logFormData(titleImageData);
+                titleImageId = await uploadTitleImageAndGetId(titleImage, user);
             }
 
             // Upload slideshow images and get their IDs
-            const slideshowImagePromises = slideshowImages.map((image, index) => {
-                const formData = new FormData();
-                formData.append('file', image);
-                formData.append('label', `slideshowImage_${index}`);
-                // return utils.uploadFile(formData);
-                logFormData(formData);
-            });
-            // const slideshowImageResponses = await Promise.all(slideshowImagePromises);
-            // const slideshowImageIds = slideshowImageResponses.map((response) => response.data._id);
+            let slideshowImageIds = null;
+            if (slideshowImages) {
+                slideshowImageIds = await uploadSlideshowImagesAndGetIds(slideshowImages, user);
+            }
 
             // Upload other files and get their IDs
-
-            // Count files in each category
-            const categoryCounts = {};
-            fileUploadFiles.forEach((fileObj) => {
-            if (categoryCounts[fileObj.category]) {
-                categoryCounts[fileObj.category]++;
-            } else {
-                categoryCounts[fileObj.category] = 1;
+            let fileIds = null;
+            if (fileUploadFiles) {
+                fileIds = await uploadFilesAndGetFileIds(fileUploadFiles, user);
             }
-            });
-
-            const currentCategoryIndex = {};
-            const filePromises = fileUploadFiles.map((fileObj) => {
-            const formData = new FormData();
-            formData.append('file', fileObj.file);
-
-            //if file category has more than one file, append index to label, if not don't append index
-            let labelWithIndex = fileObj.category;
-            if (categoryCounts[fileObj.category] > 1) {
-                if (currentCategoryIndex[fileObj.category]) {
-                currentCategoryIndex[fileObj.category]++;
-                } else {
-                currentCategoryIndex[fileObj.category] = 1;
-                }
-                labelWithIndex += `_${currentCategoryIndex[fileObj.category]}`;
-            }
-
-            formData.append('label', labelWithIndex);
-            // return utils.uploadFile(formData);
-            logFormData(formData);
-            });        
-            // const fileResponses = await Promise.all(filePromises);
-            // const fileIds = fileResponses.map((response) => response.data._id);
 
             // Create project with image and file IDs
             setProjectOwner(user);
-            console.log(user);
             const projectData = {
                 projectName,
                 projectType,
@@ -181,8 +153,8 @@ const Create = () => {
                 projectOwner: user,
                 projectStatus,
                 titleImage: titleImageId,
-                // slideshowImages: slideshowImageIds,
-                // files: fileIds,
+                slideshowImages: slideshowImageIds,
+                files: fileIds,
             };
             console.log(projectData);
             // const { data } = await utils.createProject(projectData);
@@ -205,7 +177,13 @@ const Create = () => {
 
     return (
         <>
-            <ContentHeader headerTitle="Create Project" />
+            <ContentHeader headerTitle="Create Project"
+            breadcrumb={[
+                { name: "Home", link: "/" },
+                { name: "Projects", link: "/projects" },
+                { name: "Create", active: true },
+            ]}
+            />
             <Row>
                 <Col md={12}>
                     <Card>
@@ -241,11 +219,28 @@ const Create = () => {
                                 </Group>
                                 <Group>
                                     <Label>Project Description</Label>
-                                    <Input type="text" value={projectDescription} onChange={handleProjectDescriptionChange} error={errors.projectDescription} />
+                                    <ReactQuill
+                                        value={projectDescription}
+                                        onChange={handleProjectDescriptionChange}
+                                    />
+                                    {errors.projectDescription && (
+                                      <div className="invalid-feedback d-block">
+                                        {errors.projectDescription}
+                                      </div>
+                                    )}
                                 </Group>
                                 <Group>
                                     <Label>Project Location</Label>
-                                    <Input type="text" value={projectLocation} onChange={handleProjectLocationChange} error={errors.projectLocation} />
+                                    <LocationAutocomplete
+                                        selectedLocation={projectLocation}
+                                        onChange={handleProjectLocationChange}
+                                        error={errors.projectLocation}
+                                    />
+                                    {errors.projectLocation && (
+                                      <div className="invalid-feedback d-block">
+                                        {errors.projectLocation}
+                                      </div>
+                                    )}
                                 </Group>
                                 <Group>
                                     <TitleSlideImageBrowser
@@ -265,7 +260,7 @@ const Create = () => {
                                 </Group>
                                 <Group>
                                     <Label>Project Owner</Label>
-                                    <Input type="text" value={projectOwner} onChange={handleProjectOwnerChange} error={errors.projectOwner} />
+                                    <Input type="text" value={projectOwner} onChange={handleProjectOwnerChange} error={errors.projectOwner} disabled />
                                 </Group>
                                 <Group>
                                     <Label>Project Status</Label>

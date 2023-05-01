@@ -1,5 +1,6 @@
 import Dashboard from "./Pages/Admin/Dashboard"
 import * as Users from "./Pages/Admin/Users"
+import * as Project from "./Pages/Project"
 
 import Login from "./Pages/Auth/Login"
 import Register from "./Pages/Auth/RegisterGen"
@@ -8,7 +9,7 @@ import FileUpload from "./Pages/File/Upload"
 import FileStream from "./Pages/File/Stream"
 import FileUpdates from "./Pages/File/Update"
 
-import CreateProject from "./Pages/Project/Create"
+// import CreateProject from "./Pages/Project/Create"
 
 export const views = [
   {
@@ -56,11 +57,17 @@ export const views = [
     isRoute: true,
   },
   {
+    name: 'Projects',
+    action: '/projects',
+    icon: 'feather icon-inbox',
+    element: <Project.List />
+  },
+  {
     name: 'Create Project',
     action: '/projects/create',
-    icon: 'feather icon-user',
-    element: <CreateProject />,
-    isRoute: true,
+    icon: 'feather icon-inbox',
+    element: <Project.Create />,
+    isRoute: true 
   },
   // {
   //   name: 'Menu',

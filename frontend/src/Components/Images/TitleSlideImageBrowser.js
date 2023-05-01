@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
-import { Button, Form, FormGroup, FormLabel, CloseButton } from 'react-bootstrap';
+import { Button, FormGroup, FormLabel, CloseButton } from 'react-bootstrap';
+import * as FileService from '../../Services/FileService';
 
 const TitleSlideImageBrowser = ({ setTitleImage, setSlideshowImages, titleImage, slideshowImages }) => {
   const titleImageRef = useRef();
@@ -94,4 +95,31 @@ const TitleSlideImageBrowser = ({ setTitleImage, setSlideshowImages, titleImage,
   );
 };
 
-export default TitleSlideImageBrowser;
+const uploadTitleImageAndGetId = async (titleImage, user) => {
+  const titleImageData = new FormData();
+  titleImageData.append('file', titleImage);
+  titleImageData.append('createdBy', user);
+  titleImageData.append('label', 'titleImage');
+  const titleImageResponse = await FileService.uploadSingle(titleImageData);
+  return titleImageResponse.file._id;
+};
+
+const uploadSlideshowImagesAndGetIds = async (slideshowImages, user) => {
+  const slideshowImagePromises = slideshowImages.map((image, index) => {
+    const formData = new FormData();
+    formData.append('file', image);
+    formData.append('createdBy', user);
+    formData.append('label', `slideshowImage_${index}`);
+    return FileService.uploadSingle(formData)
+      .then((response) => {
+        return response.file._id;
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  });
+  const slideshowImageIds = await Promise.all(slideshowImagePromises);
+  return slideshowImageIds;
+};
+
+export { TitleSlideImageBrowser, uploadTitleImageAndGetId, uploadSlideshowImagesAndGetIds };

@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import * as FileService from '../../Services/FileService';
 import { Button, Dropdown, Form, InputGroup, Row, Col } from 'react-bootstrap';
 
 const FileWithCategoryBrowser = ({ options, onFilesChange, error }) => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [files, setFiles] = useState([]);
   const [isInvalid, setIsInvalid] = useState(false);
+
+  
 
   useEffect(() => {
     setIsInvalid(!!error);
@@ -90,4 +93,53 @@ const FileWithCategoryBrowser = ({ options, onFilesChange, error }) => {
   );
 };
 
-export default FileWithCategoryBrowser;
+const getFileLabelWithIndex = (fileObj, categoryCounts, currentCategoryIndex) => {
+  let labelWithIndex = fileObj.category;
+  if (categoryCounts[fileObj.category] > 1) {
+    if (currentCategoryIndex[fileObj.category]) {
+      currentCategoryIndex[fileObj.category]++;
+    } else {
+      currentCategoryIndex[fileObj.category] = 1;
+    }
+    labelWithIndex += `_${currentCategoryIndex[fileObj.category]}`;
+  }
+  return labelWithIndex;
+};
+
+const createFileUploadFormData = (fileObj, categoryCounts, currentCategoryIndex, user) => {
+  const formData = new FormData();
+  formData.append('file', fileObj.file);
+  formData.append('createdBy', user);
+  formData.append('label', getFileLabelWithIndex(fileObj, categoryCounts, currentCategoryIndex));
+  return formData;
+};
+
+const uploadFilesAndGetFileIds = async (fileUploadFiles, user) => {
+  const categoryCounts = {};
+  const currentCategoryIndex = {};
+
+  fileUploadFiles.forEach((fileObj) => {
+    if (categoryCounts[fileObj.category]) {
+      categoryCounts[fileObj.category]++;
+    } else {
+      categoryCounts[fileObj.category] = 1;
+    }
+  });
+
+  const filePromises = fileUploadFiles.map((fileObj) => {
+    const formData = createFileUploadFormData(fileObj, categoryCounts, currentCategoryIndex, user);
+
+    return FileService.uploadSingle(formData)
+      .then((response) => {
+        return response.file._id;
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  });
+
+  const fileIds = await Promise.all(filePromises);
+  return fileIds;
+};
+
+export { FileWithCategoryBrowser, uploadFilesAndGetFileIds };
