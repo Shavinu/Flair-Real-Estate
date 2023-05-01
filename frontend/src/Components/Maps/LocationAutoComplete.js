@@ -48,11 +48,10 @@ const LocationAutocomplete = ({ selectedLocation, onChange }) => {
 
   if (!mapboxApiKey) {
     return (
-      <input
-        type="text"
+      <Select
         value={selectedLocation}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="Search for a location"
+        placeholder="No Mapbox API key found"
       />
     );
   }
