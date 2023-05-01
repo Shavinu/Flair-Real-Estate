@@ -1,9 +1,16 @@
 import Dashboard from "./Pages/Admin/Dashboard"
 import * as Users from "./Pages/Admin/Users"
 import * as Groups from "./Pages/Admin/Groups"
+import * as Project from "./Pages/Project"
 
 import Login from "./Pages/Auth/Login"
 import Register from "./Pages/Auth/RegisterGen"
+
+import FileUpload from "./Pages/File/Upload"
+import FileStream from "./Pages/File/Stream"
+import FileUpdates from "./Pages/File/Update"
+
+// import CreateProject from "./Pages/Project/Create"
 
 export const views = [
   {
@@ -23,6 +30,24 @@ export const views = [
     action: '/users/create',
     icon: 'feather icon-user',
     element: <Users.Create />,
+    isRoute: true,
+  },
+  {
+    name : 'Upload File',
+    action: '/files/upload',
+    element: <FileUpload />,
+    isRoute: true,
+  },
+  {
+    name : 'Stream File',
+    action: '/files/stream',
+    element: <FileStream />,
+    isRoute: true,
+  },
+  {
+    name : 'Update Files',
+    action: '/files/update',
+    element: <FileUpdates />,
     isRoute: true,
   },
   {
@@ -49,6 +74,19 @@ export const views = [
     action: '/groups/:id',
     element: <Groups.Edit />,
     isRoute: true,
+  },
+  {
+    name: 'Projects',
+    action: '/projects',
+    icon: 'feather icon-inbox',
+    element: <Project.List />
+  },
+  {
+    name: 'Create Project',
+    action: '/projects/create',
+    icon: 'feather icon-inbox',
+    element: <Project.Create />,
+    isRoute: true 
   },
   // {
   //   name: 'Menu',
@@ -136,5 +174,14 @@ export const api = {
     addUserToGroup: '/api/groups/addUserToGroup',
     removeUserFromGroup: '/api/groups/deleteUserFromGroup',
     removeManyUsersFromGroup: '/api/groups/removeManyUsersFromGroup'
+  },
+  files: {
+    uploadSingle: '/api/files/uploadSingle',
+    uploadMultiple: '/api/files/uploadMultiple',
+    search: '/api/files/search',
+    updateSingle: '/api/files/update',
+    updateMultiple: '/api/files/update',
+    stream: '/api/files/stream',
+    download: '/api/files/download',
   }
 }
