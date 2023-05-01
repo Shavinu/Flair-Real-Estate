@@ -3,8 +3,14 @@ import Select from 'react-select';
 import mbxClient from '@mapbox/mapbox-sdk';
 import mbxGeocoding from '@mapbox/mapbox-sdk/services/geocoding';
 
-const mapboxClient = mbxClient({ accessToken: process.env.REACT_APP_MAP_BOX_API_KEY });
-const geocodingClient = mbxGeocoding(mapboxClient);
+const mapboxApiKey = process.env.REACT_APP_MAP_BOX_API_KEY;
+
+let geocodingClient;
+
+if (mapboxApiKey) {
+  const mapboxClient = mbxClient({ accessToken: mapboxApiKey });
+  geocodingClient = mbxGeocoding(mapboxClient);
+}
 
 const LocationAutocomplete = ({ selectedLocation, onChange }) => {
   const [inputValue, setInputValue] = useState('');
@@ -13,7 +19,7 @@ const LocationAutocomplete = ({ selectedLocation, onChange }) => {
   const handleInputChange = (value) => {
     setInputValue(value);
 
-    if (!value) {
+    if (!value || !geocodingClient) {
       setOptions([]);
       return;
     }
@@ -39,6 +45,17 @@ const LocationAutocomplete = ({ selectedLocation, onChange }) => {
   const handleSelectChange = (selectedOption) => {
     onChange(selectedOption.value);
   };
+
+  if (!mapboxApiKey) {
+    return (
+      <input
+        type="text"
+        value={selectedLocation}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="Search for a location"
+      />
+    );
+  }
 
   return (
     <Select
