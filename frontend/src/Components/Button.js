@@ -9,6 +9,7 @@ interface ButtonProps extends ComponentProps {
   disabled?: boolean;
   icon?: any;
   type?: "button" | "submit" | "reset";
+  dataBackdrop?: String;
 }
 
 const Button: React.FunctionComponent<ButtonProps> = (props) => {
@@ -22,6 +23,7 @@ const Button: React.FunctionComponent<ButtonProps> = (props) => {
       data-toggle={props.dataToggle}
       aria-haspopup={!!props.dataToggle}
       aria-expanded={!props.dataToggle}
+      data-backdrop={props.dataBackdrop}
     >
       {props.isLoading
         ? <span className="mr-1"><Loader /></span>

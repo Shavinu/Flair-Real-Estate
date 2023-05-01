@@ -1,5 +1,6 @@
 import Dashboard from "./Pages/Admin/Dashboard"
 import * as Users from "./Pages/Admin/Users"
+import * as Groups from "./Pages/Admin/Groups"
 import * as Project from "./Pages/Project"
 
 import Login from "./Pages/Auth/Login"
@@ -54,6 +55,24 @@ export const views = [
     action: '/users/:id',
     icon: 'feather icon-user',
     element: <Users.Edit />,
+    isRoute: true,
+  },
+  {
+    name: 'User Groups',
+    action: '/groups',
+    icon: 'feather icon-users',
+    element: <Groups.List />,
+  },
+  {
+    name: 'Create User Group',
+    action: '/groups/create',
+    element: <Groups.Create />,
+    isRoute: true,
+  },
+  {
+    name: 'Edit User Group',
+    action: '/groups/:id',
+    element: <Groups.Edit />,
     isRoute: true,
   },
   {
@@ -144,6 +163,18 @@ export const api = {
     delete: '/api/users/{{id}}',
     deleteMany: '/api/users/delete-many',
   },
+  groups: {
+    list: '/api/groups/getGroups',
+    create: '/api/groups/createGroup',
+    detail: '/api/groups/getGroup/{{id}}',
+    update: '/api/groups/updateGroup',
+    deleteMany: '/api/groups/deleteManyGroups',
+    users: '/api/groups/getUsersInGroup',
+    availableUsers: '/api/groups/getAvailableUsers',
+    addUserToGroup: '/api/groups/addUserToGroup',
+    removeUserFromGroup: '/api/groups/deleteUserFromGroup',
+    removeManyUsersFromGroup: '/api/groups/removeManyUsersFromGroup'
+  },
   files: {
     uploadSingle: '/api/files/uploadSingle',
     uploadMultiple: '/api/files/uploadMultiple',
@@ -154,4 +185,3 @@ export const api = {
     download: '/api/files/download',
   }
 }
-

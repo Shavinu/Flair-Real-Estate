@@ -16,6 +16,7 @@ export interface InputProps extends ComponentProps {
   disabled?: boolean;
   readonly?: boolean;
   autoFocus?: boolean;
+  autoComplete?: any;
   icon?: string;
   onChange?: (event: any) => void;
   onBlur?: (event: any) => void;
