@@ -73,6 +73,11 @@ const Create = () => {
       isValid = false
     }
 
+    if (phoneNo && isNaN(+phoneNo)) {
+      errors = { ...errors, phoneNo: 'Please provide valid phone number!' }
+      isValid = false
+    }
+
     if (!accType) {
       errors = { ...errors, accType: 'Please select role!' }
       isValid = false
