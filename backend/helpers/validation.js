@@ -29,9 +29,37 @@ const validateSchema = Joi.object({
   licence: Joi.string().required(),
 })
 
+const projectSchema = Joi.object({
+  projectName: Joi.string().required(),
+  projectType: Joi.string().required(),
+  projectPriceRange: Joi.string().required(),
+  projectDescription: Joi.string().required(),
+  projectLocation: Joi.string().required(),
+  projectFiles: Joi.array().items(Joi.string()).optional(),
+  projectListings: Joi.array().items(Joi.string()).optional(),
+  projectOwner: Joi.string().required(),
+  projectMembers: Joi.array().items(Joi.string()).optional(),
+  projectStatus: Joi.string().required(),
+})
+
+const updateProjectSchema = Joi.object({
+  projectName: Joi.string().optional(),
+  projectType: Joi.string().optional(),
+  projectPriceRange: Joi.string().optional(),
+  projectDescription: Joi.string().optional(),
+  projectLocation: Joi.string().optional(),
+  projectFiles: Joi.array().items(Joi.string()).optional(),
+  projectListings: Joi.array().items(Joi.string()).optional(),
+  projectOwner: Joi.string().optional(),
+  projectMembers: Joi.array().items(Joi.string()).optional(),
+  projectStatus: Joi.string().optional(),
+}).unknown();
+
 
 module.exports = {
   userSchema,
   authSchema,
   validateSchema,
+  projectSchema,
+  updateProjectSchema
 }
