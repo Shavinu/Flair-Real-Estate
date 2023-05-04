@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate, Navigate } from 'react-router-dom';
 import {
   Button,
   Card,
   Col,
   ContentHeader,
-  DatePicker,
   Row,
 } from '../../Components';
 import CardBody from '../../Components/Card/CardBody';
@@ -15,20 +14,22 @@ import utils from '../../Utils';
 import Toast from '../../Components/Toast';
 import moment from 'moment';
 
-const EditProfile = () => {
+const EditProfile = ({ page }) => {
   const [user, setUser] = useState();
   const [firstName, setFirstName] = useState();
   const [lastName, setLastName] = useState();
   const [email, setEmail] = useState();
+  const [mobileNo, setMobileNo] = useState();
   const [phoneNo, setPhoneNo] = useState();
   const [accType, setAccType] = useState();
-  const [birthday, setBirthday] = useState();
+  const [licence, setLicence] = useState();
+  const [verificationStatus, setVerificationStatus] = useState();
   const [company, setCompany] = useState();
-  const [addressLine1, setAddressLine1] = useState();
-  const [addressLine2, setAddressLine2] = useState();
-  const [city, setCity] = useState();
-  const [country, setCountry] = useState();
-  const [postcode, setPostcode] = useState();
+  // const [addressLine1, setAddressLine1] = useState();
+  // const [addressLine2, setAddressLine2] = useState();
+  // const [city, setCity] = useState();
+  // const [country, setCountry] = useState();
+  // const [postcode, setPostcode] = useState();
   const [password, setPassword] = useState();
   const [confirmationPassword, setConfirmationPassword] = useState();
 
@@ -36,27 +37,24 @@ const EditProfile = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { id } = useParams();
 
-  const getUserDetailById = (id) => {
+  const getUserDetailById = () => {
     UserService.getUserDetailById(id).then((response) => {
       setUser(response);
       setFirstName(response.firstName);
       setLastName(response.lastName);
       setEmail(response.email);
+      setMobileNo(response.mobileNo)
       setPhoneNo(response.phoneNo);
       setAccType(response.accType);
-      setBirthday(response.birthday);
+      setLicence(response.licence)
+      response.verifiedLicence ? setVerificationStatus("Verified") : setVerificationStatus("Unverified")
       setCompany(response.company);
-      setAddressLine1(response.addressLine1);
-      setAddressLine2(response.addressLine2);
-      setCity(response.city);
-      setCountry(response.country);
-      setPostcode(response.postcode);
+      // setAddressLine1(response.addressLine1);
+      // setAddressLine2(response.addressLine2);
+      // setCity(response.city);
+      // setCountry(response.country);
+      // setPostcode(response.postcode);
     });
-  };
-
-  const onChangeBirthday = (value: any) => {
-    console.log(value);
-    setBirthday(moment(value).toISOString());
   };
 
   const isValid = () => {
@@ -88,10 +86,10 @@ const EditProfile = () => {
       isValid = false;
     }
 
-    if (!accType) {
-      errors = { ...errors, lastName: 'Please select role!' };
-      isValid = false;
-    }
+    // if (!accType) {
+    //   errors = { ...errors, lastName: 'Please select role!' };
+    //   isValid = false;
+    // }
 
     if (password && confirmationPassword !== password) {
       errors = { ...errors, confirmationPassword: 'Password not match!' };
@@ -101,6 +99,26 @@ const EditProfile = () => {
     setErrors(errors);
     return isValid;
   };
+
+  const onCancel = (e) =>{
+    page(1);
+  }
+
+  const changeLicence = () => {
+    console.log("change licence")
+  }
+
+  const changeEmail = () => {
+    console.log("change email")
+  }
+
+  const changePassword = () => {
+    console.log("change password")
+  }
+
+  const addMobile = () => {
+    console.log("add mobile")
+  }
 
   const onSubmit = (e) => {
     setIsLoading(true);
@@ -114,15 +132,15 @@ const EditProfile = () => {
       firstName: firstName,
       lastName: lastName,
       email: email,
+      mobileNo: mobileNo,
       phoneNo: phoneNo,
       accType: accType,
-      birthday: birthday,
       company: company,
-      addressLine1: addressLine1,
-      addressLine2: addressLine2,
-      city: city,
-      country: country,
-      postcode: postcode,
+      // addressLine1: addressLine1,
+      // addressLine2: addressLine2,
+      // city: city,
+      // country: country,
+      // postcode: postcode,
     };
 
     if (password) {
@@ -148,41 +166,46 @@ const EditProfile = () => {
   return (
     <>
       <ContentHeader
-        headerTitle='Edit User'
+        headerTitle='Edit Profile'
         breadcrumb={[
           { name: 'Home', link: '/' },
-          { name: 'Users', link: '/users' },
-          { name: 'Edit', active: true },
+          { name: 'Profile', link: `/profile/edit/${id}`, active: true },
         ]}
         options={
-          <Button
-            className='btn btn-primary waves-effect waves-light'
-            onClick={onSubmit}
-            isLoading={isLoading}>
-            Save
-          </Button>
+          <div className='col-12 d-flex mt-1 px-0'>
+            <Button
+              type='reset'
+              className='btn waves-effect waves-light mr-75'
+              onClick={onCancel}>
+              Cancel
+            </Button>
+            <Button
+              className='btn btn-primary waves-effect waves-light mr-75'
+              onClick={onSubmit}
+              isLoading={isLoading}>
+              Save
+            </Button>
+          </div>
+
         }
       />
       <Row>
         <Col
           sm={12}
           lg={8}>
-          <Card header='Account'>
+          <Card header='Account Information'>
             <CardBody>
               <div className='media mb-2'>
                 <div className='mr-2 my-25'>
                   <img
                     src={`${process.env.REACT_APP_PUBLIC_URL}/assets/images/default/avatar.jpg`}
-                    alt='users avatar'
+                    alt='avatar'
                     className='users-avatar-shadow rounded'
                     height='90'
                     width='90'
                   />
                 </div>
                 <div className='media-body mt-50'>
-                  <h4 className='media-heading'>
-                    {user?.firstName} {user?.lastName}
-                  </h4>
                   <div className='col-12 d-flex mt-1 px-0'>
                     <Button className='btn btn-primary mr-75'>Change</Button>
                     <Button className='btn btn-outline-danger mr-75'>
@@ -197,7 +220,7 @@ const EditProfile = () => {
                   sm={12}
                   md={6}>
                   <Group>
-                    <Label for='firstname'>First Name (*)</Label>
+                    <Label for='firstname'><h6>First Name</h6></Label>
                     <Input
                       name='firstName'
                       value={firstName}
@@ -213,7 +236,7 @@ const EditProfile = () => {
                   sm={12}
                   md={6}>
                   <Group>
-                    <Label for='lastName'>Last Name (*)</Label>
+                    <Label for='lastName'><h6>Last Name</h6></Label>
                     <Input
                       name='lastName'
                       value={lastName}
@@ -226,10 +249,18 @@ const EditProfile = () => {
                   </Group>
                 </Col>
                 <Col
-                  sm={12}
-                  md={6}>
+                sm={12}
+                md={6}>
                   <Group>
-                    <Label for='email'>Email (*)</Label>
+                    <label for='email'><h6>Email</h6></label>
+                    <span
+                    className='float-right'
+                    onClick={changeEmail}
+                    style={{'cursor': 'pointer'}}>
+                      <i><u>Change</u></i>
+                    </span>
+                    <div name='email'>{email}</div>
+                    {/* <Label for='email'>Email (*)</Label>
                     <Input
                       name='email'
                       value={email}
@@ -238,14 +269,145 @@ const EditProfile = () => {
                         setEmail(e.target.value);
                       }}
                       error={errors?.email}
+                    /> */}
+                  </Group>
+                </Col>
+                <Col
+                  sm={12}
+                  md={6}>
+                  <Group>
+                    <label for='password'><h6>Password</h6></label>
+                    <span
+                    className='float-right'
+                    name='password'
+                    onClick={changePassword}
+                    style={{'cursor': 'pointer'}}>
+                      <i><u>Change</u></i>
+                    </span>
+                    {/* <Label for='password'>Password</Label>
+                    <Input
+                      name='Password'
+                      type='password'
+                      value={password}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                      }}
+                      error={errors?.password}
+                    /> */}
+                  </Group>
+                </Col>
+                <Col
+                  sm={12}
+                  md={6}>
+                  <Group>
+                    <Label for='mobile'><h6>Mobile</h6></Label>
+                    <span>{
+                      mobileNo ? (
+                        <Input
+                        name='mobile'
+                        value={mobileNo}
+                        placeholder='Mobile Number'
+                        onChange={(e) => {
+                          setMobileNo(e.target.value);
+                        }}
+                        error={errors?.mobileNo}
+                      />
+                      ) : (
+                        <span
+                        className='float-right'
+                        onClick={addMobile}
+                        style={{'cursor': 'pointer'}}>
+                          <i><u>Add Mobile</u></i>
+                        </span>
+                      )}
+                    </span>
+                    <div name='mobile'>{mobileNo}</div>
+                  </Group>
+                </Col>
+                <Col
+                  sm={12}
+                  md={6}>
+                  <Group>
+                    <Label for='phone'><h6>Phone</h6></Label>
+                    <Input
+                      name='phone'
+                      value={phoneNo}
+                      placeholder='Phone Number'
+                      onChange={(e) => {
+                        setPhoneNo(e.target.value);
+                      }}
+                      error={errors?.company}
                     />
+                  </Group>
+                </Col>
+                <Col
+                sm={12}
+                md={6}>
+                  {/* <Group>
+                    <Label for='role'>Role (*)</Label>
+                    <Select
+                      options={[
+                        { value: 'agent', label: 'Agent' },
+                        { value: 'builder', label: 'Builder' },
+                      ]}
+                      value={accType}
+                      onChange={(value) => setAccType(value)}
+                      error={errors?.accType}
+                    />
+                  </Group> */}
+                  <Group>
+                    <h6>Role</h6>
+                    <span>{accType}</span>
+                  </Group>
+                  <Group>
+                    <Label for='company'><h6>Company</h6></Label>
+                    <Input
+                      name='company'
+                      value={company}
+                      placeholder='Company'
+                      onChange={(e) => {
+                        setCompany(e.target.value);
+                      }}
+                      error={errors?.company}
+                    />
+                  </Group>
+                </Col>
+                <Col
+                sm={12}
+                md={6}>
+                  {/* <Group>
+                    <Label for='licence'>Licence</Label>
+                    <Input
+                      name='licnece'
+                      value={licence}
+                      placeholder='Licence Number'
+                      onChange={(e) => {
+                        setLicence(e.target.value);
+                      }}
+                      error={errors?.licence}
+                    />
+                  </Group> */}
+                  <Group>
+                    <Label for='licence'><h6>Licence</h6></Label>
+                    <span
+                    name='licence'
+                    className='float-right'
+                    onClick={changeLicence}
+                    style={{'cursor': 'pointer'}}>
+                      <i><u>Change</u></i>
+                    </span>
+                    <div>{licence}</div>
+                  </Group>
+                  <Group>
+                    <h6>Licence Verification Status</h6>
+                    <span>{verificationStatus}</span>
                   </Group>
                 </Col>
               </Row>
             </CardBody>
           </Card>
 
-          <Card header='More Information'>
+          {/* <Card header='More Information'>
             <CardBody>
               <Row>
                 <Col
@@ -265,20 +427,21 @@ const EditProfile = () => {
                     />
                   </Group>
 
-                  <Group>
-                    <Label for='company'>Company</Label>
-                    <Input
-                      name='company'
-                      value={company}
-                      placeholder='Company'
-                      onChange={(e) => {
-                        setCompany(e.target.value);
-                      }}
-                      error={errors?.company}
-                    />
-                  </Group>
 
-                  <Group>
+
+
+                  {/* <Group>
+                    <Label for='postcode'>Post Code</Label>
+                    <Input
+                      name='Postcode'
+                      value={postcode}
+                      placeholder='Postcode'
+                      onChange={(e) => {
+                        setPostcode(e.target.value);
+                      }}
+                      error={errors?.postcode}
+                    />
+                  </Group><Group>
                     <Label for='birthday'>Birthday</Label>
                     <DatePicker
                       onChange={onChangeBirthday}
@@ -340,25 +503,13 @@ const EditProfile = () => {
                       }}
                       error={errors?.country}
                     />
-                  </Group>
-                  <Group>
-                    <Label for='postcode'>Post Code</Label>
-                    <Input
-                      name='Postcode'
-                      value={postcode}
-                      placeholder='Postcode'
-                      onChange={(e) => {
-                        setPostcode(e.target.value);
-                      }}
-                      error={errors?.postcode}
-                    />
-                  </Group>
+                  </Group> */}
                 </Col>
               </Row>
-            </CardBody>
-          </Card>
-        </Col>
-        <Col
+            {/* </CardBody>
+          </Card> */}
+        {/* </Col> */}
+        {/* <Col
           sm={12}
           lg={4}>
           <Card header='Settings'>
@@ -409,8 +560,8 @@ const EditProfile = () => {
               </Group>
             </CardBody>
           </Card>
-        </Col>
-      </Row>
+        </Col> */}
+      {/* </Row> */}
     </>
   );
 };

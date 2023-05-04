@@ -33,14 +33,14 @@ export const views = [
   },
   {
     name:'View Profile',
-    action: '/profile/view/:id',
+    action: '/profile/:id',
     element: <Dashboard.ViewProfile />
   },
-  {
-    name: 'Edit Profile',
-    action: '/profile/edit/:id',
-    element: <Dashboard.EditProfile />
-  }
+  // {
+  //   name: 'Edit Profile',
+  //   action: '/profile/edit/:id',
+  //   element: <Dashboard.EditProfile />
+  // }
   // {
   //   name: 'Menu',
   //   icon: 'feather icon-menu',

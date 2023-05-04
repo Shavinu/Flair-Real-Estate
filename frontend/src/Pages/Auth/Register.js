@@ -15,6 +15,7 @@ const Register = ({ type, page }) => {
   const [company, setCompany] = useState('');
   const [licence, setLicence] = useState('');
   const [verifiedLicence, setVerifiedLicence] = useState('');
+  const [mobileNo, setMobileNo] = useState('');
   const [phoneNo, setPhoneNo] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
@@ -111,6 +112,7 @@ const Register = ({ type, page }) => {
           AuthServices.register({
             firstName: firstName,
             lastName: lastName,
+            mobileNo: mobileNo,
             phoneNo: phoneNo,
             email: email,
             password: password,
@@ -211,6 +213,16 @@ const Register = ({ type, page }) => {
                             error={errors?.email}
                           />
                           <Label for='email'>Email</Label>
+                        </Group>
+                        <Group className='form-label-group'>
+                          <Input
+                            name='mobile'
+                            value={mobileNo}
+                            placeholder='Mobile Number'
+                            onChange={(e) => setMobileNo(e.target.value)}
+                            error={errors?.mobileNo}
+                          />
+                          <Label for='mobile'>Mobile Number</Label>
                         </Group>
                         <Group className='form-label-group'>
                           <Input

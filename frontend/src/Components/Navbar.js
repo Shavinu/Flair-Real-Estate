@@ -55,9 +55,9 @@ const Navbar = () => {
                   <li className='nav-item'>
                     <button className='nav-link btn'>About Us</button>
                   </li>
-                  <div class='dropdown'>
-                    <button class='nav-link btn'>NSW Listings</button>
-                    <div class='dropdown-options'>
+                  <div className='dropdown'>
+                    <button className='nav-link btn'>NSW Listings</button>
+                    <div className='dropdown-options'>
                       <a href='#'>Sydney North West</a>
                       <a href='#'>Sydney South West</a>
                       <a href='#'>Newcastle</a>
@@ -65,9 +65,9 @@ const Navbar = () => {
                       <a href='#'>Wollongong</a>
                     </div>
                   </div>
-                  <div class='dropdown'>
-                    <button class='nav-link btn'>Resources</button>
-                    <div class='dropdown-options'>
+                  <div className='dropdown'>
+                    <button className='nav-link btn'>Resources</button>
+                    <div className='dropdown-options'>
                       <a href='#'>Mortgage Calculator</a>
                       <a href='#'>Buying and Selling process</a>
                       <a href='#'>Property news</a>
@@ -103,7 +103,7 @@ const Navbar = () => {
                   <div className='dropdown-menu dropdown-menu-right'>
                     <a
                       className='dropdown-item'
-                      href={`/profile/view/${user?._id}`}>
+                      href={`/profile/${user?._id}`}>
                       <i className='feather icon-user'></i> Profile
                     </a>
                     <a

@@ -5,7 +5,6 @@ import {
   Card,
   Col,
   ContentHeader,
-  DatePicker,
   Row,
 } from '../../Components';
 import CardBody from '../../Components/Card/CardBody';
@@ -14,27 +13,27 @@ import { Group, Input, Label, Select } from '../../Components/Form';
 import utils from '../../Utils';
 import Toast from '../../Components/Toast';
 import moment from 'moment';
+import EditProfile from './EditProfile';
 
 const ViewProfile = () => {
+  const [page, setPage] = useState(1);
   const [user, setUser] = useState();
   const [firstName, setFirstName] = useState();
   const [lastName, setLastName] = useState();
   const [email, setEmail] = useState();
+  const [mobileNo, setMobileNo] = useState();
   const [phoneNo, setPhoneNo] = useState();
   const [accType, setAccType] = useState();
   const [licence, setLicence] = useState();
   const [verificationStatus, setVerificationStatus] = useState();
-  // const [birthday, setBirthday] = useState();
   const [company, setCompany] = useState();
-  const [addressLine1, setAddressLine1] = useState();
-  const [addressLine2, setAddressLine2] = useState();
-  const [city, setCity] = useState();
-  const [country, setCountry] = useState();
-  const [postcode, setPostcode] = useState();
-  const [password, setPassword] = useState();
-  const [confirmationPassword, setConfirmationPassword] = useState();
-  const [errors, setErrors] = useState();
-  const [isLoading, setIsLoading] = useState(false);
+  // const [addressLine1, setAddressLine1] = useState();
+  // const [addressLine2, setAddressLine2] = useState();
+  // const [city, setCity] = useState();
+  // const [country, setCountry] = useState();
+  // const [postcode, setPostcode] = useState();
+  // const [errors, setErrors] = useState();
+  // const [isLoading, setIsLoading] = useState(false);
   const { id } = useParams();
 
   const getUserDetailById = (id) => {
@@ -43,120 +42,36 @@ const ViewProfile = () => {
       setFirstName(response.firstName);
       setLastName(response.lastName);
       setEmail(response.email);
+      setMobileNo(response.mobileNo);
       setPhoneNo(response.phoneNo);
       setAccType(response.accType);
-      setLicence(response.licence)
-      setVerificationStatus(response.verifiedlicence)
-      // setBirthday(response.birthday);
-      // setCompany(response.company);
-      setCompany("LJ Hooker")
-      setAddressLine1(response.addressLine1);
-      setAddressLine2(response.addressLine2);
-      setCity(response.city);
-      setCountry(response.country);
-      setPostcode(response.postcode);
+      response.verifiedLicence ? setVerificationStatus("Verified") : setVerificationStatus("Unverified")
+      setCompany(response.company);
+      // setCompany("LJ Hooker")
+      // setAddressLine1(response.addressLine1);
+      // setAddressLine2(response.addressLine2);
+      // setCity(response.city);
+      // setCountry(response.country);
+      // setPostcode(response.postcode);
     });
   };
-
-  // const onChangeBirthday = (value: any) => {
-  //   console.log(value);
-  //   setBirthday(moment(value).toISOString());
-  // };
-
-  // const isValid = () => {
-  //   let isValid = true;
-  //   let errors = {};
-
-  //   if (!email) {
-  //     errors = { ...errors, email: 'Please provide email address!' };
-  //     isValid = false;
-  //   }
-
-  //   if (email && !utils.string.isValidEmail(email)) {
-  //     errors = { ...errors, email: 'Please provide a valid email address!' };
-  //     isValid = false;
-  //   }
-
-  //   if (!firstName) {
-  //     errors = { ...errors, firstName: 'Please provide your first name!' };
-  //     isValid = false;
-  //   }
-
-  //   if (!lastName) {
-  //     errors = { ...errors, lastName: 'Please provide your last name!' };
-  //     isValid = false;
-  //   }
-
-  //   if (!phoneNo) {
-  //     errors = { ...errors, phoneNo: 'Please provide your phone number!' };
-  //     isValid = false;
-  //   }
-
-  //   if (!accType) {
-  //     errors = { ...errors, lastName: 'Please select role!' };
-  //     isValid = false;
-  //   }
-
-  //   if (password && confirmationPassword !== password) {
-  //     errors = { ...errors, confirmationPassword: 'Password not match!' };
-  //     isValid = false;
-  //   }
-
-  //   setErrors(errors);
-  //   return isValid;
-  // };
-
-  // const onSubmit = (e) => {
-  //   setIsLoading(true);
-  //   e.preventDefault();
-  //   if (!isValid()) {
-  //     setIsLoading(false);
-  //     return;
-  //   }
-
-  //   const body = {
-  //     firstName: firstName,
-  //     lastName: lastName,
-  //     email: email,
-  //     phoneNo: phoneNo,
-  //     accType: accType,
-  //     birthday: birthday,
-  //     company: company,
-  //     addressLine1: addressLine1,
-  //     addressLine2: addressLine2,
-  //     city: city,
-  //     country: country,
-  //     postcode: postcode,
-  //   };
-
-  //   if (password) {
-  //     body.password = password;
-  //   }
-
-  //   UserService.updateUser(id, body)
-  //     .then((response) => {
-  //       Toast('User has been updated successfully!', 'success');
-  //       getUserDetailById(id);
-  //       setErrors();
-  //     })
-  //     .catch(() => {
-  //       Toast('Failed to update user!', 'danger');
-  //     })
-  //     .finally(() => setIsLoading(false));
-  // };
 
   useEffect(() => {
     getUserDetailById(id);
   }, [id]);
 
-  return (
-    <>
+  return ( <>
+    {
+      page === 2 ? (<EditProfile page={setPage}/>) : (
+
+      <>
       <ContentHeader
         headerTitle='My Profile'
         breadcrumb={[
           { name: 'Home', link: '/' },
           { name: 'Profile', link: `/profile/view/${id}`, active: true },
         ]}
+        options={<Link className="btn btn-primary waves-effect waves-light" onClick={() => {setPage(2)}}/*to={`/profile/edit/${id}`}*/>Edit Profile</Link>}
         // options={
         //   <Button
         //     className='btn btn-primary waves-effect waves-light'
@@ -176,7 +91,7 @@ const ViewProfile = () => {
                 <div className='mr-2 my-25'>
                   <img
                     src={`${process.env.REACT_APP_PUBLIC_URL}/assets/images/default/avatar.jpg`}
-                    alt='users avatar'
+                    alt='avatar'
                     className='users-avatar-shadow rounded'
                     height='90'
                     width='90'
@@ -186,7 +101,7 @@ const ViewProfile = () => {
                   <h4 className='media-heading'>
                     {firstName} {lastName}
                   </h4>
-                  <row className='col-12 d-flex mt-1 px-0'>
+                  <Row className='col-12 d-flex mt-1 px-0'>
                     <Col
                      sm={12}
                      md={6}>
@@ -199,47 +114,24 @@ const ViewProfile = () => {
                      sm={12}
                      md={6}>
                       <Group>
+                        <h6>Mobile</h6>
+                        <span>{mobileNo}</span>
+                      </Group>
+                     </Col>
+                    <Col
+                     sm={12}
+                     md={6}>
+                      <Group>
                         <h6>Phone</h6>
                         <span>{phoneNo}</span>
                       </Group>
                      </Col>
-                  </row>
+
+                  </Row>
                 </div>
               </div>
 
               <Row>
-                {/* <Col
-                  sm={12}
-                  md={6}>
-                  <Group>
-                    <Label for='firstname'>First Name (*)</Label>
-                    <Input
-                      name='firstName'
-                      value={firstName}
-                      placeholder='First Name'
-                      onChange={(e) => {
-                        setFirstName(e.target.value);
-                      }}
-                      error={errors?.firstName}
-                    />
-                  </Group>
-                </Col>
-                <Col
-                  sm={12}
-                  md={6}>
-                  <Group>
-                    <Label for='lastName'>Last Name (*)</Label>
-                    <Input
-                      name='lastName'
-                      value={lastName}
-                      placeholder='Last Name'
-                      onChange={(e) => {
-                        setLastName(e.target.value);
-                      }}
-                      error={errors?.lastName}
-                    />
-                  </Group>
-                </Col> */}
                 <Col
                   sm={12}
                   md={6}>
@@ -260,11 +152,11 @@ const ViewProfile = () => {
                     <span>{email}</span>
                   </Group> */}
                   <Group>
-                    <h6>License Number</h6>
+                    <h6>Licence Number</h6>
                     <span>{licence}</span>
                   </Group>
                   <Group>
-                    <h6>License Verification Status</h6>
+                    <h6>Licence Verification Status</h6>
                     <span>{verificationStatus}</span>
                   </Group>
                 </Col>
@@ -401,6 +293,8 @@ const ViewProfile = () => {
           </Card>
         </Col> */}
       </Row>
+      </>
+      )}
     </>
   );
 };

@@ -19,9 +19,13 @@ const userSchema = new Schema({
         type: String,
         required: true,
     },
-    phoneNo: {
+    mobileNo: {
         type: String,
-        required: true
+        required: false
+    },
+    phoneNo: {
+      type: String,
+      required: true
     },
     email: {
         type: String,
@@ -37,11 +41,11 @@ const userSchema = new Schema({
     licence: {
         type: String,
         unique: true,
-        required: false
+        required: true
     },
     verifiedLicence: {
         type: Boolean,
-        required: false
+        required: true
     },
     group: {
         type: Schema.Types.ObjectId,
