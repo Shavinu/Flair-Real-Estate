@@ -4,6 +4,8 @@ import {
   Button,
   Card,
   Col,
+  changePassword,
+  changeEmail,
   ContentHeader,
   Row,
 } from '../../Components';
@@ -562,6 +564,14 @@ const EditProfile = ({ page }) => {
           </Card>
         </Col> */}
       {/* </Row> */}
+      <changePassword show={showConfirmDeleteModal}
+        setShow={setShowConfirmDeleteModal}
+        onSubmit={onConfirmDeleteUsers}
+      />
+      <changeEmail show={showConfirmDeleteModal}
+        setShow={setShowConfirmDeleteModal}
+        onSubmit={onConfirmDeleteUsers}
+      />
     </>
   );
 };
