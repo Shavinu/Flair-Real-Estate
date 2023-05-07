@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Slider from 'rc-slider';
+import { ProgressBar } from "react-bootstrap";
 import 'rc-slider/assets/index.css';
 
 const PriceRangeInput = ({ value, onChange, error, min, max, step }) => {
@@ -60,4 +61,35 @@ const PriceRangeInput = ({ value, onChange, error, min, max, step }) => {
   );
 };
 
-export default PriceRangeInput;
+const PriceRangeOutput = ({ minPrice, maxPrice }) => {
+  const minValue = parseInt(minPrice);
+  const maxValue = parseInt(maxPrice);
+  const middlePoint = (minPrice + maxPrice) / 2;
+
+  return (
+    <div>
+      <div className="d-flex justify-content-between">
+        <span>{`$${minPrice}`}</span>
+        <span>{`$${maxPrice}`}</span>
+      </div>
+      <ProgressBar style={{ height: "30px" }}>
+        <ProgressBar
+          now={middlePoint}
+          min={minValue}
+          max={middlePoint}
+          key={1}
+          className="bg-success"
+        />
+        <ProgressBar
+          now={middlePoint}
+          min={middlePoint}
+          max={maxValue}
+          key={2}
+          className="bg-warning"
+        />
+      </ProgressBar>
+    </div>
+  );
+};
+
+export { PriceRangeInput, PriceRangeOutput };

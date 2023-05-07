@@ -7,45 +7,45 @@ const projectController = {
     // Create a new project
     createProject: async (req, res) => {
         try {
-          const { projectOwner } = req.body;
-      
-          // Validate the project data
-          const { error } = projectSchema.validate(req.body);
-          if (error) {
-            return res.status(400).json({ message: error.details[0].message });
-          }
-      
-          // Check if the project owner exists
-          const owner = await User.findById(projectOwner);
-          if (!owner) {
-            return res.status(404).json({ message: 'User not found' });
-          }
-      
-          // Create the project
-          const newProject = new Project(req.body);
-      
-          // Ensure projectMembers is an array
-          if (!Array.isArray(newProject.projectMembers)) {
-            newProject.projectMembers = [];
-          }
-      
-          // Add the projectOwner to the projectMembers if not already included
-          if (!newProject.projectMembers.includes(newProject.projectOwner.toString())) {
-            newProject.projectMembers.push(newProject.projectOwner);
-          }
-      
-          // Convert projectOwner to ObjectId
-          newProject.projectOwner = new mongoose.Types.ObjectId(newProject.projectOwner);
-      
-          // Convert projectMembers to ObjectIds
-          newProject.projectMembers = newProject.projectMembers.map(memberId =>
-            new mongoose.Types.ObjectId(memberId)
-          );
-      
-          const savedProject = await newProject.save();
-          res.status(201).json(savedProject);
+            const { projectOwner } = req.body;
+
+            // Validate the project data
+            const { error } = projectSchema.validate(req.body);
+            if (error) {
+                return res.status(400).json({ message: error.details[0].message });
+            }
+
+            // Check if the project owner exists
+            const owner = await User.findById(projectOwner);
+            if (!owner) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            // Create the project
+            const newProject = new Project(req.body);
+
+            // Ensure projectMembers is an array
+            if (!Array.isArray(newProject.projectMembers)) {
+                newProject.projectMembers = [];
+            }
+
+            // Add the projectOwner to the projectMembers if not already included
+            if (!newProject.projectMembers.includes(newProject.projectOwner.toString())) {
+                newProject.projectMembers.push(newProject.projectOwner);
+            }
+
+            // Convert projectOwner to ObjectId
+            newProject.projectOwner = new mongoose.Types.ObjectId(newProject.projectOwner);
+
+            // Convert projectMembers to ObjectIds
+            newProject.projectMembers = newProject.projectMembers.map(memberId =>
+                new mongoose.Types.ObjectId(memberId)
+            );
+
+            const savedProject = await newProject.save();
+            res.status(201).json(savedProject);
         } catch (error) {
-          res.status(500).json({ message: error.message });
+            res.status(500).json({ message: error.message });
         }
     },
 
@@ -63,7 +63,11 @@ const projectController = {
     getProjectById: async (req, res) => {
         try {
             const { projectId } = req.params;
-            const project = await Project.findById(projectId).populate('projectOwner');
+            const project = await Project.findById(projectId)
+                .populate({
+                    path: 'projectOwner',
+                    select: '_id firstName lastName email'
+                });
             if (!project) {
                 return res.status(404).json({ message: 'Project not found' });
             }
@@ -119,7 +123,10 @@ const projectController = {
     deleteProjectById: async (req, res) => {
         try {
             const { projectId } = req.params;
-            const deletedProject = await Project.findByIdAndDelete(projectId);
+            const deletedProject = await Project.findByIdAndDelete(projectId).populate({
+                path: 'projectOwner',
+                select: '_id firstName lastName email'
+            });
             if (!deletedProject) {
                 return res.status(404).json({ message: 'Project not found' });
             }
@@ -133,14 +140,37 @@ const projectController = {
     getProjectsByOwner: async (req, res) => {
         try {
             const { ownerId } = req.params;
-            const projects = await Project.find({ projectOwner: ownerId }).populate('projectOwner');
-            res.status(200).json(projects);
+            const page = parseInt(req.query.page);
+            const limit = parseInt(req.query.limit);
+            const skip = page && limit ? (page - 1) * limit : 0;
+
+            const projectsQuery = Project.find({ projectOwner: ownerId })
+                .populate('projectOwner', '_id firstName lastName email')
+                .sort({ createdAt: -1 });
+
+            if (skip) {
+                projectsQuery.skip(skip);
+            }
+
+            if (limit) {
+                projectsQuery.limit(limit);
+            }
+
+            const projects = await projectsQuery.exec();
+            const totalProjects = await Project.countDocuments({ projectOwner: ownerId });
+
+            res.status(200).json({
+                projects,
+                currentPage: page || 1,
+                totalPages: limit ? Math.ceil(totalProjects / limit) : 1,
+            });
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
     },
 
-// Add members to a project
+
+    // Add members to a project
     addProjectMembers: async (req, res) => {
         try {
             const projectId = req.params.id;
@@ -172,18 +202,18 @@ const projectController = {
         try {
             const projectId = req.params.id;
             const userIds = Array.isArray(req.body) ? req.body : [req.body];
-    
+
             const project = await Project.findById(projectId);
             if (!project) {
                 return res.status(404).json({ message: 'Project not found' });
             }
-    
+
             const objectIds = userIds.map(id => new mongoose.Types.ObjectId(id));
-    
+
             if (objectIds.some(id => id.equals(project.projectOwner))) {
                 return res.status(400).json({ message: "Cannot remove the owner of the group" });
             }
-    
+
             const updatedProject = await Project.findByIdAndUpdate(
                 projectId,
                 {
@@ -191,7 +221,7 @@ const projectController = {
                 },
                 { new: true }
             );
-    
+
             res.json(updatedProject);
         } catch (error) {
             res.status(500).json({ message: error.message });
