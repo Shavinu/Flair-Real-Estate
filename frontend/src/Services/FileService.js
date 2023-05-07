@@ -29,6 +29,10 @@ export const streamFile = (fileId) => {
   return utils.fetch.httpGet(utils.url.replaceId(api.files.stream, fileId));
 };
 
+export const getImageUrl = (imageId) => {
+  return `${process.env.REACT_APP_API_URL}${utils.url.replaceId(api.files.stream, imageId)}`;
+};
+
 export const downloadFile = (fileId) => {
   return utils.fetch.httpGet(utils.url.replaceId(api.files.download, fileId));
 };

@@ -1,3 +1,4 @@
+const { meta } = require('@hapi/joi/lib/base');
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
@@ -24,9 +25,25 @@ const projectSchema = new Schema({
         type: String,
         required: true
     },
+    projectTitleImage: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'File',
+        required: false
+    },
+    projectSlideImages: [
+        {
+            type: Map,
+            of: mongoose.Schema.Types.ObjectId,
+            ref: 'File',
+            required: false,
+            default: []
+        }
+    ],
+    //include objectid of files and their categories
     projectFiles: [
         {
-            type: mongoose.Schema.Types.ObjectId,
+            type: Map,
+            of: mongoose.Schema.Types.ObjectId,
             ref: 'File',
             required: false,
             default: []

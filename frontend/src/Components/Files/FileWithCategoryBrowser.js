@@ -7,7 +7,7 @@ const FileWithCategoryBrowser = ({ options, onFilesChange, error }) => {
   const [files, setFiles] = useState([]);
   const [isInvalid, setIsInvalid] = useState(false);
 
-  
+
 
   useEffect(() => {
     setIsInvalid(!!error);
@@ -62,7 +62,7 @@ const FileWithCategoryBrowser = ({ options, onFilesChange, error }) => {
 
       {files.map((fileObj, index) => (
         <Row className='mt-1 mb-1' key={index}>
-          <InputGroup key={index} as={Col} md="6">
+          <InputGroup key={index} as={Col} md="12">
             <Form.Control
               type="text"
               value={fileObj.category}
@@ -109,37 +109,37 @@ const getFileLabelWithIndex = (fileObj, categoryCounts, currentCategoryIndex) =>
 const createFileUploadFormData = (fileObj, categoryCounts, currentCategoryIndex, user) => {
   const formData = new FormData();
   formData.append('file', fileObj.file);
-  formData.append('createdBy', user);
+  formData.append('userId', user);
   formData.append('label', getFileLabelWithIndex(fileObj, categoryCounts, currentCategoryIndex));
   return formData;
 };
 
 const uploadFilesAndGetFileIds = async (fileUploadFiles, user) => {
-  const categoryCounts = {};
-  const currentCategoryIndex = {};
+  try {
+    const categoryCounts = {};
+    const currentCategoryIndex = {};
 
-  fileUploadFiles.forEach((fileObj) => {
-    if (categoryCounts[fileObj.category]) {
-      categoryCounts[fileObj.category]++;
-    } else {
-      categoryCounts[fileObj.category] = 1;
-    }
-  });
+    fileUploadFiles.forEach((fileObj) => {
+      if (categoryCounts[fileObj.category]) {
+        categoryCounts[fileObj.category]++;
+      } else {
+        categoryCounts[fileObj.category] = 1;
+      }
+    });
 
-  const filePromises = fileUploadFiles.map((fileObj) => {
-    const formData = createFileUploadFormData(fileObj, categoryCounts, currentCategoryIndex, user);
-
-    return FileService.uploadSingle(formData)
-      .then((response) => {
-        return response.file._id;
+    const projectFiles = await Promise.all(
+      fileUploadFiles.map(async (fileObj) => {
+        const formData = createFileUploadFormData(fileObj, categoryCounts, currentCategoryIndex, user);
+        const response = await FileService.uploadSingle(formData);
+        return { [response.file.metadata.label]: response.file._id };
       })
-      .catch((e) => {
-        console.log(e);
-      });
-  });
+    );
 
-  const fileIds = await Promise.all(filePromises);
-  return fileIds;
+    console.log(projectFiles);
+    return JSON.stringify(projectFiles);
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 export { FileWithCategoryBrowser, uploadFilesAndGetFileIds };
