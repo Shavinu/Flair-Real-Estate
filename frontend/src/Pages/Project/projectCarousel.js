@@ -30,7 +30,7 @@ const CardCarousel = ({ project, imageUrls }) => {
         <Col>
           <div className="d-flex justify-content-center align-items-center">
             <Button variant="secondary" onClick={handlePrevClick}>
-            <i className="feather icon-arrow-left"></i>
+              <i className="feather icon-arrow-left"></i>
             </Button>
             <Carousel ref={carouselRef} controls={false} indicators={false}>
               <Carousel.Item>
@@ -53,7 +53,7 @@ const CardCarousel = ({ project, imageUrls }) => {
               </Carousel.Item>
             </Carousel>
             <Button variant="secondary" onClick={handleNextClick}>
-            <i className="feather icon-arrow-right"></i>
+              <i className="feather icon-arrow-right"></i>
             </Button>
           </div>
         </Col>

@@ -162,7 +162,7 @@ const Create = () => {
         Toast('Project created successfully!', 'success');
         setErrors({});
         setTimeout(() => {
-        navigate(`/projects/${response._id}`);
+          navigate(`/projects/${response._id}`);
         }, 500);
       })
       .catch(() => {

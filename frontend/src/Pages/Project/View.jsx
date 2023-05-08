@@ -82,13 +82,13 @@ const ProjectDetails = () => {
             ]}
             options={
                 <div>
-            
-            <ButtonGroup>
-                <Link to={`/projects/`} className="btn btn-primary">
-                    Back
-                </Link>
-            </ButtonGroup>
-            </div>}
+
+                    <ButtonGroup>
+                        <Link to={`/projects/`} className="btn btn-primary">
+                            Back
+                        </Link>
+                    </ButtonGroup>
+                </div>}
         />;
     }
     const [minPrice, maxPrice] = project.projectPriceRange.split("-");
@@ -102,16 +102,16 @@ const ProjectDetails = () => {
                 ]}
                 options={
                     <div>
-                
-                <ButtonGroup>
-                    <Link to={`/projects/`} className="btn btn-primary">
-                        Back
-                    </Link>
-                    <Link to={`/projects/`} className="btn btn-secondary">
-                        Edit
-                    </Link>
-                </ButtonGroup>
-                </div>}
+
+                        <ButtonGroup>
+                            <Link to={`/projects/`} className="btn btn-primary">
+                                Back
+                            </Link>
+                            <Link to={`/projects/`} className="btn btn-secondary">
+                                Edit
+                            </Link>
+                        </ButtonGroup>
+                    </div>}
             />
             <style>{
                 `.border-2 {

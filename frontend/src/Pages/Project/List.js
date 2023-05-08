@@ -8,7 +8,8 @@ import "./List.css";
 
 // the ownerId should be the person browsing, but if builder uses a group, the ownerId should be the group owner
 const ProjectsListing = () => {
-    const ownerId = '644c6415ad75b1d119eed7eb';
+    const user = JSON.parse(localStorage.getItem('user'));
+    const ownerId = user.payload._id;
     const [projects, setProjects] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
