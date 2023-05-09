@@ -6,7 +6,7 @@ const createError = require('http-errors');
 
 //create group and add current user to group
 const createGroup = async (req, res) => {
-  const { groupType, groupLicence, groupName, groupContact, groupEmail, groupArea } = req.body;
+  const { groupType, groupLicence, groupName, groupContact, groupEmail, groupArea, groupParentId } = req.body;
   try {
     const existingGroup = await Group.findOne({ groupLicence: groupLicence });
 
@@ -15,7 +15,7 @@ const createGroup = async (req, res) => {
       return res.status(400).json({ error: `"${req.body.groupLicence}" license is already registered!` });
     }
 
-    const group = await Group.create({ groupType, groupLicence, groupName, groupContact, groupEmail, groupArea });
+    const group = await Group.create({ groupType, groupLicence, groupName, groupContact, groupEmail, groupArea, groupParentId });
 
     res.status(200).json(group);
 
@@ -27,7 +27,7 @@ const createGroup = async (req, res) => {
 
 //update group
 const updateGroup = async (req, res) => {
-  const { _id, groupType, groupLicence, groupName, groupContact, groupEmail, groupArea } = req.body;
+  const { _id, groupType, groupLicence, groupName, groupContact, groupEmail, groupArea, groupParentId } = req.body;
   if (!mongoose.Types.ObjectId.isValid(_id)) {
     return res.status(400).json({ error: 'Not valid group ID' });
   }
@@ -42,7 +42,7 @@ const updateGroup = async (req, res) => {
 
     const updatedGroup = await Group.findOneAndUpdate(
       { _id: _id },
-      { groupType, groupLicence, groupName, groupContact, groupEmail, groupArea },
+      { groupType, groupLicence, groupName, groupContact, groupEmail, groupArea, groupParentId },
       { new: true }
     );
 
@@ -192,7 +192,7 @@ const getAvailableUsers = async (req, res) => {
     res.status(200).json(users);
   } catch (error) {
     console.error(error);
-    res.status(400).json({ error: 'Unable to get users' });
+    return res.status(400).json({ error: 'Unable to get users' });
   }
 }
 

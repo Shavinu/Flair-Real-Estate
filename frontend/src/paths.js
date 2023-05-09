@@ -95,6 +95,13 @@ export const views = [
     element: <Project.View />,
     isRoute: true
   },
+  {
+    name: 'View Project',
+    action: '/projects/:id',
+    icon: 'feather icon-inbox',
+    element: <Project.View />,
+    isRoute: true 
+  },
   // {
   //   name: 'Menu',
   //   icon: 'feather icon-menu',
@@ -189,7 +196,17 @@ export const api = {
     search: '/api/files/search',
     updateSingle: '/api/files/update',
     updateMultiple: '/api/files/update',
-    stream: '/api/files/stream',
+    stream: '/api/files/stream/{{id}}',
     download: '/api/files/download',
+  },
+  projects: {
+    create: '/api/projects/',
+    get: '/api/projects/{{id}}',
+    getAll: '/api/projects/',
+    update: '/api/projects/',
+    delete: '/api/projects/{{id}}',
+    getProjectByOwner: '/api/projects/owner/{{Id}}',
+    addMembers: '/api/projects/{{id}}/add-members/',
+    removeMembers: '/api/projects/{{id}}/remove-members/'
   }
 }
