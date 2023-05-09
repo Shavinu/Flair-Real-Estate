@@ -5,27 +5,18 @@ import { Group, Input, Label, Select } from "../../../Components/Form";
 import utils from "../../../Utils";
 import * as GroupService from '../../../Services/GroupService';
 import Toast from "../../../Components/Toast";
-import DataTable from "react-data-table-component";
+import GroupInformationForm from "./Components/GroupInformationForm";
+import GroupMembers from "./Components/GroupMembers";
+import SubGroups from "./Components/SubGroups";
 
 const Edit = () => {
-  const [users, setUsers] = useState([]);
-  const [availableUsers, setAvailableUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState();
-  const [selectedUsers, setSelectedUsers] = useState([]);
-  const [toggledClearRows, setToggledClearRows] = useState(false);
-
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [contact, setContact] = useState('');
-  const [area, setArea] = useState('');
-  const [type, setType] = useState('');
-  const [license, setLicense] = useState('');
+  const [groupDetail, setGroupDetail] = useState();
+  const [subGroup, setSubGroup] = useState();
 
   const [alert, setAlert] = useState();
   const [errors, setErrors] = useState();
   const [isLoading, setIsLoading] = useState(false);
-  const [isAddingUserToGroup, setIsAddingUserToGroup] = useState(false);
-  const navigate = useNavigate();
+  const [isCreatingSubGroup, setIsCreatingSubGroup] = useState(false);
   const { id } = useParams();
 
   const getGroupDetailById = (id) => {
@@ -326,6 +317,22 @@ const Edit = () => {
         </Card>
       </Col>
     </Row>
+
+    {!groupDetail?.groupParentId &&
+      <Row>
+        <Col sm={12} md={3}>
+          <h4>Manage Subgroups</h4>
+          <p>Use the options below to manage the subgroups of this group. You can add or remove child groups, and adjust their settings as needed.</p>
+        </Col>
+
+        <Col sm={12} md={9}>
+          <Card>
+            <CardBody>
+              <SubGroups group={groupDetail} />
+            </CardBody>
+          </Card>
+        </Col>
+      </Row>}
 
     <Row>
       <Col sm={12} md={3}>

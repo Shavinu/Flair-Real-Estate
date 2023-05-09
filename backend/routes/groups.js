@@ -1,18 +1,19 @@
 const express = require('express')
 const router = express.Router()
 const {
-    createGroup,
-    updateGroup,
-    deleteGroup,
-    getGroup,
-    getGroups,
-    addUserToGroup,
-    getGroupsBySearch,
-    getUsersInGroup,
-    deleteUserFromGroup,
-    getAvailableUsers,
-    removeManyUsersFromGroup,
-    deleteManyGroups
+  createGroup,
+  updateGroup,
+  deleteGroup,
+  getGroup,
+  getGroups,
+  addUserToGroup,
+  getGroupsBySearch,
+  getUsersInGroup,
+  deleteUserFromGroup,
+  getAvailableUsers,
+  removeManyUsersFromGroup,
+  deleteManyGroups,
+  getSubGroups
 } = require('../controllers/groupController')
 
 //create group
@@ -30,6 +31,9 @@ router.post('/deleteGroup', deleteGroup)
 //get group
 //id is the group object id
 router.get('/getGroup/:id', getGroup)
+
+//get sub groups by id
+router.post('/subGroups', getSubGroups)
 
 //get all groups
 router.get('/getGroups', getGroups)

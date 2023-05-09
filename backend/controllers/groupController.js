@@ -71,7 +71,7 @@ const getGroup = async (req, res) => {
 //get all groups
 const getGroups = async (req, res) => {
   try {
-    const groups = await Group.find().sort({ CreateAt: -1 });
+    const groups = await Group.find({ groupParentId: null }).sort({ CreateAt: -1 });
     res.status(200).json(groups);
   } catch (error) {
     console.error(error);
@@ -218,6 +218,17 @@ const deleteManyGroups = async (req, res) => {
   }
 }
 
+const getSubGroups = async (req, res) => {
+  try {
+    const { groupParentId } = req.body;
+    const groups = await Group.find({ groupParentId: groupParentId }).sort({ CreateAt: -1 });
+    return res.status(200).json(groups);
+  } catch (error) {
+    console.error(error);
+    res.status(404).json({ error: 'Unable to get group list' });
+  }
+}
+
 module.exports = {
   createGroup,
   updateGroup,
@@ -231,4 +242,5 @@ module.exports = {
   getAvailableUsers,
   removeManyUsersFromGroup,
   deleteManyGroups,
+  getSubGroups,
 }

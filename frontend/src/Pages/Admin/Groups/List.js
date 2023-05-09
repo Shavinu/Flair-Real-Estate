@@ -52,22 +52,22 @@ const List = () => {
   const columns = useMemo(() => [
     {
       name: 'Name',
-      selector: row => row.groupName,
+      selector: row => row.groupName || '--',
       sortable: true,
     },
     {
       name: 'Email',
-      selector: row => row.groupEmail,
+      selector: row => row.groupEmail || '--',
       sortable: true,
     },
     {
       name: 'Contact',
-      selector: row => row.groupContact,
+      selector: row => row.groupContact || '--',
       sortable: true,
     },
     {
       name: 'Area',
-      selector: row => row.groupArea,
+      selector: row => row.groupArea || '--',
       sortable: true,
     },
     {

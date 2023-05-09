@@ -33,19 +33,19 @@ export const views = [
     isRoute: true,
   },
   {
-    name : 'Upload File',
+    name: 'Upload File',
     action: '/files/upload',
     element: <FileUpload />,
     isRoute: true,
   },
   {
-    name : 'Stream File',
+    name: 'Stream File',
     action: '/files/stream',
     element: <FileStream />,
     isRoute: true,
   },
   {
-    name : 'Update Files',
+    name: 'Update Files',
     action: '/files/update',
     element: <FileUpdates />,
     isRoute: true,
@@ -86,7 +86,14 @@ export const views = [
     action: '/projects/create',
     icon: 'feather icon-inbox',
     element: <Project.Create />,
-    isRoute: true 
+    isRoute: true
+  },
+  {
+    name: 'View Project',
+    action: '/projects/:id',
+    icon: 'feather icon-inbox',
+    element: <Project.View />,
+    isRoute: true
   },
   // {
   //   name: 'Menu',
@@ -170,6 +177,7 @@ export const api = {
     update: '/api/groups/updateGroup',
     deleteMany: '/api/groups/deleteManyGroups',
     users: '/api/groups/getUsersInGroup',
+    subGroups: '/api/groups/subGroups',
     availableUsers: '/api/groups/getAvailableUsers',
     addUserToGroup: '/api/groups/addUserToGroup',
     removeUserFromGroup: '/api/groups/deleteUserFromGroup',
