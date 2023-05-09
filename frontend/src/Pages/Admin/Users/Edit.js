@@ -403,6 +403,7 @@ const Edit = () => {
                   setConfirmationPassword(e.target.value);
                 }}
                 error={errors?.confirmationPassword}
+                autoComplete={'new-password'}
               />
             </Group>
           </CardBody>

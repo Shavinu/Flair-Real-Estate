@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
-import { Button, Card, Col, ConfirmModal, ContentHeader, Dropdown, Modal, Row } from "../../../Components";
+import { Button, Card, ConfirmModal, ContentHeader, Dropdown, Modal } from "../../../Components";
 import CardBody from "../../../Components/Card/CardBody";
 import DataTable from 'react-data-table-component';
 import * as GroupService from '../../../Services/GroupService';
 import { Link } from "react-router-dom";
 import Toast from "../../../Components/Toast";
 import utils from "../../../Utils";
-import { Group, Select } from "../../../Components/Form";
 import GroupMembers from "./Components/GroupMembers";
+import ExpandedComponent from "./Components/ExpandedComponent";
 
 const List = () => {
   const [groups, setGroups] = useState([]);
@@ -54,9 +54,6 @@ const List = () => {
     },
     {
       name: 'Users',
-      // cell: row => (<Button className="btn btn-icon btn-sm btn-flat-secondary my-1" onClick={() => onShowUsersModel(row)}>
-      //   <i className="feather icon-eye"></i>
-      // </Button>),
       cell: row => (<button className="btn btn-icon btn-sm btn-flat-secondary my-1" data-backdrop="false" data-target="#group-members-modal" data-toggle="modal" onClick={() => setSelectedGroup(row)}>
         <i className="feather icon-eye"></i>
       </button>),
@@ -131,6 +128,12 @@ const List = () => {
           onSelectedRowsChange={onSelectedRowsChange}
           pagination
           clearSelectedRows={toggledClearGroupRows}
+          expandableRows
+          expandableRowsComponent={ExpandedComponent}
+          expandableRowsComponentProps={{
+            "setSelectedGroup": setSelectedGroup,
+            "onSelectDelete": onSelectDelete
+          }}
         />
       </CardBody>
     </Card>

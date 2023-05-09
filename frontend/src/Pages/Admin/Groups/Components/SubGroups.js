@@ -142,9 +142,8 @@ const SubGroups = ({ group, isCreatingSubGroup, setIsCreatingSubGroup }) => {
                   Cancel
                 </Button>
                 <Button className="btn btn-primary waves-effect waves-light"
-                  onClick={() => {
-                    onSubmit();
-                  }}
+                  isLoading={isLoading}
+                  onClick={onSubmit}
                 >
                   Add Group
                 </Button>

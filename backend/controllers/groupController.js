@@ -210,7 +210,7 @@ const removeManyUsersFromGroup = async (req, res) => {
 const deleteManyGroups = async (req, res) => {
   try {
     const { ids } = req.body;
-    const groups = await Group.updateMany({ _id: { $in: ids } });
+    const groups = await Group.deleteMany({ _id: { $in: ids } });
     return res.status(200).json(groups);
   } catch (error) {
     console.error(error);

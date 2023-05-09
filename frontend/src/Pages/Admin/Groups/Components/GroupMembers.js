@@ -130,7 +130,7 @@ const GroupMembers = ({ group }) => {
               <Row>
                 <Col sm={9}>
                   <select className={`form-control ${errors?.user ? 'is-invalid' : ''}`} name="group-member" id="group-members" onChange={e => setSelectedUser(availableUsers.find(user => user._id === e.target.value))} value={selectedUser?._id}>
-                    <option value={null} selected>Select User</option>
+                    <option value={null}>Select User</option>
                     {availableUsers.map(user => (<option value={user._id}>{user.email}</option>))}
                   </select>
                   {errors?.user && <div className="invalid-feedback">
