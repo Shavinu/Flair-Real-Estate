@@ -3,7 +3,7 @@ import { Alert, Col, Row } from "../../../../Components";
 import { Group, Input, Label, Select } from "../../../../Components/Form";
 import * as GroupService from "../../../../Services/GroupService";
 
-const GroupInformationForm = ({ group, setGroup, alert, errors }) => {
+const GroupInformationForm = ({ group, setGroup, alert, errors, isSubGroup }) => {
   const [groups, setGroups] = useState([]);
 
   useEffect(() => {
@@ -75,13 +75,14 @@ const GroupInformationForm = ({ group, setGroup, alert, errors }) => {
             value={group?.groupLicence}
             placeholder="License"
             onChange={(e) => {
-              setGroup({ ...group, groupArea: e.target.value });
+              setGroup({ ...group, groupLicence: e.target.value });
             }}
             error={errors?.groupLicence}
           />
         </Group>
       </Col>
-      <Col sm={12} md={6}>
+
+      {!isSubGroup && <Col sm={12} md={6}>
         <Group>
           <Label>Type (*)</Label>
           <Select
@@ -90,13 +91,13 @@ const GroupInformationForm = ({ group, setGroup, alert, errors }) => {
               { value: 'agency', label: 'Agency' },
             ]}
             value={group?.groupType}
-            onChange={(value) => setGroup({ ...group, groupArea: value })}
+            onChange={(value) => setGroup({ ...group, groupType: value })}
             error={errors?.groupType}
           />
         </Group>
-      </Col>
+      </Col>}
 
-      <Col sm={12} md={6}>
+      {!isSubGroup && <Col sm={12} md={6}>
         <Group>
           <Label>Group</Label>
           <Select
@@ -105,7 +106,7 @@ const GroupInformationForm = ({ group, setGroup, alert, errors }) => {
             onChange={(value) => setGroup({ ...group, groupParentId: value })}
           />
         </Group>
-      </Col>
+      </Col>}
     </Row>
   </>
 }

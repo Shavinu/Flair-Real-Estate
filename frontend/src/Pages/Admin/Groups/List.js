@@ -80,8 +80,8 @@ const List = () => {
     setSelectedGroups(selected.selectedRows);
   }
 
-  const onSelectDelete = (user) => {
-    setSelectedGroups([user]);
+  const onSelectDelete = (group) => {
+    setSelectedGroups([group]);
     setShowConfirmDeleteModal(true);
   }
 
@@ -101,7 +101,6 @@ const List = () => {
         setShowConfirmDeleteModal(false)
         setToggledClearGroupRows(!toggledClearGroupRows)
       })
-    setShowConfirmDeleteModal(false);
   }
 
   useEffect(() => {

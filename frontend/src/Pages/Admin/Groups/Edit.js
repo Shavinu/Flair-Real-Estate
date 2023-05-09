@@ -140,12 +140,24 @@ const Edit = () => {
         <Col sm={12} md={3}>
           <h4>Manage Subgroups</h4>
           <p>Use the options below to manage the subgroups of this group. You can add or remove child groups, and adjust their settings as needed.</p>
+
+          {!isCreatingSubGroup
+            && <Button className="btn btn-primary waves-effect waves-light"
+              onClick={() => setIsCreatingSubGroup(true)}
+            >
+              Add Group
+            </Button>
+          }
         </Col>
 
         <Col sm={12} md={9}>
           <Card>
             <CardBody>
-              <SubGroups group={groupDetail} />
+              <SubGroups
+                group={groupDetail}
+                isCreatingSubGroup={isCreatingSubGroup}
+                setIsCreatingSubGroup={setIsCreatingSubGroup}
+              />
             </CardBody>
           </Card>
         </Col>
