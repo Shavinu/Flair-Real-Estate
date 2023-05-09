@@ -34,7 +34,7 @@ const Input: React.FunctionComponent<InputProps> = (props) => {
         )}
         name={props.name}
         placeholder={props.placeholder}
-        value={props.value}
+        value={props.value || ''}
         defaultValue={props.defaultValue}
         onChange={props.onChange}
         onBlur={props.onBlur}
