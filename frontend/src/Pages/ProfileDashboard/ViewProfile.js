@@ -45,6 +45,7 @@ const ViewProfile = () => {
       setMobileNo(response.mobileNo);
       setPhoneNo(response.phoneNo);
       setAccType(response.accType);
+      setLicence(response.licence);
       response.verifiedLicence ? setVerificationStatus("Verified") : setVerificationStatus("Unverified")
       setCompany(response.company);
       // setCompany("LJ Hooker")

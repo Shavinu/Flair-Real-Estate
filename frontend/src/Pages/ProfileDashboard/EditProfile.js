@@ -4,6 +4,7 @@ import { Button, Card, Col, Modal, ContentHeader, Row } from '../../Components';
 import CardBody from '../../Components/Card/CardBody';
 import * as UserService from '../../Services/UserService';
 import { Group, Input, Label, Select } from '../../Components/Form';
+import * as AuthServices from '../../Services/AuthService';
 import utils from '../../Utils';
 import Toast from '../../Components/Toast';
 import moment from 'moment';
@@ -39,6 +40,8 @@ const EditProfile = ({ page }) => {
   const [showEmailChangeModal, setShowEmailChangeModal] = useState(false);
   const [newEmail, setNewEmail] = useState();
 
+  const [alertMessage, setAlertMessage] = useState('');
+
   const getUserDetailById = () => {
     UserService.getUserDetailById(id).then((response) => {
       setUser(response);
@@ -65,16 +68,6 @@ const EditProfile = ({ page }) => {
     let isValid = true;
     let errors = {};
 
-    if (!email) {
-      errors = { ...errors, email: 'Please provide email address!' };
-      isValid = false;
-    }
-
-    if (email && !utils.string.isValidEmail(email)) {
-      errors = { ...errors, email: 'Please provide a valid email address!' };
-      isValid = false;
-    }
-
     if (!firstName) {
       errors = { ...errors, firstName: 'Please provide your first name!' };
       isValid = false;
@@ -95,10 +88,10 @@ const EditProfile = ({ page }) => {
     //   isValid = false;
     // }
 
-    if (password && confirmationPassword !== password) {
-      errors = { ...errors, confirmationPassword: 'Password not match!' };
-      isValid = false;
-    }
+    // if (password && confirmationPassword !== password) {
+    //   errors = { ...errors, confirmationPassword: 'Password not match!' };
+    //   isValid = false;
+    // }
 
     setErrors(errors);
     return isValid;
@@ -112,11 +105,9 @@ const EditProfile = ({ page }) => {
     console.log('change licence');
   };
 
-  const changeEmail = () => {
-    console.log('change email');
-  };
 
-  const validatePassword = () => {
+
+  const validatePassword = (e) => {
     setIsLoading(true);
     e.preventDefault();
     if (currentPassword) {
@@ -130,6 +121,7 @@ const EditProfile = ({ page }) => {
     })
       .then((response) => {
         setAlertMessage();
+        setCurrentPassword();
         setModalStep(2);
         // Toast('Login successfully!', 'success');
         // navigate('/');
@@ -146,16 +138,23 @@ const EditProfile = ({ page }) => {
       .finally(() => setIsLoading(false));
   };
 
-  const changePassword = () => {
+  const changePassword = (e) => {
+    let errors = {};
     setIsLoading(true);
     e.preventDefault();
-    if (newPassword && confirmNewPassword) {
+    if (!newPassword) {
+      errors = { ...errors, newPassword: 'Please enter a new password' };
+    } else if(!confirmNewPassword){
+      errors = { ...errors, confirmNewPassword: 'Please enter a new password' };
+    } else if (newPassword != confirmNewPassword) {
+      errors = { ...errors, confirmNewPassword: 'Passwords do not match' };
+      // Toast('Passwords do not match', 'warning');
+    } else{
       setIsLoading(false);
       return;
     }
-    if (newPassword != confirmNewPassword) {
-      Toast('Passwords do not match', 'warning');
-    }
+
+    setErrors(errors);
 
     const body = {
       newPassword: newPassword,
@@ -166,10 +165,46 @@ const EditProfile = ({ page }) => {
         Toast('Password has been updated successfully!', 'success');
         getUserDetailById(id);
         setErrors();
+        // setShowPasswordChangeModal(false);
         setModalStep(1);
+        setNewPassword();
+        setConfirmNewPassword('');
       })
       .catch(() => {
         Toast('Failed to update password!', 'danger');
+      })
+      .finally(() => setIsLoading(false));
+  };
+
+  const changeEmail = (e) => {
+    let errors = {}
+    setIsLoading(true);
+    e.preventDefault();
+    if (!newEmail) {
+      errors = { ...errors, newEmail: 'Please provide email address!' };
+    }
+    if (newEmail && !utils.string.isValidEmail(newEmail)) {
+      errors = { ...errors, newEmail: 'Please provide a valid email address!' };
+    }
+
+    setErrors(errors);
+
+    const body = {
+      email: newEmail,
+    };
+
+    UserService.updateUser(id, body)
+      .then((response) => {
+        Toast('Email has been updated successfully!', 'success');
+        getUserDetailById(id);
+        setErrors();
+        // setShowEmailChangeModal(false);
+        setModalStep(1);
+        setEmail(newEmail);
+        setNewEmail();
+      })
+      .catch(() => {
+        Toast('Failed to update email', 'danger');
       })
       .finally(() => setIsLoading(false));
   };
@@ -318,7 +353,7 @@ const EditProfile = ({ page }) => {
                     </label>
                     <span
                       className='float-right'
-                      onClick={changeEmail}
+                      onClick={() => setShowEmailChangeModal(true)}
                       style={{ cursor: 'pointer' }}>
                       <i>
                         <u>Change</u>
@@ -347,7 +382,7 @@ const EditProfile = ({ page }) => {
                     <span
                       className='float-right'
                       name='password'
-                      onClick={setShowPasswordChangeModal(true)}
+                      onClick={() => setShowPasswordChangeModal(true)}
                       style={{ cursor: 'pointer' }}>
                       <i>
                         <u>Change</u>
@@ -694,6 +729,7 @@ const EditProfile = ({ page }) => {
                     type='password'
                     value={confirmNewPassword}
                     onChange={(e) => setConfirmNewPassword(e.target.value)}
+                    error={errors?.confirmNewPassword}
                   />
                 </label>
                 <Button
@@ -721,14 +757,14 @@ const EditProfile = ({ page }) => {
               sm={12}
               md={8}>
               <Group>
-                <label>
+                <Label>
                   Password:
-                  <input
+                  <Input
                     type='password'
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
                   />
-                </label>
+                </Label>
                 <Button
                   className='btn btn-outline-primary btn-inline'
                   type='submit'
@@ -745,14 +781,14 @@ const EditProfile = ({ page }) => {
               sm={12}
               md={8}>
               <Group>
-                <label>
+                <Label>
                   New Email:
-                  <input
-                    type='password'
+                  <Input
                     value={newEmail}
                     onChange={(e) => setNewEmail(e.target.value)}
+                    error={errors?.newEmail}
                   />
-                </label>
+                </Label>
                 <Button
                   className='btn btn-outline-primary btn-inline'
                   type='submit'
