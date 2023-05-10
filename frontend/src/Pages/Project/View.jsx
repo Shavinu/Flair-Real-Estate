@@ -10,8 +10,6 @@ import * as FileService from "../../Services/FileService";
 import { PriceRangeOutput } from "../../Components/Form/PriceRange";
 import CardCarousel from "./projectCarousel";
 import { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
 
 const ProjectDetails = () => {
     const [project, setProject] = useState(null);
@@ -107,7 +105,7 @@ const ProjectDetails = () => {
                             <Link to={`/projects/`} className="btn btn-primary">
                                 Back
                             </Link>
-                            <Link to={`/projects/`} className="btn btn-secondary">
+                            <Link to={`/projects/${project._id}/edit`} className="btn btn-secondary">
                                 Edit
                             </Link>
                         </ButtonGroup>
@@ -120,7 +118,7 @@ const ProjectDetails = () => {
             }</style>
             <Row>
                 <Col lg={8}>
-                    <Card className="rounded m-auto p-2">
+                    <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
                         <Row>
                             <Col lg={12}>
                                 <Card.Img
@@ -136,16 +134,15 @@ const ProjectDetails = () => {
                             </Col>
                         </Row>
                         <Row>
-                            <Col lg={12}>
-
-                                <Card.Subtitle className="text-muted"> Description: </Card.Subtitle>
-                                <div dangerouslySetInnerHTML={{ __html: project.projectDescription }} />
+                            <Col lg={12} className="m-0 p-0">
+                                <Card.Subtitle className="text-white bg-dark p-1 m-0 mt-0 mb-0" style={{ background: 'linear-gradient(to right, rgba(102, 126, 234, 0.5), rgba(118, 75, 162, 0.5))' }}> Description: </Card.Subtitle>
+                                <div className="text-dark p-1 m-0 mt-0 mb-0" dangerouslySetInnerHTML={{ __html: project.projectDescription }} />
                             </Col>
                         </Row>
                     </Card>
 
-                    <Card className="rounded mt-1 p-2">
-                        <Card.Subtitle className="text-muted"> Slides: </Card.Subtitle>
+                    <Card className="rounded mt-1 p-0">
+                        <Card.Subtitle className="text-white bg-dark p-1 mt-0 mb-1" style={{ background: 'linear-gradient(to right, rgba(102, 126, 234, 0.5), rgba(118, 75, 162, 0.5))' }}> Slides: </Card.Subtitle>
                         <CardCarousel project={project} imageUrls={imageUrls} />
                     </Card>
                 </Col>
@@ -172,7 +169,15 @@ const ProjectDetails = () => {
                     <ListGroup>
                         {project.projectFiles.map((projectFile, index) => (
                             <ListGroup.Item key={index}>
-                                {Object.keys(projectFile)[0]}: {projectFile[Object.keys(projectFile)[0]]}
+                                {Object.keys(projectFile)[0]}:
+                                <ButtonGroup>
+                                    <Link to={FileService.getImageUrl(projectFile[Object.keys(projectFile)[0]])} className="ml-1 btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer" >
+                                        View
+                                    </Link>
+                                    <Link to={FileService.getFileUrl(projectFile[Object.keys(projectFile)[0]])} className="btn btn-dark btn-sm" target="_blank" rel="noopener noreferrer" >
+                                        Download
+                                    </Link>
+                                </ButtonGroup>
                             </ListGroup.Item>
                         ))}
                     </ListGroup>

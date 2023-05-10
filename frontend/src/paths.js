@@ -102,6 +102,13 @@ export const views = [
     element: <Project.View />,
     isRoute: true 
   },
+  {
+    name: 'Edit Project',
+    action: '/projects/:id/edit',
+    icon: 'feather icon-inbox',
+    element: <Project.Edit />,
+    isRoute: true
+  },
   // {
   //   name: 'Menu',
   //   icon: 'feather icon-menu',
@@ -197,7 +204,7 @@ export const api = {
     updateSingle: '/api/files/update',
     updateMultiple: '/api/files/update',
     stream: '/api/files/stream/{{id}}',
-    download: '/api/files/download',
+    download: '/api/files/download/{{id}}',
   },
   projects: {
     create: '/api/projects/',

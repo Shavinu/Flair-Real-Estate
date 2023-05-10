@@ -20,12 +20,32 @@ const CardCarousel = ({ project, imageUrls }) => {
     setShowModal(true);
   };
 
+  const handleThumbnailClick = (index) => {
+    carouselRef.current.next(index);
+  };
+
   const handleCloseModal = () => {
     setShowModal(false);
   };
 
   return (
     <Container>
+      <Row className="justify-content-center">
+        {project.projectSlideImages.map((slideImage, index) => {
+          const fileId = slideImage[Object.keys(slideImage)[0]];
+          return (
+            <Col md={2} sm={3} xs={4} key={index}>
+              <Card className="thumb-card mb-0" onClick={() => handleThumbnailClick(index)}>
+                <Card.Img
+                  variant="top"
+                  src={imageUrls[fileId]}
+                  alt={Object.keys(slideImage)[0]}
+                />
+              </Card>
+            </Col>
+          );
+        })}
+      </Row>
       <Row>
         <Col>
           <div className="d-flex justify-content-center align-items-center">
@@ -33,12 +53,12 @@ const CardCarousel = ({ project, imageUrls }) => {
               <i className="feather icon-arrow-left"></i>
             </Button>
             <Carousel ref={carouselRef} controls={false} indicators={false}>
-              <Carousel.Item>
-                <Row>
-                  {project.projectSlideImages.map((slideImage, index) => {
-                    const fileId = slideImage[Object.keys(slideImage)[0]];
-                    return (
-                      <Col md={4} key={index}>
+              {project.projectSlideImages.map((slideImage, index) => {
+                const fileId = slideImage[Object.keys(slideImage)[0]];
+                return (
+                  <Carousel.Item key={index}>
+                    <Row>
+                      <Col md={12}>
                         <Card className="zoom-card m-1" onClick={() => handleImageClick(imageUrls[fileId])}>
                           <Card.Img
                             variant="top"
@@ -47,10 +67,10 @@ const CardCarousel = ({ project, imageUrls }) => {
                           />
                         </Card>
                       </Col>
-                    );
-                  })}
-                </Row>
-              </Carousel.Item>
+                    </Row>
+                  </Carousel.Item>
+                );
+              })}
             </Carousel>
             <Button variant="secondary" onClick={handleNextClick}>
               <i className="feather icon-arrow-right"></i>

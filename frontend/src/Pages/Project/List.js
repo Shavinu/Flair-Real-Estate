@@ -72,13 +72,15 @@ const ProjectsListing = () => {
             />
             <Row>
                 {projects.map((project) => (
-                    <Col key={project._id} md={4} className="mb-4">
-                        <Card className="project-card">
+                    <Col key={project._id} lg={4} md={6} className="mb-4">
+                        {/* make card height all the same size */}
+                        <Card className="project-card h-100">
                             <Card.Img variant="top" src={imageUrls[project.projectTitleImage]} style={{ width: "100%", height: "200px", objectFit: "cover" }} />
-                            <Card.Body>
-                                <Card.Title>{project.projectName}</Card.Title>
-                                <Card.Text>{project.projectLocation}</Card.Text>
-                                <Card.Text><div className="truncate-text" dangerouslySetInnerHTML={{ __html: project.projectDescription }} /></Card.Text>
+                            <Card.Body className="p-0">
+                                <Card.Title className="text-white bg-dark p-1 mb-0" style={{ background: 'linear-gradient(to right, rgba(102, 126, 234, 0.5), rgba(118, 75, 162, 0.5))' }}>{project.projectName}</Card.Title>
+                                <Card.Text className="text-right text-white bg-info pl-1 pr-1" style={{ background: 'linear-gradient(to right, rgba(102, 126, 234, 0.5), rgba(118, 75, 162, 0.5))' }}
+                                >{project.projectLocation}</Card.Text>
+                                <Card.Text className="pl-1 pr-1"><div className="truncate-text" dangerouslySetInnerHTML={{ __html: project.projectDescription }} /></Card.Text>
                             </Card.Body>
                             <Card.Footer>
                                 <ButtonGroup>

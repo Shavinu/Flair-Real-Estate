@@ -69,24 +69,12 @@ const PriceRangeOutput = ({ minPrice, maxPrice }) => {
   return (
     <div>
       <div className="d-flex justify-content-between">
-        <span>{`$${minPrice}`}</span>
-        <span>{`$${maxPrice}`}</span>
+        <span>{`$${minPrice}.00`}</span>
+        <span>{`$${maxPrice}.00`}</span>
       </div>
-      <ProgressBar style={{ height: "30px" }}>
-        <ProgressBar
-          now={middlePoint}
-          min={minValue}
-          max={middlePoint}
-          key={1}
-          className="bg-success"
-        />
-        <ProgressBar
-          now={middlePoint}
-          min={middlePoint}
-          max={maxValue}
-          key={2}
-          className="bg-warning"
-        />
+      <ProgressBar style={{ height: "20px" }}>
+        <ProgressBar variant="success" now={minValue} key={1} style={{ borderRadius: "0px" }} />
+        <ProgressBar variant="warning" now={maxValue} key={2} style={{ borderRadius: "0px" }} />
       </ProgressBar>
     </div>
   );

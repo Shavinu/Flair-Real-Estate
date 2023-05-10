@@ -36,3 +36,7 @@ export const getImageUrl = (imageId) => {
 export const downloadFile = (fileId) => {
   return utils.fetch.httpGet(utils.url.replaceId(api.files.download, fileId));
 };
+
+export const getFileUrl = (fileId) => {
+  return `${process.env.REACT_APP_API_URL}${utils.url.replaceId(api.files.download, fileId)}`;
+}
