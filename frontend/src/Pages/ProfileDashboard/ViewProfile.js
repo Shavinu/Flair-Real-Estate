@@ -27,13 +27,13 @@ const ViewProfile = () => {
   const [licence, setLicence] = useState();
   const [verificationStatus, setVerificationStatus] = useState();
   const [company, setCompany] = useState();
-  // const [addressLine1, setAddressLine1] = useState();
-  // const [addressLine2, setAddressLine2] = useState();
-  // const [city, setCity] = useState();
-  // const [country, setCountry] = useState();
-  // const [postcode, setPostcode] = useState();
-  // const [errors, setErrors] = useState();
-  // const [isLoading, setIsLoading] = useState(false);
+  const [addressLine1, setAddressLine1] = useState();
+  const [addressLine2, setAddressLine2] = useState();
+  const [city, setCity] = useState();
+  const [country, setCountry] = useState();
+  const [postcode, setPostcode] = useState();
+  const [errors, setErrors] = useState();
+  const [isLoading, setIsLoading] = useState(false);
   const { id } = useParams();
 
   const getUserDetailById = (id) => {
@@ -48,12 +48,11 @@ const ViewProfile = () => {
       setLicence(response.licence);
       response.verifiedLicence ? setVerificationStatus("Verified") : setVerificationStatus("Unverified")
       setCompany(response.company);
-      // setCompany("LJ Hooker")
-      // setAddressLine1(response.addressLine1);
-      // setAddressLine2(response.addressLine2);
-      // setCity(response.city);
-      // setCountry(response.country);
-      // setPostcode(response.postcode);
+      setAddressLine1(response.addressLine1);
+      setAddressLine2(response.addressLine2);
+      setCity(response.city);
+      setCountry(response.country);
+      setPostcode(response.postcode);
     });
   };
 
@@ -148,10 +147,6 @@ const ViewProfile = () => {
                 <Col
                   sm={12}
                   md={6}>
-                  {/* <Group>
-                    <h6>Email</h6>
-                    <span>{email}</span>
-                  </Group> */}
                   <Group>
                     <h6>Licence Number</h6>
                     <span>{licence}</span>
@@ -164,135 +159,41 @@ const ViewProfile = () => {
               </Row>
             </CardBody>
           </Card>
-
-          {/* <Card header='Personal Information'>
+          <Card header='Office Address'>
             <CardBody>
               <Row>
-                <Col
+              <Col
                   sm={12}
                   md={6}>
+                  <Group>
+                    <h6>Address line 1</h6>
+                    <span>{addressLine1}</span>
+                  </Group>
+                  <Group>
+                  <h6>Address line 2</h6>
+                    <span>{addressLine2}</span>
+                  </Group>
+                  <Group>
+                    <h6>City</h6>
+                    <span>{city}</span>
+                  </Group>
                 </Col>
                 <Col
                   sm={12}
                   md={6}>
-                  <h5>Address</h5>
                   <Group>
-                    <Label for='address_line_1'>Address line 1</Label>
-                    <Input
-                      name='address_line_1'
-                      value={addressLine1}
-                      placeholder='Address Line 1'
-                      onChange={(e) => {
-                        setAddressLine1(e.target.value);
-                      }}
-                      error={errors?.addressLine1}
-                    />
+                    <h6>Post Code</h6>
+                    <span>{postcode}</span>
                   </Group>
                   <Group>
-                    <Label for='address_line_1'>Address line 2</Label>
-                    <Input
-                      name='address_line_1'
-                      value={addressLine2}
-                      placeholder='Address Line 2'
-                      onChange={(e) => {
-                        setAddressLine2(e.target.value);
-                      }}
-                      error={errors?.addressLine2}
-                    />
-                  </Group>
-                  <Group>
-                    <Label for='city'>City</Label>
-                    <Input
-                      name='city'
-                      value={city}
-                      placeholder='City'
-                      onChange={(e) => {
-                        setCity(e.target.value);
-                      }}
-                      error={errors?.city}
-                    />
-                  </Group>
-                  <Group>
-                    <Label for='country'>Country</Label>
-                    <Input
-                      name='country'
-                      value={country}
-                      placeholder='Country'
-                      onChange={(e) => {
-                        setCountry(e.target.value);
-                      }}
-                      error={errors?.country}
-                    />
-                  </Group>
-                  <Group>
-                    <Label for='postcode'>Post Code</Label>
-                    <Input
-                      name='Postcode'
-                      value={postcode}
-                      placeholder='Postcode'
-                      onChange={(e) => {
-                        setPostcode(e.target.value);
-                      }}
-                      error={errors?.postcode}
-                    />
+                    <h6>Country</h6>
+                    <span>{country}</span>
                   </Group>
                 </Col>
               </Row>
             </CardBody>
-          </Card> */}
+          </Card>
         </Col>
-        {/* <Col
-          sm={12}
-          lg={4}>
-          <Card header='Settings'>
-            <CardBody>
-              <Group>
-                <Label for='role'>Role</Label>
-                <Select
-                  options={[
-                    { value: 'admin', label: 'Admin' },
-                    { value: 'agent', label: 'Agent' },
-                    { value: 'moderator', label: 'Moderator' },
-                    { value: 'builder', label: 'Builder' },
-                    { value: 'user', label: 'User' },
-                  ]}
-                  value={accType}
-                  onChange={(value) => setAccType(value)}
-                  error={errors?.accType}
-                />
-              </Group>
-            </CardBody>
-          </Card>
-
-          <Card header='Password'>
-            <CardBody>
-              <Group>
-                <Label for='password'>Password</Label>
-                <Input
-                  name='Password'
-                  type='password'
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                  }}
-                  error={errors?.password}
-                />
-              </Group>
-              <Group>
-                <Label for='password_confirmation'>Confirm Password</Label>
-                <Input
-                  name='password_confirmation'
-                  type='password'
-                  value={confirmationPassword}
-                  onChange={(e) => {
-                    setConfirmationPassword(e.target.value);
-                  }}
-                  error={errors?.confirmationPassword}
-                />
-              </Group>
-            </CardBody>
-          </Card>
-        </Col> */}
       </Row>
       </>
       )}

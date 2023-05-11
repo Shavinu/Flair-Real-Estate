@@ -11,34 +11,34 @@ import moment from 'moment';
 
 const EditProfile = ({ page }) => {
   const [user, setUser] = useState();
-  const [firstName, setFirstName] = useState();
-  const [lastName, setLastName] = useState();
-  const [email, setEmail] = useState();
-  const [mobileNo, setMobileNo] = useState();
-  const [phoneNo, setPhoneNo] = useState();
-  const [accType, setAccType] = useState();
-  const [licence, setLicence] = useState();
-  const [verificationStatus, setVerificationStatus] = useState();
-  const [company, setCompany] = useState();
-  // const [addressLine1, setAddressLine1] = useState();
-  // const [addressLine2, setAddressLine2] = useState();
-  // const [city, setCity] = useState();
-  // const [country, setCountry] = useState();
-  // const [postcode, setPostcode] = useState();
-  const [password, setPassword] = useState();
-  const [confirmationPassword, setConfirmationPassword] = useState();
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobileNo, setMobileNo] = useState("");
+  const [phoneNo, setPhoneNo] = useState("");
+  const [accType, setAccType] = useState("");
+  const [licence, setLicence] = useState("");
+  const [verificationStatus, setVerificationStatus] = useState("");
+  const [company, setCompany] = useState("");
+  const [addressLine1, setAddressLine1] = useState("");
+  const [addressLine2, setAddressLine2] = useState("");
+  const [city, setCity] = useState("");
+  const [country, setCountry] = useState("");
+  const [postcode, setPostcode] = useState("");
+  // const [password, setPassword] = useState();
+  // const [confirmationPassword, setConfirmationPassword] = useState();
 
-  const [errors, setErrors] = useState();
+  const [errors, setErrors] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { id } = useParams();
 
   const [showPasswordChangeModal, setShowPasswordChangeModal] = useState(false);
   const [modalStep, setModalStep] = useState(1);
-  const [currentPassword, setCurrentPassword] = useState();
-  const [confirmNewPassword, setConfirmNewPassword] = useState();
-  const [newPassword, setNewPassword] = useState();
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [showEmailChangeModal, setShowEmailChangeModal] = useState(false);
-  const [newEmail, setNewEmail] = useState();
+  const [newEmail, setNewEmail] = useState("");
 
   const [alertMessage, setAlertMessage] = useState('');
 
@@ -56,12 +56,16 @@ const EditProfile = ({ page }) => {
         ? setVerificationStatus('Verified')
         : setVerificationStatus('Unverified');
       setCompany(response.company);
-      // setAddressLine1(response.addressLine1);
-      // setAddressLine2(response.addressLine2);
-      // setCity(response.city);
-      // setCountry(response.country);
-      // setPostcode(response.postcode);
+      setAddressLine1(response.addressLine1);
+      setAddressLine2(response.addressLine2);
+      setCity(response.city);
+      setCountry(response.country);
+      setPostcode(response.postcode);
     });
+  };
+
+  const onCancel = (e) => {
+    page(1);
   };
 
   const isValid = () => {
@@ -69,68 +73,96 @@ const EditProfile = ({ page }) => {
     let errors = {};
 
     if (!firstName) {
-      errors = { ...errors, firstName: 'Please provide your first name!' };
+      errors = { ...errors, firstName: 'Please provide your first name' };
       isValid = false;
     }
 
     if (!lastName) {
-      errors = { ...errors, lastName: 'Please provide your last name!' };
+      errors = { ...errors, lastName: 'Please provide your last name' };
       isValid = false;
     }
 
     if (!phoneNo) {
-      errors = { ...errors, phoneNo: 'Please provide your phone number!' };
+      errors = { ...errors, phoneNo: 'Please provide your phone number' };
       isValid = false;
     }
-
-    // if (!accType) {
-    //   errors = { ...errors, lastName: 'Please select role!' };
-    //   isValid = false;
-    // }
-
-    // if (password && confirmationPassword !== password) {
-    //   errors = { ...errors, confirmationPassword: 'Password not match!' };
-    //   isValid = false;
-    // }
 
     setErrors(errors);
     return isValid;
   };
 
-  const onCancel = (e) => {
-    page(1);
+  const isCurrPasswordValid = () => {
+    let isValid = true;
+    let errors = {};
+
+    if (!currentPassword) {
+      errors = { ...errors, currentPassword: 'Please enter your password' };
+      isValid = false;
+    }
+
+    setErrors(errors);
+    return isValid;
   };
 
-  const changeLicence = () => {
-    console.log('change licence');
+  const isNewPasswordValid = () => {
+    let isValid = true;
+    let errors = {};
+
+    if (!newPassword) {
+      errors = { ...errors, newPassword: 'Please enter a new password' };
+      isValid = false;
+    }
+    if (!confirmNewPassword) {
+      errors = { ...errors, confirmNewPassword: 'Please confirm new password' };
+      isValid = false;
+    }
+
+    if(newPassword != confirmNewPassword){
+      errors = { ...errors, confirmNewPassword: 'Password does not match' };
+      isValid = false;
+    }
+
+    setErrors(errors);
+    return isValid;
   };
 
+  const isNewEmailValid = () => {
+    let isValid = true;
+    let errors = {};
 
+    if (!newEmail) {
+      errors = { ...errors, newEmail: 'Please provide new email address' };
+      isValid = false;
+    }
+
+    if (newEmail && !utils.string.isValidEmail(newEmail)) {
+      errors = { ...errors, email: 'Please provide a valid email address' };
+      isValid = false;
+    }
+
+    setErrors(errors);
+    return isValid;
+  };
 
   const validatePassword = (e) => {
     setIsLoading(true);
     e.preventDefault();
-    if (currentPassword) {
+    if (!isCurrPasswordValid()) {
       setIsLoading(false);
       return;
     }
-
     AuthServices.login({
       email: email,
       password: currentPassword,
     })
       .then((response) => {
         setAlertMessage();
-        setCurrentPassword();
+        setCurrentPassword("");
         setModalStep(2);
-        // Toast('Login successfully!', 'success');
-        // navigate('/');
+        Toast('Login successfully!', 'success');
       })
       .catch((response) => {
-        if (
-          response.response?.data?.error &&
-          response.response?.data?.error.message
-        ) {
+        if (response.response?.data?.error && response.response?.data?.error.message) {
           setAlertMessage(response.response.data.error.message);
         }
         Toast('Password is incorrect', 'warning');
@@ -139,25 +171,15 @@ const EditProfile = ({ page }) => {
   };
 
   const changePassword = (e) => {
-    let errors = {};
     setIsLoading(true);
     e.preventDefault();
-    if (!newPassword) {
-      errors = { ...errors, newPassword: 'Please enter a new password' };
-    } else if(!confirmNewPassword){
-      errors = { ...errors, confirmNewPassword: 'Please enter a new password' };
-    } else if (newPassword != confirmNewPassword) {
-      errors = { ...errors, confirmNewPassword: 'Passwords do not match' };
-      // Toast('Passwords do not match', 'warning');
-    } else{
+    if (!isNewPasswordValid()) {
       setIsLoading(false);
       return;
     }
 
-    setErrors(errors);
-
     const body = {
-      newPassword: newPassword,
+      password: newPassword,
     };
 
     UserService.updateUser(id, body)
@@ -167,8 +189,8 @@ const EditProfile = ({ page }) => {
         setErrors();
         // setShowPasswordChangeModal(false);
         setModalStep(1);
-        setNewPassword();
-        setConfirmNewPassword('');
+        setNewPassword("");
+        setConfirmNewPassword("");
       })
       .catch(() => {
         Toast('Failed to update password!', 'danger');
@@ -177,17 +199,12 @@ const EditProfile = ({ page }) => {
   };
 
   const changeEmail = (e) => {
-    let errors = {}
     setIsLoading(true);
     e.preventDefault();
-    if (!newEmail) {
-      errors = { ...errors, newEmail: 'Please provide email address!' };
+    if (!isNewEmailValid()) {
+      setIsLoading(false);
+      return;
     }
-    if (newEmail && !utils.string.isValidEmail(newEmail)) {
-      errors = { ...errors, newEmail: 'Please provide a valid email address!' };
-    }
-
-    setErrors(errors);
 
     const body = {
       email: newEmail,
@@ -198,10 +215,10 @@ const EditProfile = ({ page }) => {
         Toast('Email has been updated successfully!', 'success');
         getUserDetailById(id);
         setErrors();
-        // setShowEmailChangeModal(false);
         setModalStep(1);
+        // setShowEmailChangeModal(false);
         setEmail(newEmail);
-        setNewEmail();
+        setNewEmail("");
       })
       .catch(() => {
         Toast('Failed to update email', 'danger');
@@ -212,6 +229,11 @@ const EditProfile = ({ page }) => {
   const addMobile = () => {
     console.log('add mobile');
   };
+
+  const changeLicence = () => {
+    console.log('change licence');
+  };
+
 
   const onSubmit = (e) => {
     setIsLoading(true);
@@ -224,21 +246,21 @@ const EditProfile = ({ page }) => {
     const body = {
       firstName: firstName,
       lastName: lastName,
-      email: email,
+      // email: email,
       mobileNo: mobileNo,
       phoneNo: phoneNo,
-      accType: accType,
-      company: company,
-      // addressLine1: addressLine1,
-      // addressLine2: addressLine2,
-      // city: city,
-      // country: country,
-      // postcode: postcode,
+      // accType: accType,
+      // company: company,
+      addressLine1: addressLine1,
+      addressLine2: addressLine2,
+      city: city,
+      country: country,
+      postcode: postcode,
     };
 
-    if (password) {
-      body.password = password;
-    }
+    // if (password) {
+    //   body.password = password;
+    // }
 
     UserService.updateUser(id, body)
       .then((response) => {
@@ -312,7 +334,7 @@ const EditProfile = ({ page }) => {
                   sm={12}
                   md={6}>
                   <Group>
-                    <Label for='firstname'>
+                    <Label htmlFor='firstname'>
                       <h6>First Name</h6>
                     </Label>
                     <Input
@@ -330,7 +352,7 @@ const EditProfile = ({ page }) => {
                   sm={12}
                   md={6}>
                   <Group>
-                    <Label for='lastName'>
+                    <Label htmlFor='lastName'>
                       <h6>Last Name</h6>
                     </Label>
                     <Input
@@ -348,19 +370,23 @@ const EditProfile = ({ page }) => {
                   sm={12}
                   md={6}>
                   <Group>
-                    <label for='email'>
+                    <label htmlFor='email'>
                       <h6>Email</h6>
                     </label>
                     <span
                       className='float-right'
-                      onClick={() => setShowEmailChangeModal(true)}
+                      name="email"
+                      data-backdrop="true"
+                      data-target="#email_change_modal"
+                      data-toggle="modal"
+                      onClick={() => setModalStep(1)}
                       style={{ cursor: 'pointer' }}>
                       <i>
                         <u>Change</u>
                       </i>
                     </span>
                     <div name='email'>{email}</div>
-                    {/* <Label for='email'>Email (*)</Label>
+                    {/* <Label htmlFor='email'>Email (*)</Label>
                     <Input
                       name='email'
                       value={email}
@@ -376,19 +402,22 @@ const EditProfile = ({ page }) => {
                   sm={12}
                   md={6}>
                   <Group>
-                    <label for='password'>
+                    <label htmlFor='password'>
                       <h6>Password</h6>
                     </label>
                     <span
                       className='float-right'
                       name='password'
-                      onClick={() => setShowPasswordChangeModal(true)}
+                      data-backdrop="true"
+                      data-target="#password_change_modal"
+                      data-toggle="modal"
+                      onClick={() => setModalStep(1)}
                       style={{ cursor: 'pointer' }}>
                       <i>
                         <u>Change</u>
                       </i>
                     </span>
-                    {/* <Label for='password'>Password</Label>
+                    {/* <Label htmlFor='password'>Password</Label>
                     <Input
                       name='Password'
                       type='password'
@@ -404,7 +433,7 @@ const EditProfile = ({ page }) => {
                   sm={12}
                   md={6}>
                   <Group>
-                    <Label for='mobile'>
+                    <Label htmlFor='mobile'>
                       <h6>Mobile</h6>
                     </Label>
                     <span>
@@ -436,7 +465,7 @@ const EditProfile = ({ page }) => {
                   sm={12}
                   md={6}>
                   <Group>
-                    <Label for='phone'>
+                    <Label htmlFor='phone'>
                       <h6>Phone</h6>
                     </Label>
                     <Input
@@ -453,24 +482,12 @@ const EditProfile = ({ page }) => {
                 <Col
                   sm={12}
                   md={6}>
-                  {/* <Group>
-                    <Label for='role'>Role (*)</Label>
-                    <Select
-                      options={[
-                        { value: 'agent', label: 'Agent' },
-                        { value: 'builder', label: 'Builder' },
-                      ]}
-                      value={accType}
-                      onChange={(value) => setAccType(value)}
-                      error={errors?.accType}
-                    />
-                  </Group> */}
                   <Group>
                     <h6>Role</h6>
                     <span>{accType}</span>
                   </Group>
                   <Group>
-                    <Label for='company'>
+                    <Label htmlFor='company'>
                       <h6>Company</h6>
                     </Label>
                     <Input
@@ -488,7 +505,7 @@ const EditProfile = ({ page }) => {
                   sm={12}
                   md={6}>
                   {/* <Group>
-                    <Label for='licence'>Licence</Label>
+                    <Label htmlFor='licence'>Licence</Label>
                     <Input
                       name='licnece'
                       value={licence}
@@ -500,7 +517,7 @@ const EditProfile = ({ page }) => {
                     />
                   </Group> */}
                   <Group>
-                    <Label for='licence'>
+                    <Label htmlFor='licence'>
                       <h6>Licence</h6>
                     </Label>
                     <span
@@ -523,57 +540,14 @@ const EditProfile = ({ page }) => {
             </CardBody>
           </Card>
 
-          {/* <Card header='More Information'>
+          <Card header='Office Address'>
             <CardBody>
               <Row>
-                <Col
+              <Col
                   sm={12}
                   md={6}>
-                  <h5>Personal Information</h5>
                   <Group>
-                    <Label for='phoneNo'>Phone Number (*)</Label>
-                    <Input
-                      name='phoneNo'
-                      value={phoneNo}
-                      placeholder='Phone Number'
-                      onChange={(e) => {
-                        setPhoneNo(e.target.value);
-                      }}
-                      error={errors?.phoneNo}
-                    />
-                  </Group>
-
-
-
-
-                  {/* <Group>
-                    <Label for='postcode'>Post Code</Label>
-                    <Input
-                      name='Postcode'
-                      value={postcode}
-                      placeholder='Postcode'
-                      onChange={(e) => {
-                        setPostcode(e.target.value);
-                      }}
-                      error={errors?.postcode}
-                    />
-                  </Group><Group>
-                    <Label for='birthday'>Birthday</Label>
-                    <DatePicker
-                      onChange={onChangeBirthday}
-                      value={birthday}
-                      options={{
-                        dateFormat: 'd-m-Y',
-                      }}
-                    />
-                  </Group>
-                </Col>
-                <Col
-                  sm={12}
-                  md={6}>
-                  <h5>Address</h5>
-                  <Group>
-                    <Label for='address_line_1'>Address line 1</Label>
+                    <Label htmlFor='address_line_1'>Address line 1</Label>
                     <Input
                       name='address_line_1'
                       value={addressLine1}
@@ -585,7 +559,7 @@ const EditProfile = ({ page }) => {
                     />
                   </Group>
                   <Group>
-                    <Label for='address_line_1'>Address line 2</Label>
+                    <Label htmlFor='address_line_1'>Address line 2</Label>
                     <Input
                       name='address_line_1'
                       value={addressLine2}
@@ -597,7 +571,7 @@ const EditProfile = ({ page }) => {
                     />
                   </Group>
                   <Group>
-                    <Label for='city'>City</Label>
+                    <Label htmlFor='city'>City</Label>
                     <Input
                       name='city'
                       value={city}
@@ -608,8 +582,24 @@ const EditProfile = ({ page }) => {
                       error={errors?.city}
                     />
                   </Group>
+                </Col>
+                <Col
+                  sm={12}
+                  md={6}>
                   <Group>
-                    <Label for='country'>Country</Label>
+                    <Label htmlFor='postcode'>Post Code</Label>
+                    <Input
+                      name='Postcode'
+                      value={postcode}
+                      placeholder='Postcode'
+                      onChange={(e) => {
+                        setPostcode(e.target.value);
+                      }}
+                      error={errors?.postcode}
+                    />
+                  </Group>
+                  <Group>
+                    <Label htmlFor='country'>Country</Label>
                     <Input
                       name='country'
                       value={country}
@@ -619,65 +609,14 @@ const EditProfile = ({ page }) => {
                       }}
                       error={errors?.country}
                     />
-                  </Group> */}
+                  </Group>
+                </Col>
+              </Row>
+            </CardBody>
+          </Card>
         </Col>
       </Row>
-      {/* </CardBody>
-          </Card> */}
-      {/* </Col> */}
-      {/* <Col
-          sm={12}
-          lg={4}>
-          <Card header='Settings'>
-            <CardBody>
-              <Group>
-                <Label for='role'>Role</Label>
-                <Select
-                  options={[
-                    { value: 'admin', label: 'Admin' },
-                    { value: 'agent', label: 'Agent' },
-                    { value: 'moderator', label: 'Moderator' },
-                    { value: 'builder', label: 'Builder' },
-                    { value: 'user', label: 'User' },
-                  ]}
-                  value={accType}
-                  onChange={(value) => setAccType(value)}
-                  error={errors?.accType}
-                />
-              </Group>
-            </CardBody>
-          </Card>
 
-          <Card header='Password'>
-            <CardBody>
-              <Group>
-                <Label for='password'>Password</Label>
-                <Input
-                  name='Password'
-                  type='password'
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                  }}
-                  error={errors?.password}
-                />
-              </Group>
-              <Group>
-                <Label for='password_confirmation'>Confirm Password</Label>
-                <Input
-                  name='password_confirmation'
-                  type='password'
-                  value={confirmationPassword}
-                  onChange={(e) => {
-                    setConfirmationPassword(e.target.value);
-                  }}
-                  error={errors?.confirmationPassword}
-                />
-              </Group>
-            </CardBody>
-          </Card>
-        </Col> */}
-      {/* </Row> */}
       <Modal
         id='password_change_modal'
         show={showPasswordChangeModal}
@@ -691,18 +630,22 @@ const EditProfile = ({ page }) => {
               sm={12}
               md={8}>
               <Group>
-                <label>
+                <p>Please enter your password to access this.</p>
+                <Label>
                   Current Password:
-                  <input
+                  <Input
+                    className='mr-75'
                     type='password'
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
+                    error={errors?.currentPassword}
                   />
-                </label>
+                </Label>
                 <Button
-                  className='btn btn-outline-primary btn-inline'
+                  className='btn btn-outline-primary btn-inline mr-75'
                   type='submit'
-                  onClick={validatePassword}>
+                  onClick={validatePassword}
+                  >
                   Next
                 </Button>
               </Group>
@@ -715,27 +658,29 @@ const EditProfile = ({ page }) => {
               sm={12}
               md={8}>
               <Group>
-                <label>
+                <Label>
                   New Password:
-                  <input
+                  <Input
                     type='password'
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
+                    error={errors?.newPassword}
                   />
-                </label>
-                <label>
+                </Label>
+                <Label>
                   Confirm New Password:
-                  <input
+                  <Input
                     type='password'
                     value={confirmNewPassword}
                     onChange={(e) => setConfirmNewPassword(e.target.value)}
                     error={errors?.confirmNewPassword}
                   />
-                </label>
+                </Label>
                 <Button
                   className='btn btn-outline-primary btn-inline'
-                  type='submit'
-                  onClick={changePassword}>
+                  type='submit'ord
+                  onClick={changePassword}
+                  >
                   Change Password
                 </Button>
               </Group>
@@ -757,18 +702,21 @@ const EditProfile = ({ page }) => {
               sm={12}
               md={8}>
               <Group>
+                <p>Please enter your password to access this.</p>
                 <Label>
                   Password:
                   <Input
                     type='password'
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
+                    error={errors?.currentPassword}
                   />
                 </Label>
                 <Button
                   className='btn btn-outline-primary btn-inline'
                   type='submit'
-                  onClick={validatePassword}>
+                  onClick={validatePassword}
+                  >
                   Next
                 </Button>
               </Group>
@@ -792,7 +740,8 @@ const EditProfile = ({ page }) => {
                 <Button
                   className='btn btn-outline-primary btn-inline'
                   type='submit'
-                  onClick={changeEmail}>
+                  onClick={changeEmail}
+                  >
                   Change Email
                 </Button>
               </Group>
