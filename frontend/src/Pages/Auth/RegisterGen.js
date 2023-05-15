@@ -43,10 +43,15 @@ const RegisterGen = () => {
                       setPage(2)
                     }}>Real Estate Agency</Button>
 
-                    <Button className="btn btn-primary btn-block mb-2" onClick={() =>{
+                    <Button className="btn btn-primary btn-block" onClick={() =>{
                       setType('agent')
                       setPage(2)
                     }}>Real Estate Agent</Button>
+
+                    <Button className="btn btn-primary btn-block mb-2" onClick={() =>{
+                      setType('assistant agent')
+                      setPage(2)
+                    }}>Assistant Real Estate Agent</Button>
 
                     <Button className="btn btn-primary btn-block" onClick={() =>{
                       setType('builder')
