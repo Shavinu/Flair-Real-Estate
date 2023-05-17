@@ -16,7 +16,7 @@ const userSchema = Joi.object({
   city: Joi.string().allow(null).allow(''),
   country: Joi.string().allow(null).allow(''),
   postcode: Joi.string().allow(null).allow(''),
-  group: Joi.object().keys({_id: Joi.string()}).allow(null).allow(''),
+  group: Joi.object().keys({ _id: Joi.string() }).allow(null).allow(''),
 });
 
 const authSchema = Joi.object({
@@ -57,11 +57,27 @@ const updateProjectSchema = Joi.object({
   projectStatus: Joi.string().optional(),
 }).unknown();
 
+const listingSchema = Joi.object({
+  listingName: Joi.string().required(),
+  type: Joi.string().required(),
+  priceRange: Joi.string().required(),
+  description: Joi.string().required(),
+  streetAddress: Joi.string().required(),
+  postcode: Joi.number().required(),
+  region: Joi.string().optional(),
+  landSize: Joi.number().optional(),
+  bedrooms: Joi.number().optional(),
+  bathrooms: Joi.number().optional(),
+  carSpaces: Joi.number().optional(),
+  titleImage: Joi.number().optional(),
+  devloper: Joi.string().optional(),
+})
 
 module.exports = {
   userSchema,
   authSchema,
   validateSchema,
   projectSchema,
-  updateProjectSchema
+  updateProjectSchema,
+  listingSchema
 }
