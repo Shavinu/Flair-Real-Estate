@@ -236,11 +236,17 @@ const Register = ({ type, page }) => {
                           <Input
                             name='license'
                             value={licence}
-                            placeholder='License Number'
+                            placeholder={type !== 'assistant agent'
+                            ? 'License Number'
+                            : 'Certificate Number'}
                             onChange={(e) => setLicence(e.target.value)}
                             error={errors?.licence}
                           />
-                          <Label for='license'>Licence Number</Label>
+                          <Label for='license'>
+                            {type !== 'assistant agent'
+                              ? 'License Number'
+                              : 'Certificate Number'}
+                          </Label>
                         </Group>
                         <Group className='form-label-group'>
                           <Input
