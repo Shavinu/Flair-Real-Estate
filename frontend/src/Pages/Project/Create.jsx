@@ -7,26 +7,23 @@ import { Group, Input, Label } from "../../Components/Form";
 import Select from "react-select";
 import ReactQuill from 'react-quill';
 import LocationAutocomplete from '../../Components/Maps/LocationAutoComplete';
-import 'react-quill/dist/quill.snow.css';
 import utils from "../../Utils";
 import Toast from "../../Components/Toast";
+import * as UserService from "../../Services/UserService";
 import * as ProjectService from "../../Services/ProjectService";
-import {
-  FileWithCategoryBrowser,
-  uploadFilesAndGetFileIds
-} from "../../Components/Files/FileWithCategoryBrowser";
-import {
-  TitleSlideImageBrowser,
-  uploadTitleImageAndGetId,
-  uploadSlideshowImagesAndGetIds
-} from '../../Components/Images/TitleSlideImageBrowser';
-
+import { FileWithCategoryBrowser, uploadFilesAndGetFileIds } from "./Components/FileWithCategoryBrowser";
+import { TitleSlideImageBrowser, uploadTitleImageAndGetId, uploadSlideshowImagesAndGetIds } from '../../Components/Images/TitleSlideImageBrowser';
 import { PriceRangeInput } from "../../Components/Form/PriceRange";
+import SelectProjectMembers from "./Components/selectProjectMembers";
+import ProjectCommission from './Components/projectCommission';
+import './Create.css'
+import 'react-quill/dist/quill.snow.css';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
-//create component
 const Create = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState();
+  const [userGroup, setUserGroup] = useState();
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'));
@@ -34,23 +31,34 @@ const Create = () => {
       setUser(user.payload._id);
       setProjectOwner(user.payload.email)
     }
+
+    const fetchUserGroup = async () => {
+      const userDetails = await UserService.getUserDetailById(user.payload._id);
+      if (!userDetails.group) return;
+      setUserGroup(userDetails.group);
+    }
+
+    fetchUserGroup();
   }, []);
 
-  //To do; add project files, members, images
   const [projectStatus, setProjectStatus] = useState({ value: "Active", label: "Active" });
   const [projectType, setProjectType] = useState("");
-  const [projectPriceRange, setProjectPriceRange] = useState("");
   const [projectName, setProjectName] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
+  const [coordinates, setCoordinates] = useState(null);
   const [projectLocation, setProjectLocation] = useState("");
   const [projectOwner, setProjectOwner] = useState("");
-
+  const [projectPriceRange, setProjectPriceRange] = useState({});
   const [titleImage, setTitleImage] = useState(null);
   const [slideshowImages, setSlideshowImages] = useState([]);
 
   const [fileUploadFiles, setFileUploadFiles] = useState([]);
 
+  const [editableBy, setEditableBy] = useState([]);
+  const [commissionData, setCommissionData] = useState({});
+
   const [errors, setErrors] = useState({});
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleProjectStatusChange = (e) => {
@@ -73,104 +81,135 @@ const Create = () => {
     setProjectLocation(newLocation);
   };
 
+  const handleCoordinatesChange = (newCoordinates) => {
+    setCoordinates(newCoordinates);
+  };
+
   const handleProjectOwnerChange = (e) => {
     setProjectOwner(e.target.value);
   }
 
   const validateInput = () => {
-    const errors = {};
+    let newErrors = { ...errors };
     if (!projectName) {
-      errors.projectName = "Project name is required";
+      newErrors.projectName = "Project name is required";
+    } else {
+      delete newErrors.projectName;
     }
     if (!projectType) {
-      errors.projectType = "Project type is required";
-    }
-    if (!projectPriceRange) {
-      errors.projectPriceRange = "Project price range is required";
-    }
-    if (projectPriceRange[1] <= projectPriceRange[0]) {
-      errors.projectPriceRange = 'Upper bound must be greater than lower bound';
+      newErrors.projectType = "Project type is required";
+    } else {
+      delete newErrors.projectType;
     }
     if (projectDescription.trim() === '' || projectDescription === '<p><br></p>') {
-      errors.projectDescription = "Project description is required";
+      newErrors.projectDescription = "Project description is required";
+    } else {
+      delete newErrors.projectDescription;
     }
-    if (projectLocation.trim() === "") {
-      errors.projectLocation = "Project location is required";
+    if (projectLocation === null || projectLocation.trim() === "") {
+      newErrors.projectLocation = "Project location is required";
+    } else {
+      delete newErrors.projectLocation;
     }
     if (!projectOwner) {
-      errors.projectOwner = "Project owner is required";
+      newErrors.projectOwner = "Project owner is required";
+    } else {
+      delete newErrors.projectOwner;
     }
-    if (!projectStatus) {
-      errors.projectStatus = "Project status is required";
+    if (projectStatus.value === "") {
+      newErrors.projectStatus = "Project status is required";
+    } else {
+      delete newErrors.projectStatus;
     }
+    // if (editableBy.length === 0) {
+    //   newErrors.editableBy = "Please select at least one user group";
+    // } else {
+    //   delete newErrors.editableBy;
+    // }
 
-    const otherFilesWithoutCategory = fileUploadFiles.filter(file => file.isOther && !file.category);
-    if (otherFilesWithoutCategory.length > 0) {
-      errors.otherFileCategories = "Please provide a category for this 'Other' file";
-    }
-
-    setErrors(errors);
-    return Object.keys(errors).length === 0;
+    setErrors(newErrors);
+    return newErrors;
   };
 
   const handleProjectSubmit = async (e) => {
     e.preventDefault();
-    const isValid = validateInput();
-    if (!isValid) return;
-    setLoading(true);
+    setIsSubmitted(true);
+
+    // console.log(editableBy);
+    // console.log(coordinates);
+    // console.log(projectLocation);
+    // console.log(projectPriceRange)
+    console.log(commissionData);
+
+    const newErrors = validateInput();
+    console.log(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
+    // setLoading(true);
     const logFormData = (formData) => {
       for (const [key, value] of formData.entries()) {
         console.log(`${key}: ${value}`);
       }
     };
 
-    // Upload title image and get its ID
-    let titleImageId = null;
-    if (titleImage) {
-      titleImageId = await uploadTitleImageAndGetId(titleImage, user);
-    }
+    try {
 
-    // Upload slideshow images and get their IDs
-    let slideshowImageIds = null;
-    if (slideshowImages) {
-      slideshowImageIds = await uploadSlideshowImagesAndGetIds(slideshowImages, user);
-    }
+      // Upload title image and get its ID
+      let titleImageId = null;
+      if (titleImage) {
+        titleImageId = await uploadTitleImageAndGetId(titleImage, user);
+      }
+      console.log(titleImageId);
 
-    // Upload other files and get their IDs
-    let fileIds = null;
-    if (fileUploadFiles) {
-      fileIds = await uploadFilesAndGetFileIds(fileUploadFiles, user);
-    }
+      // Upload slideshow images and get their IDs
+      let slideshowImageIds = null;
+      if (slideshowImages) {
+        slideshowImageIds = await uploadSlideshowImagesAndGetIds(slideshowImages, user);
+        //convert to array
+        slideshowImageIds = JSON.parse(slideshowImageIds);
+      }
+      console.log(slideshowImageIds);
 
-    // Create project with image and file IDs
-    setProjectOwner(user);
-    const projectData = {
-      projectName,
-      projectType: projectType.value,
-      projectPriceRange: projectPriceRange.join('-'),
-      projectDescription,
-      projectLocation,
-      projectOwner: user,
-      projectStatus: projectStatus.value,
-      projectTitleImage: titleImageId,
-      projectSlideImages: JSON.parse(slideshowImageIds),
-      projectFiles: JSON.parse(fileIds)
-    };
-    console.log(projectData);
-    ProjectService.createProject(projectData)
-      .then(response => {
-        Toast('Project created successfully!', 'success');
-        setErrors({});
-        setTimeout(() => {
-          navigate(`/projects/${response._id}`);
-        }, 500);
-      })
-      .catch(() => {
-        Toast('Failed to create project!', 'danger');
-      })
-      .finally(() =>
-        setLoading(false)
-      )
+      // Upload other files and get their IDs and data
+      let fileData = null;
+      if (fileUploadFiles) {
+        fileData = await uploadFilesAndGetFileIds(fileUploadFiles, user);
+        console.log(fileData);
+        fileData = JSON.parse(fileData);
+      }
+
+      // Create project with image and file IDs
+      setProjectOwner(user);
+      const projectData = {
+        projectName,
+        projectType: projectType.value,
+        projectPriceRange: [projectPriceRange],
+        projectDescription,
+        projectLocation: [{ locationName: projectLocation, longitude: coordinates.longitude, latitude: coordinates.latitude }],
+        projectListings: [],
+        projectOwner: user,
+        editableBy,
+        projectStatus: projectStatus.value,
+        projectCommission: [commissionData]
+      };
+
+      if (titleImageId) projectData.projectTitleImage = titleImageId;
+      if (slideshowImageIds) projectData.projectSlideImages = slideshowImageIds;
+      if (fileData) projectData.projectFiles = fileData;
+
+      console.log(projectData);
+      // return;
+      const response = await ProjectService.createProject(projectData);
+      Toast('Project created successfully!', 'success');
+      setErrors({});
+      setTimeout(() => {
+        navigate(`/projects/${response._id}`);
+      }, 500);
+    } catch (error) {
+      Toast('Failed to create project!', 'danger');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -205,27 +244,34 @@ const Create = () => {
               <Group>
                 <Label>Project Price Range</Label>
                 <PriceRangeInput
-                  value={projectPriceRange}
-                  onChange={(value) => setProjectPriceRange(value)}
+                  min={0}
+                  max={2000000}
+                  step={[
+                    { till: 500000, step: 25000 },
+                    { till: 1000000, step: 50000 },
+                    { till: 2000000, step: 100000 },
+                    { till: 10000000, step: 500000 }
+                  ]}
+                  onChange={setProjectPriceRange}
+                  isSubmitted={isSubmitted}
+                  setErrors={setErrors}
                   error={errors.projectPriceRange}
-                  min={0.00}
-                  max={10000000.00}
-                  step={1000.00}
                 />
               </Group>
               <hr className="mt-1 border border-mute rounded" />
               <Group>
                 <Label>Project Location</Label>
-                <LocationAutocomplete
-                  selectedLocation={projectLocation}
-                  onChange={handleProjectLocationChange}
-                  error={errors.projectLocation}
-                />
                 {errors.projectLocation && (
                   <div className="invalid-feedback d-block">
                     {errors.projectLocation}
                   </div>
                 )}
+                <LocationAutocomplete
+                  selectedLocation={projectLocation}
+                  onChange={handleProjectLocationChange}
+                  onCoordinatesChange={handleCoordinatesChange}
+                  error={errors.projectLocation}
+                />
               </Group>
             </CardBody>
           </Card>
@@ -233,6 +279,11 @@ const Create = () => {
             <CardBody>
               <Group>
                 <Label>Project Description</Label>
+                {errors.projectDescription && (
+                  <div className="invalid-feedback d-block">
+                    {errors.projectDescription}
+                  </div>
+                )}
                 <style>
                   {`
                   .ql-editor {
@@ -251,11 +302,6 @@ const Create = () => {
                   value={projectDescription}
                   onChange={handleProjectDescriptionChange}
                 />
-                {errors.projectDescription && (
-                  <div className="invalid-feedback d-block">
-                    {errors.projectDescription}
-                  </div>
-                )}
               </Group>
               <hr className="mt-1 border border-mute rounded" />
               <Group>
@@ -264,15 +310,6 @@ const Create = () => {
                   slideshowImages={slideshowImages}
                   setTitleImage={setTitleImage}
                   setSlideshowImages={setSlideshowImages}
-                />
-              </Group>
-              <hr className="mt-1 border border-mute rounded" />
-              <Group className="text-center">
-                <Label>Files</Label>
-                <FileWithCategoryBrowser
-                  options={['Floor Plan', 'Site Plan', 'Other']}
-                  onFilesChange={setFileUploadFiles}
-                  error={errors.otherFileCategories}
                 />
               </Group>
             </CardBody>
@@ -324,9 +361,50 @@ const Create = () => {
                   </div>
                 )}
               </Group>
+              <hr className="mt-1 border border-mute rounded" />
+              <Group>
+                <Label>Editable By</Label>
+                <SelectProjectMembers
+                  user={user}
+                  onSubmitEditableBy={setEditableBy}
+                  setErrors={setErrors}
+                  error={errors.editableBy}
+                />
+              </Group>
+              <hr className="mt-1 border border-mute rounded" />
+              <Group>
+                <Label>Project Commission</Label>
+                <ProjectCommission
+                  onCommissionChange={setCommissionData}
+                  setErrors={setErrors}
+                  error={errors.projectCommission}
+                />
+              </Group>
             </CardBody>
           </Card>
         </Col >
+        <Col sm={12} lg={12}>
+          <Card className="border-2 border-primary rounded">
+            <CardBody>
+              <Group className="text-center">
+                <p className="small text-left">Project Files</p>
+                <hr />
+                <p className='small text-left'>Please select files to display in your project</p>
+                <FileWithCategoryBrowser
+                  options={[
+                    { value: "Site Plan", label: "Site Plan" },
+                    { value: "Floor Plan", label: "Floor Plan" },
+                    { value: "Elevation Plan", label: "Elevation Plan" },
+                    { value: "Other", label: "Other" }
+                  ]}
+                  onFilesChange={setFileUploadFiles}
+                  setErrors={setErrors}
+                  error={errors.projectFiles}
+                />
+              </Group>
+            </CardBody>
+          </Card>
+        </Col>
       </Row >
     </>
   )

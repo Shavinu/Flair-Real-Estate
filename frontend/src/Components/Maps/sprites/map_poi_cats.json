@@ -1,0 +1,26 @@
+{
+  "hospital": {
+    "width": 800,
+    "height": 800,
+    "x": 10,
+    "y": 10,
+    "pixelRatio": 1,
+    "sdf": false
+  },
+  "school": {
+    "width": 800,
+    "height": 800,
+    "x": 830,
+    "y": 10,
+    "pixelRatio": 1,
+    "sdf": false
+  },
+  "bank": {
+    "width": 800,
+    "height": 800,
+    "x": 10,
+    "y": 830,
+    "pixelRatio": 1,
+    "sdf": false
+  }
+}

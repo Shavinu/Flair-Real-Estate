@@ -5,7 +5,7 @@ const projectController = require('../controllers/projectController');
 // Create a new project
 // POST /api/projects
 // Request body: { projectName, projectType, projectPriceRange, projectDescription, projectLocation, 
-//      projectFiles (optional), projectListings (optional), projectOwner, projectMembers (optional), projectStatus }
+// projectFiles (optional), projectListings (optional), projectOwner, projectMembers (optional), projectStatus }
 router.post('/', projectController.createProject);
 
 // Get all projects

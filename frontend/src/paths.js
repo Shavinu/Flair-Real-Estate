@@ -6,12 +6,6 @@ import * as Project from "./Pages/Project"
 import Login from "./Pages/Auth/Login"
 import Register from "./Pages/Auth/RegisterGen"
 
-import FileUpload from "./Pages/File/Upload"
-import FileStream from "./Pages/File/Stream"
-import FileUpdates from "./Pages/File/Update"
-
-// import CreateProject from "./Pages/Project/Create"
-
 export const views = [
   {
     name: 'Dashboard',
@@ -30,24 +24,6 @@ export const views = [
     action: '/users/create',
     icon: 'feather icon-user',
     element: <Users.Create />,
-    isRoute: true,
-  },
-  {
-    name: 'Upload File',
-    action: '/files/upload',
-    element: <FileUpload />,
-    isRoute: true,
-  },
-  {
-    name: 'Stream File',
-    action: '/files/stream',
-    element: <FileStream />,
-    isRoute: true,
-  },
-  {
-    name: 'Update Files',
-    action: '/files/update',
-    element: <FileUpdates />,
     isRoute: true,
   },
   {
@@ -96,17 +72,17 @@ export const views = [
     isRoute: true
   },
   {
-    name: 'View Project',
-    action: '/projects/:id',
-    icon: 'feather icon-inbox',
-    element: <Project.View />,
-    isRoute: true 
-  },
-  {
     name: 'Edit Project',
     action: '/projects/:id/edit',
     icon: 'feather icon-inbox',
     element: <Project.Edit />,
+    isRoute: true
+  },
+  {
+    name: 'Test',
+    action: '/projects/test',
+    icon: 'feather icon-inbox',
+    element: <Project.Test />,
     isRoute: true
   },
   // {

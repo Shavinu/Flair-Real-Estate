@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Project = require('../models/projectModel');
 const User = require('../models/userModel');
+const Group = require('../models/groupModel');
 const { projectSchema, updateProjectSchema } = require('../helpers/validation');
 
 const projectController = {
@@ -24,27 +25,48 @@ const projectController = {
       // Create the project
       const newProject = new Project(req.body);
 
-      // Ensure projectMembers is an array
-      if (!Array.isArray(newProject.projectMembers)) {
-        newProject.projectMembers = [];
-      }
-
-      // Add the projectOwner to the projectMembers if not already included
-      if (!newProject.projectMembers.includes(newProject.projectOwner.toString())) {
-        newProject.projectMembers.push(newProject.projectOwner);
-      }
-
       // Convert projectOwner to ObjectId
       newProject.projectOwner = new mongoose.Types.ObjectId(newProject.projectOwner);
 
-      // Convert projectMembers to ObjectIds
-      newProject.projectMembers = newProject.projectMembers.map(memberId =>
-        new mongoose.Types.ObjectId(memberId)
-      );
+      // Validate and convert editableBy groups to ObjectIds
+      if (Array.isArray(newProject.editableBy)) {
+        for (const editable of newProject.editableBy) {
+          const group = await Group.findById(editable.group);
+          if (!group) {
+            return res.status(404).json({ message: `Group ${editable.group} not found` });
+          }
+          editable.group = new mongoose.Types.ObjectId(editable.group);
+
+          // Validate and convert subgroup members to ObjectId
+          if (editable.includeSubGroups && Array.isArray(editable.subgroups)) {
+            for (const subgroup of editable.subgroups) {
+              const subgroupObject = await Group.findById(subgroup.subgroup);
+              if (!subgroupObject) {
+                return res.status(404).json({ message: `Subgroup ${subgroup.subgroup} not found` });
+              }
+              subgroup.subgroup = new mongoose.Types.ObjectId(subgroup.subgroup);
+
+              if (Array.isArray(subgroup.subgroupMembers)) {
+                subgroup.subgroupMembers = subgroup.subgroupMembers.map(memberId =>
+                  new mongoose.Types.ObjectId(memberId)
+                );
+              }
+            }
+          }
+
+          // Convert group members to ObjectId
+          if (Array.isArray(editable.groupMembers)) {
+            editable.groupMembers = editable.groupMembers.map(memberId =>
+              new mongoose.Types.ObjectId(memberId)
+            );
+          }
+        }
+      }
 
       const savedProject = await newProject.save();
       res.status(201).json(savedProject);
     } catch (error) {
+      console.log(error);
       res.status(500).json({ message: error.message });
     }
   },

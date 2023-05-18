@@ -27,40 +27,43 @@ const getCoordinates = async (address) => {
   }
 };
 
-const renderMapboxMap = (location, coordinates) => {
-    const mapboxAccessToken = process.env.REACT_APP_MAP_BOX_API_KEY;
-    const mapboxUrl = `https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${mapboxAccessToken}`;
+const renderMapboxMap = (location) => {
+  const locationName = location[0].locationName
+  const longitude = location[0].longitude.toString()
+  const latitude = location[0].latitude.toString()
+  const mapboxAccessToken = process.env.REACT_APP_MAP_BOX_API_KEY;
+  const mapboxUrl = `https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${mapboxAccessToken}`;
 
-    const customMarkerIcon = new L.Icon({
-        iconUrl: require('leaflet/dist/images/marker-icon.png'),
-        shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41],
-      });
-  
-    if (!coordinates) {
-      return <div>Loading map...</div>;
-    }
-  
-    return (
-      <div style={{ height: '300px', width: '100%' }}>
-        <MapContainer center={coordinates} zoom={13} style={{ height: '100%', width: '100%' }}>
-          <TileLayer
-            attribution='&copy; <a href="https://www.mapbox.com/about/maps/">Mapbox</a>'
-            url={mapboxUrl}
-            id='mapbox/streets-v11'
-            tileSize={512}
-            zoomOffset={-1}
-            accessToken={mapboxAccessToken}
-          />
-          <Marker position={coordinates} icon={customMarkerIcon}>
-            <Popup>{location}</Popup>
-          </Marker>
-        </MapContainer>
-      </div>
-    );
-  };
+  const customMarkerIcon = new L.Icon({
+    iconUrl: require('leaflet/dist/images/marker-icon.png'),
+    shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41],
+  });
 
-export { getCoordinates, renderMapboxMap}
+  if (!longitude || !latitude) {
+    return <div>Loading map...</div>;
+  }
+
+  return (
+    <div style={{ height: '300px', width: '100%' }}>
+      <MapContainer center={[latitude, longitude]} zoom={13} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
+        <TileLayer
+          attribution='&copy; <a href="https://www.mapbox.com/about/maps/">Mapbox</a>'
+          url={mapboxUrl}
+          id='mapbox/streets-v11'
+          tileSize={512}
+          zoomOffset={-1}
+          accessToken={mapboxAccessToken}
+        />
+        <Marker position={[latitude, longitude]} icon={customMarkerIcon}>
+          <Popup>{locationName}</Popup>
+        </Marker>
+      </MapContainer>
+    </div>
+  );
+};
+
+export { getCoordinates, renderMapboxMap }

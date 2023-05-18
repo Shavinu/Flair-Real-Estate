@@ -182,6 +182,9 @@ const uploadSlideshowImagesAndGetIds = async (slideshowImages, user) => {
     );
 
     console.log(projectSlideImages);
+    if (projectSlideImages.length === 0) {
+      return;
+    }
     return JSON.stringify(projectSlideImages);
   } catch (e) {
     console.log(e);

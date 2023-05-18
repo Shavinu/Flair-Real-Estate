@@ -1,63 +1,96 @@
-import React, { useState } from 'react';
-import Slider from 'rc-slider';
-import { ProgressBar } from "react-bootstrap";
-import 'rc-slider/assets/index.css';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Container, Row, Col, ProgressBar } from 'react-bootstrap';
+import Select from 'react-select';
 
-const PriceRangeInput = ({ value, onChange, error, min, max, step }) => {
-  const [state, setState] = useState({
-    lowerBound: min,
-    upperBound: max,
-    value: [min, max],
-  });
+const PriceRangeInput = ({ onChange, min, max, step, error, setErrors, isSubmitted }) => {
+  const [minPrice, setMinPrice] = useState(null);
+  const [maxPrice, setMaxPrice] = useState(null);
+  const [localError, setLocalError] = useState(null);
 
-  const onLowerBoundChange = (e) => {
-    const newValue = { ...state, lowerBound: +e.target.value };
-    setState(newValue);
-    onChange(newValue.value);
-    handleApply(newValue);
+  const priceOptions = useMemo(() => {
+    let prices = [];
+    let currentPrice = min;
+
+    for (let i = 0; i < step.length; i++) {
+      const { till, step: stepValue } = step[i];
+
+      while (currentPrice <= till && currentPrice <= max) {
+        prices.push({
+          value: currentPrice,
+          label: '$' + currentPrice.toLocaleString()
+        });
+
+        currentPrice += stepValue;
+      }
+    }
+
+    return prices;
+  }, [max, min, step]);
+
+  const handleMinPriceChange = (option) => {
+    setMinPrice(option.value);
+    if (!maxPrice || option.value > maxPrice) {
+      setMaxPrice(option.value);
+    }
   };
 
-  const onUpperBoundChange = (e) => {
-    const newValue = { ...state, upperBound: +e.target.value };
-    setState(newValue);
-    onChange(newValue.value);
-    handleApply(newValue);
+  const handleMaxPriceChange = (option) => {
+    setMaxPrice(option.value);
+    if (!minPrice || option.value < minPrice) {
+      setMinPrice(option.value);
+    }
   };
 
-  const onSliderChange = (value) => {
-    const newValue = { ...state, value, lowerBound: value[0], upperBound: value[1] };
-    setState(newValue);
-    onChange(newValue.value);
-  };
+  useEffect(() => {
+    onChange({
+      minPrice: minPrice ? parseInt(minPrice) : null,
+      maxPrice: maxPrice ? parseInt(maxPrice) : null,
+    });
+  }, [onChange, minPrice, maxPrice]);
 
-  const handleApply = (newState) => {
-    const { lowerBound, upperBound } = newState;
-    setState({ ...newState, value: [lowerBound, upperBound] });
-  };
+  useEffect(() => {
+    if (isSubmitted && (minPrice === null && maxPrice === null)) {
+      setLocalError('Please select a price range');
+    }
+    else {
+      setLocalError(null);
+    }
+  }, [minPrice, maxPrice, isSubmitted]);
+
+  useEffect(() => {
+    if (localError) {
+      setErrors((prevErrors) => ({ ...prevErrors, projectPriceRange: localError }));
+    } else {
+      setErrors((prevErrors) => {
+        const errorsCopy = { ...prevErrors };
+        delete errorsCopy.projectPriceRange;
+        return errorsCopy;
+      });
+    }
+  }, [localError, setErrors]);
 
   return (
-    <div className='row align-items-center'>
-      <div className='col-md-3 col-12'>
-        <label>LowerBound: </label>
-        <input className="form-control" type="number" value={state.lowerBound} onChange={onLowerBoundChange} />
-      </div>
-      <div className='col-md-6 col-12 align-items-center mt-1'>
-        <Slider
-          range
-          allowCross={false}
-          value={state.value}
-          onChange={onSliderChange}
-          min={min}
-          max={max}
-          step={step}
-        />
-      </div>
-      <div className='col-md-3 col-12'>
-        <label>UpperBound: </label>
-        <input className="form-control" type="number" value={state.upperBound} onChange={onUpperBoundChange} />
-      </div>
-      {error && <div className="invalid-feedback d-block text-center">{error}</div>}
-    </div>
+    <Container className='m-0 p-0'>
+      {localError && <div className="invalid-feedback d-block text-left">{localError}</div>}
+      <Row className='align-items-center'>
+        <Col>
+          <Select
+            value={priceOptions.find((option) => option.value === minPrice)}
+            options={priceOptions}
+            onChange={handleMinPriceChange}
+            placeholder="Select Min Price"
+          />
+        </Col>
+        <Col>
+          <Select
+            value={priceOptions.find((option) => option.value === maxPrice)}
+            options={priceOptions.filter((option) => option.value >= minPrice)}
+            onChange={handleMaxPriceChange}
+            placeholder="Select Max Price"
+          />
+        </Col>
+      </Row>
+    </Container>
   );
 };
 
