@@ -65,39 +65,41 @@ const SelectProjectMembers = ({ user, onSubmitEditableBy }) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        //get user's details
-        const userDetails = await UserService.getUserDetailById(user);
-        console.log(userDetails);
-
-        //if userDetails.group does not exist return
-        if (!userDetails.group) return;
-        setGroupId(userDetails.group);
-
-        // Fetch the users in the group
-        const users = await GroupService.getUsersByGroupId(userDetails.group);
-
-        const options = users.map(user => ({
-          value: user._id,
-          label: `${user.firstName} ${user.lastName}`
-        }));
-
-        // Fetch the subgroups in the group
-        const fetchedSubgroups = await GroupService.getSubGroupsByParentGroupId(userDetails.group);
-
-        const subgroups = fetchedSubgroups.map(subgroup => ({
-          value: subgroup._id,
-          label: subgroup.groupName
-        }));
-
-        // Add an "All" option
-        options.unshift({ value: 'all', label: 'All members' });
-        setGroupMembers(options);
-
-        setSubgroups(subgroups);
-        // setSelectedSubgroups(subgroups);
-      } catch (error) {
-        console.log(error);
-      }
+        if(user){
+          //get user's details
+          const userDetails = await UserService.getUserDetailById(user);
+          // console.log(userDetails);
+  
+          //if userDetails.group does not exist return
+          if (!userDetails.group) return;
+          setGroupId(userDetails.group);
+  
+          // Fetch the users in the group
+          const users = await GroupService.getUsersByGroupId(userDetails.group);
+  
+          const options = users.map(user => ({
+            value: user._id,
+            label: `${user.firstName} ${user.lastName}`
+          }));
+  
+          // Fetch the subgroups in the group
+          const fetchedSubgroups = await GroupService.getSubGroupsByParentGroupId(userDetails.group);
+  
+          const subgroups = fetchedSubgroups.map(subgroup => ({
+            value: subgroup._id,
+            label: subgroup.groupName
+          }));
+  
+          // Add an "All" option
+          options.unshift({ value: 'all', label: 'All members' });
+          setGroupMembers(options);
+  
+          setSubgroups(subgroups);
+          // setSelectedSubgroups(subgroups);
+        }
+        } catch (error) {
+          console.log(error);
+        }
     };
 
     fetchUsers();
@@ -130,7 +132,7 @@ const SelectProjectMembers = ({ user, onSubmitEditableBy }) => {
         const users = await GroupService.getUsersByGroupId(subgroup.value);
         fetchedSubgroupMembers.push(...users);
       }
-      console.log(fetchedSubgroupMembers);
+      // console.log(fetchedSubgroupMembers);
 
       const options = fetchedSubgroupMembers.map(user => ({
         value: user._id,

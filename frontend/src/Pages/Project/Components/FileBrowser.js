@@ -3,7 +3,7 @@ import * as FileService from '../../../Services/FileService';
 import { Button, ButtonGroup, Dropdown, InputGroup, Form, Row, Col, Table } from 'react-bootstrap';
 import Select from 'react-select';
 
-const FileWithCategoryBrowser = ({ options, onFilesChange, error, setErrors }) => {
+const FileBrowser = ({ options, onFilesChange, error, setErrors }) => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [files, setFiles] = useState([]);
   const [isInvalid, setIsInvalid] = useState(false);
@@ -249,7 +249,7 @@ const createFileUploadFormData = (fileObj, categoryCounts, currentCategoryIndex,
   return formData;
 };
 
-const uploadFilesAndGetFileIds = async (fileUploadFiles, user) => {
+const UploadFiles = async (fileUploadFiles, user) => {
   try {
     let categoryCounts = {};
     let currentCategoryIndex = {};
@@ -277,4 +277,4 @@ const uploadFilesAndGetFileIds = async (fileUploadFiles, user) => {
   }
 };
 
-export { FileWithCategoryBrowser, uploadFilesAndGetFileIds };
+export { FileBrowser, UploadFiles };

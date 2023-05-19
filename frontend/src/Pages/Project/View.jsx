@@ -9,7 +9,7 @@ import NearbyPOIs from "../../Components/Maps/getNearbyPOIs";
 import * as ProjectService from "../../Services/ProjectService";
 import * as FileService from "../../Services/FileService";
 import { PriceRangeOutput } from "../../Components/Form/PriceRange";
-import CardCarousel from "./Components/projectCarousel";
+import CardCarousel from "./Components/ImageCarousel";
 import { useState, useEffect } from "react";
 
 const ProjectDetails = () => {

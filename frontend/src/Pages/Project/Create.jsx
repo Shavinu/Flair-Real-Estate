@@ -1,4 +1,3 @@
-//import necessary modules
 import React, { Component, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Card, Col, ContentHeader, Row } from "../../Components";
@@ -6,17 +5,21 @@ import CardBody from "../../Components/Card/CardBody";
 import { Group, Input, Label } from "../../Components/Form";
 import Select from "react-select";
 import ReactQuill from 'react-quill';
-import LocationAutocomplete from '../../Components/Maps/LocationAutoComplete';
 import utils from "../../Utils";
 import Toast from "../../Components/Toast";
+
 import * as UserService from "../../Services/UserService";
 import * as ProjectService from "../../Services/ProjectService";
-import { FileWithCategoryBrowser, uploadFilesAndGetFileIds } from "./Components/FileWithCategoryBrowser";
-import { TitleSlideImageBrowser, uploadTitleImageAndGetId, uploadSlideshowImagesAndGetIds } from '../../Components/Images/TitleSlideImageBrowser';
+
+import LocationAutocomplete from '../../Components/Maps/LocationAutoComplete';
 import { PriceRangeInput } from "../../Components/Form/PriceRange";
-import SelectProjectMembers from "./Components/selectProjectMembers";
-import ProjectCommission from './Components/projectCommission';
-import './Create.css'
+
+import { FileBrowser, UploadFiles } from "./Components/FileBrowser";
+import { ImageBrowser, UploadTitle, UploadSlides } from './Components/ImageBrowser';
+import SelectProjectMembers from "./Components/MembersSelector";
+import ProjectCommission from './Components/CommissionSelector';
+
+import './Create.css';
 import 'react-quill/dist/quill.snow.css';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -156,14 +159,14 @@ const Create = () => {
       // Upload title image and get its ID
       let titleImageId = null;
       if (titleImage) {
-        titleImageId = await uploadTitleImageAndGetId(titleImage, user);
+        titleImageId = await UploadTitle(titleImage, user);
       }
       console.log(titleImageId);
 
       // Upload slideshow images and get their IDs
       let slideshowImageIds = null;
       if (slideshowImages) {
-        slideshowImageIds = await uploadSlideshowImagesAndGetIds(slideshowImages, user);
+        slideshowImageIds = await UploadSlides(slideshowImages, user);
         //convert to array
         slideshowImageIds = JSON.parse(slideshowImageIds);
       }
@@ -172,7 +175,7 @@ const Create = () => {
       // Upload other files and get their IDs and data
       let fileData = null;
       if (fileUploadFiles) {
-        fileData = await uploadFilesAndGetFileIds(fileUploadFiles, user);
+        fileData = await UploadFiles(fileUploadFiles, user);
         console.log(fileData);
         fileData = JSON.parse(fileData);
       }
@@ -305,7 +308,7 @@ const Create = () => {
               </Group>
               <hr className="mt-1 border border-mute rounded" />
               <Group>
-                <TitleSlideImageBrowser
+                <ImageBrowser
                   titleImage={titleImage}
                   slideshowImages={slideshowImages}
                   setTitleImage={setTitleImage}
@@ -390,7 +393,7 @@ const Create = () => {
                 <p className="small text-left">Project Files</p>
                 <hr />
                 <p className='small text-left'>Please select files to display in your project</p>
-                <FileWithCategoryBrowser
+                <FileBrowser
                   options={[
                     { value: "Site Plan", label: "Site Plan" },
                     { value: "Floor Plan", label: "Floor Plan" },

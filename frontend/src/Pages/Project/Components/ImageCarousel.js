@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { Container, Row, Col, Carousel, Card, Button, Modal } from "react-bootstrap";
-import "./projectCarousel.css";
+import "./ImageCarousel.css";
 
 const CardCarousel = ({ project, imageUrls }) => {
   const carouselRef = useRef(null);
