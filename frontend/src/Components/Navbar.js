@@ -27,43 +27,42 @@ const Navbar = () => {
     });
   }, []);
 
-  return (
-    <>
-      <nav className='header-navbar navbar-expand-lg navbar navbar-with-menu fixed-top navbar-light navbar-shadow'>
-        <div className='navbar-wrapper'>
-          <div className='navbar-container content'>
-            <div
-              className='navbar-collapse'
-              id='navbar-mobile'>
-              <div className='mr-auto float-left bookmark-wrapper d-flex align-items-center'>
-                <ul className='nav navbar-nav'>
-                  <li className='nav-item mobile-menu d-xl-none mr-auto'>
-                    <a
-                      className='nav-link nav-menu-main menu-toggle hidden-xs'
-                      href='#'>
-                      <i className='ficon feather icon-menu'></i>
-                    </a>
-                  </li>
-                </ul>
-                <ul className='nav navbar-nav bookmark-icons'>
-                  <li className='nav-item d-none d-lg-block'></li>
-                </ul>
-                <ul className='navbar-nav'>
-                  <li className='nav-item'>
-                    <button className='nav-link btn'>Home</button>
-                  </li>
-                  <li className='nav-item'>
-                    <button className='nav-link btn'>About Us</button>
-                  </li>
-                  <div className='dropdown'>
-                    <button className='nav-link btn'>NSW Listings</button>
-                    <div className='dropdown-options'>
-                      <a href='#'>Sydney North West</a>
-                      <a href='#'>Sydney South West</a>
-                      <a href='#'>Newcastle</a>
-                      <a href='#'>Central Coast</a>
-                      <a href='#'>Wollongong</a>
+  return <>
+    <nav className="header-navbar navbar-expand-lg navbar navbar-with-menu fixed-top navbar-light navbar-shadow">
+      <div className="navbar-wrapper">
+        <div className="navbar-container content">
+          <div className="navbar-collapse" id="navbar-mobile">
+            <div className="mr-auto float-left bookmark-wrapper d-flex align-items-center">
+              <ul className="nav navbar-nav">
+                <li className="nav-item mobile-menu d-xl-none mr-auto"><a className="nav-link nav-menu-main menu-toggle hidden-xs" href="#"><i className="ficon feather icon-menu"></i></a></li>
+              </ul>
+              <ul className="nav navbar-nav bookmark-icons">
+                <li className="nav-item d-none d-lg-block">
+                </li>
+              </ul>
+              <ul className="navbar-nav">
+                <li className="nav-item">
+                  <button className="nav-link btn">Home</button>
+                </li>
+                <li className="nav-item">
+                  <button className="nav-link btn">About Us</button>
+                </li>
+                <div className="dropdown">
+                  <button className="nav-link btn">NSW Listings</button>
+                    <div className="dropdown-options">
+                      <a href="#">Sydney North West</a>
+                      <a href="#">Sydney South West</a>
+                      <a href="#">Newcastle</a>
+                      <a href="#">Central Coast</a>
+                      <a href="#">Wollongong</a>
                     </div>
+                </div>
+                <div className="dropdown">
+                  <button className="nav-link btn">Resources</button>
+                   <div className="dropdown-options">
+                    <a href="#">Mortgage Calculator</a>
+                    <a href="#">Buying and Selling process</a>
+                    <a href="#">Property news</a>
                   </div>
                   <div className='dropdown'>
                     <button className='nav-link btn'>Resources</button>

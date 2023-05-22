@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { Button, Card, Col, ContentHeader, DatePicker, Row } from "../../../Components";
 import CardBody from "../../../Components/Card/CardBody";
 import * as UserService from '../../../Services/UserService';
+import * as GroupService from '../../../Services/GroupService';
 import { Group, Input, Label, Select } from "../../../Components/Form";
 import utils from "../../../Utils";
 import Toast from "../../../Components/Toast";
@@ -10,20 +11,22 @@ import moment from "moment";
 
 const Edit = () => {
   const [user, setUser] = useState();
-  const [firstName, setFirstName] = useState();
-  const [lastName, setLastName] = useState();
-  const [email, setEmail] = useState();
-  const [phoneNo, setPhoneNo] = useState();
-  const [accType, setAccType] = useState();
-  const [birthday, setBirthday] = useState();
-  const [company, setCompany] = useState();
-  const [addressLine1, setAddressLine1] = useState();
-  const [addressLine2, setAddressLine2] = useState();
-  const [city, setCity] = useState();
-  const [country, setCountry] = useState();
-  const [postcode, setPostcode] = useState();
-  const [password, setPassword] = useState();
-  const [confirmationPassword, setConfirmationPassword] = useState();
+  const [groups, setGroups] = useState([]);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phoneNo, setPhoneNo] = useState('');
+  const [accType, setAccType] = useState('');
+  const [birthday, setBirthday] = useState('');
+  const [company, setCompany] = useState('');
+  const [addressLine1, setAddressLine1] = useState('');
+  const [addressLine2, setAddressLine2] = useState('');
+  const [city, setCity] = useState('');
+  const [country, setCountry] = useState('');
+  const [postcode, setPostcode] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmationPassword, setConfirmationPassword] = useState('');
+  const [group, setGroup] = useState('');
 
   const [errors, setErrors] = useState();
   const [isLoading, setIsLoading] = useState(false)
@@ -45,11 +48,18 @@ const Edit = () => {
         setCity(response.city);
         setCountry(response.country);
         setPostcode(response.postcode);
+        setGroup(response.group);
+      })
+  }
+
+  const getGroupList = () => {
+    GroupService.getGroupList()
+      .then(response => {
+        setGroups(response);
       })
   }
 
   const onChangeBirthday = (value: any) => {
-    console.log(value);
     setBirthday(moment(value).toISOString());
   }
 
@@ -82,6 +92,11 @@ const Edit = () => {
       isValid = false
     }
 
+    if (phoneNo && isNaN(+phoneNo)) {
+      errors = { ...errors, phoneNo: 'Please provide valid phone number!' }
+      isValid = false
+    }
+
     if (!accType) {
       errors = { ...errors, lastName: 'Please select role!' }
       isValid = false
@@ -110,13 +125,20 @@ const Edit = () => {
       email: email,
       phoneNo: phoneNo,
       accType: accType,
-      birthday: birthday,
       company: company,
       addressLine1: addressLine1,
       addressLine2: addressLine2,
       city: city,
       country: country,
       postcode: postcode,
+    }
+
+    if (birthday) {
+      body.birthday = birthday
+    }
+
+    if (group) {
+      body.group = group
     }
 
     if (password) {
@@ -138,7 +160,11 @@ const Edit = () => {
   }
 
   useEffect(() => {
-    getUserDetailById(id);
+    getGroupList();
+  }, []);
+
+  useEffect(() => {
+    id && getUserDetailById(id);
   }, [id]);
 
   return <>
@@ -340,6 +366,16 @@ const Edit = () => {
                 error={errors?.accType}
               />
             </Group>
+
+            <Group>
+              <Label for="group">Group</Label>
+              <Select
+                options={groups.map(group => ({ value: group._id, label: group.groupName }))}
+                value={group}
+                onChange={(value) => setGroup(value)}
+                error={errors?.group}
+              />
+            </Group>
           </CardBody>
         </Card>
 
@@ -354,6 +390,7 @@ const Edit = () => {
                   setPassword(e.target.value);
                 }}
                 error={errors?.password}
+                autoComplete={'new-password'}
               />
             </Group>
             <Group>
@@ -365,6 +402,7 @@ const Edit = () => {
                   setConfirmationPassword(e.target.value);
                 }}
                 error={errors?.confirmationPassword}
+                autoComplete={'new-password'}
               />
             </Group>
           </CardBody>

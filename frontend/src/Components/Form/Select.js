@@ -75,7 +75,7 @@ const Select: React.FunctionComponent<SelectProps> = (props) => {
 
   return <React.Fragment>
     <ReactSelect classNamePrefix="select"
-      className={classNames('z-index-1', props.error ? 'is-invalid' : '')}
+      className={props.error ? 'is-invalid' : ''}
       value={value}
       isClearable={true}
       isSearchable={true}
@@ -86,6 +86,7 @@ const Select: React.FunctionComponent<SelectProps> = (props) => {
       isMulti={props.multiple}
       options={options}
       components={animatedComponents}
+      menuPortalTarget={document.body}
       styles={{ menu: base => ({ ...base, zIndex: 9999 }) }}
       isDisabled={props.readonly}
     />

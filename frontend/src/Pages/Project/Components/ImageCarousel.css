@@ -1,0 +1,77 @@
+.zoom-card {
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .zoom-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  
+  .zoom-card:hover::before {
+    opacity: 1;
+  }
+  
+  .zoom-card::after {
+    content: "\1F50D";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 48px;
+    color: white;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  
+  .zoom-card:hover::after {
+    opacity: 1;
+  }  
+
+  .thumb-card {
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .thumb-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  
+  .thumb-card:hover::before {
+    opacity: 1;
+  }
+  
+  .thumb-card::after {
+    content: "\1F441";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 48px;
+    color: white;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  
+  .thumb-card:hover::after {
+    opacity: 1;
+  }  

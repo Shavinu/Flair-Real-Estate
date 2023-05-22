@@ -3,7 +3,6 @@ import { Button, Card, ConfirmModal, ContentHeader, Dropdown } from "../../../Co
 import CardBody from "../../../Components/Card/CardBody";
 import DataTable from 'react-data-table-component';
 import * as UserService from '../../../Services/UserService';
-import moment from "moment";
 import { Link } from "react-router-dom";
 import Toast from "../../../Components/Toast";
 import utils from "../../../Utils";
@@ -44,7 +43,7 @@ const List = () => {
     },
     {
       name: 'Role',
-      selector: row => row.accType || '--',
+      selector: row => utils.string.capitalize(row.accType) || '--',
       sortable: true,
     },
     {
