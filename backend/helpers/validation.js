@@ -2,21 +2,21 @@ const Joi = require('@hapi/joi');
 
 const userSchema = Joi.object({
   accType: Joi.string().required(),
+  jobType: Joi.string().required(),
   licence: Joi.string().optional(),
   verifiedLicence: Joi.boolean().optional(),
   email: Joi.string().email().required(),
   password: Joi.string().required(),
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
+  mobileNo: Joi.string().optional(),
   phoneNo: Joi.string().required(),
-  birthday: Joi.date().allow(null).allow(''),
-  company: Joi.string().allow(null).allow(''),
-  addressLine1: Joi.string().allow(null).allow(''),
-  addressLine2: Joi.string().allow(null).allow(''),
-  city: Joi.string().allow(null).allow(''),
-  country: Joi.string().allow(null).allow(''),
-  postcode: Joi.string().allow(null).allow(''),
-  group: Joi.object().keys({ _id: Joi.string() }).allow(null).allow(''),
+  company: Joi.string(),
+  addressLine1: Joi.string(),
+  addressLine1: Joi.string(),
+  city: Joi.string(),
+  country: Joi.string(),
+  postcode: Joi.string()
 });
 
 const authSchema = Joi.object({
