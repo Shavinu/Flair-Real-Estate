@@ -24,6 +24,7 @@ const ViewProfile = () => {
   const [mobileNo, setMobileNo] = useState();
   const [phoneNo, setPhoneNo] = useState();
   const [accType, setAccType] = useState();
+  const [jobType, setJobType] = useState();
   const [licence, setLicence] = useState();
   const [verificationStatus, setVerificationStatus] = useState();
   const [company, setCompany] = useState();
@@ -32,8 +33,8 @@ const ViewProfile = () => {
   const [city, setCity] = useState();
   const [country, setCountry] = useState();
   const [postcode, setPostcode] = useState();
-  const [errors, setErrors] = useState();
-  const [isLoading, setIsLoading] = useState(false);
+  // const [errors, setErrors] = useState();
+  // const [isLoading, setIsLoading] = useState(false);
   const { id } = useParams();
 
   const getUserDetailById = (id) => {
@@ -45,6 +46,7 @@ const ViewProfile = () => {
       setMobileNo(response.mobileNo);
       setPhoneNo(response.phoneNo);
       setAccType(response.accType);
+      setJobType(response.jobType);
       setLicence(response.licence);
       response.verifiedLicence ? setVerificationStatus("Verified") : setVerificationStatus("Unverified")
       setCompany(response.company);
@@ -138,6 +140,10 @@ const ViewProfile = () => {
                   <Group>
                     <h6>Role</h6>
                     <span>{accType}</span>
+                  </Group>
+                  <Group>
+                    <h6>Job Title</h6>
+                    <span>{jobType}</span>
                   </Group>
                   <Group>
                     <h6>Company</h6>

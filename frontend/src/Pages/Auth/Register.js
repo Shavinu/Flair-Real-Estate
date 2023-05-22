@@ -1,6 +1,6 @@
 import { Suspense, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Group, Input, Label } from '../../Components/Form';
+import { Group, Input, Label, Select } from '../../Components/Form';
 import utils from '../../Utils';
 import * as AuthServices from '../../Services/AuthService';
 import Toast from '../../Components/Toast';
@@ -13,6 +13,7 @@ const Register = ({ type, page }) => {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [company, setCompany] = useState('');
+  const [jobType, setJobType] = useState('');
   const [licence, setLicence] = useState('');
   const [verifiedLicence, setVerifiedLicence] = useState('');
   const [mobileNo, setMobileNo] = useState('');
@@ -50,6 +51,11 @@ const Register = ({ type, page }) => {
 
     if (email && !utils.string.isValidEmail(email)) {
       errors = { ...errors, email: 'Please provide a valid email address' };
+      isValid = false;
+    }
+
+    if (!jobType) {
+      errors = { ...errors, jobType: 'Please provide your job title' };
       isValid = false;
     }
 
@@ -117,6 +123,7 @@ const Register = ({ type, page }) => {
             email: email,
             password: password,
             company: company,
+            jobType: jobType,
             licence: licence,
             verifiedLicence: verifiedLicence,
             accType: type,
@@ -245,6 +252,7 @@ const Register = ({ type, page }) => {
                           <Label for='company'>Company</Label>
                         </Group>
                         <Group className='form-label-group'>
+                          <p>If you do not have a licence, use your corporate licence</p>
                           <Input
                             name='license'
                             value={licence}
@@ -253,6 +261,19 @@ const Register = ({ type, page }) => {
                             error={errors?.licence}
                           />
                           <Label for='license'>Licence Number</Label>
+                        </Group>
+                        <Group className='form-label-group'>
+                        <Select
+                          options={[
+                            { value: 'incharge', label: 'Licence Incharge (Class 1 only)' },
+                            { value: 'agent', label: 'Licence Real Estate Agent (Class 1 or Class 2)' },
+                            { value: 'assistant', label: 'Assistant Agent' },
+                          ]}
+                          value={''}
+                          onChange={(value) => setJobType(value)}
+                          error={errors?.jobType}
+                        />
+                          <Label for='job'>Job Title</Label>
                         </Group>
                         <Group className='form-label-group'>
                           <Input

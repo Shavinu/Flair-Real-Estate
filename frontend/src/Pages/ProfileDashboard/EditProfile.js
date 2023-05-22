@@ -17,6 +17,7 @@ const EditProfile = ({ page }) => {
   const [mobileNo, setMobileNo] = useState("");
   const [phoneNo, setPhoneNo] = useState("");
   const [accType, setAccType] = useState("");
+  const [jobType, setJobType] = useState("");
   const [licence, setLicence] = useState("");
   const [verificationStatus, setVerificationStatus] = useState("");
   const [company, setCompany] = useState("");
@@ -39,6 +40,11 @@ const EditProfile = ({ page }) => {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [showEmailChangeModal, setShowEmailChangeModal] = useState(false);
   const [newEmail, setNewEmail] = useState("");
+  const [showMobileChangeModal, setShowMobileChangeModal] = useState(false);
+  const [newMobile, setNewMobile] = useState("");
+  const [mobileVerificationCode, setMobileVerificationCode] = useState("");
+  const [showCompanyChangeModal, setShowCompanyChangeModal] = useState("");
+  const [newCompany, setNewCompany] = useState("");
 
   const [alertMessage, setAlertMessage] = useState('');
 
@@ -51,6 +57,7 @@ const EditProfile = ({ page }) => {
       setMobileNo(response.mobileNo);
       setPhoneNo(response.phoneNo);
       setAccType(response.accType);
+      setJobType(response.jobType);
       setLicence(response.licence);
       response.verifiedLicence
         ? setVerificationStatus('Verified')
@@ -84,6 +91,21 @@ const EditProfile = ({ page }) => {
 
     if (!phoneNo) {
       errors = { ...errors, phoneNo: 'Please provide your phone number' };
+      isValid = false;
+    }
+
+    if (phoneNo && !utils.string.isValidMobile(phoneNo)) {
+      errors = { ...errors, phoneNo: 'Please provide a valid phone number' };
+      isValid = false;
+    }
+
+    if (mobileNo && !utils.string.isValidMobile(mobileNo)) {
+      errors = { ...errors, mobileNo: 'Please provide a valid mobile number' };
+      isValid = false;
+    }
+
+    if (!jobType) {
+      errors = { ...errors, jobType: 'Please provide a job title' };
       isValid = false;
     }
 
@@ -226,14 +248,9 @@ const EditProfile = ({ page }) => {
       .finally(() => setIsLoading(false));
   };
 
-  const addMobile = () => {
-    console.log('add mobile');
-  };
+  const verifyCompany = (e) => {
 
-  const changeLicence = () => {
-    console.log('change licence');
-  };
-
+  }
 
   const onSubmit = (e) => {
     setIsLoading(true);
@@ -246,6 +263,7 @@ const EditProfile = ({ page }) => {
     const body = {
       firstName: firstName,
       lastName: lastName,
+      jobType: jobType,
       // email: email,
       mobileNo: mobileNo,
       phoneNo: phoneNo,
@@ -386,16 +404,6 @@ const EditProfile = ({ page }) => {
                       </i>
                     </span>
                     <div name='email'>{email}</div>
-                    {/* <Label htmlFor='email'>Email (*)</Label>
-                    <Input
-                      name='email'
-                      value={email}
-                      placeholder='Email'
-                      onChange={(e) => {
-                        setEmail(e.target.value);
-                      }}
-                      error={errors?.email}
-                    /> */}
                   </Group>
                 </Col>
                 <Col
@@ -417,16 +425,6 @@ const EditProfile = ({ page }) => {
                         <u>Change</u>
                       </i>
                     </span>
-                    {/* <Label htmlFor='password'>Password</Label>
-                    <Input
-                      name='Password'
-                      type='password'
-                      value={password}
-                      onChange={(e) => {
-                        setPassword(e.target.value);
-                      }}
-                      error={errors?.password}
-                    /> */}
                   </Group>
                 </Col>
                 <Col
@@ -436,8 +434,6 @@ const EditProfile = ({ page }) => {
                     <Label htmlFor='mobile'>
                       <h6>Mobile</h6>
                     </Label>
-                    <span>
-                      {mobileNo ? (
                         <Input
                           name='mobile'
                           value={mobileNo}
@@ -447,18 +443,6 @@ const EditProfile = ({ page }) => {
                           }}
                           error={errors?.mobileNo}
                         />
-                      ) : (
-                        <span
-                          className='float-right'
-                          onClick={addMobile}
-                          style={{ cursor: 'pointer' }}>
-                          <i>
-                            <u>Add Mobile</u>
-                          </i>
-                        </span>
-                      )}
-                    </span>
-                    <div name='mobile'>{mobileNo}</div>
                   </Group>
                 </Col>
                 <Col
@@ -487,49 +471,42 @@ const EditProfile = ({ page }) => {
                     <span>{accType}</span>
                   </Group>
                   <Group>
+                    <h6>Job Title</h6>
+                    <Select
+                      options={[
+                        { value: 'incharge', label: 'Licence Incharge (Class 1 only)' },
+                        { value: 'agent', label: 'Licence Real Estate Agent (Class 1 or Class 2)' },
+                        { value: 'assistant', label: 'Assistant Agent' },
+                      ]}
+                      value={jobType}
+                      onChange={(value) => setJobType(value)}
+                      error={errors?.jobType}
+                    />
+                  </Group>
+                  <Group>
                     <Label htmlFor='company'>
                       <h6>Company</h6>
                     </Label>
-                    <Input
-                      name='company'
-                      value={company}
-                      placeholder='Company'
-                      onChange={(e) => {
-                        setCompany(e.target.value);
-                      }}
-                      error={errors?.company}
-                    />
+                    <span
+                      className='float-right'
+                      data-backdrop="true"
+                      data-target="#company_change_modal"
+                      data-toggle="modal"
+                      onClick={() => setModalStep(1)}
+                      style={{ cursor: 'pointer' }}>
+                      <i>
+                        <u>Request change</u>
+                      </i>
+                    </span>
+                    <div name='company'>{company}</div>
                   </Group>
                 </Col>
                 <Col
                   sm={12}
                   md={6}>
-                  {/* <Group>
-                    <Label htmlFor='licence'>Licence</Label>
-                    <Input
-                      name='licnece'
-                      value={licence}
-                      placeholder='Licence Number'
-                      onChange={(e) => {
-                        setLicence(e.target.value);
-                      }}
-                      error={errors?.licence}
-                    />
-                  </Group> */}
                   <Group>
-                    <Label htmlFor='licence'>
-                      <h6>Licence</h6>
-                    </Label>
-                    <span
-                      name='licence'
-                      className='float-right'
-                      onClick={changeLicence}
-                      style={{ cursor: 'pointer' }}>
-                      <i>
-                        <u>Change</u>
-                      </i>
-                    </span>
-                    <div>{licence}</div>
+                    <h6>Licence</h6>
+                    <span>{licence}</span>
                   </Group>
                   <Group>
                     <h6>Licence Verification Status</h6>
@@ -630,7 +607,7 @@ const EditProfile = ({ page }) => {
               sm={12}
               md={8}>
               <Group>
-                <p>Please enter your password to access this.</p>
+                <p>Please enter your password to access this</p>
                 <Label>
                   Current Password:
                   <Input
@@ -678,7 +655,7 @@ const EditProfile = ({ page }) => {
                 </Label>
                 <Button
                   className='btn btn-outline-primary btn-inline'
-                  type='submit'ord
+                  type='submit'
                   onClick={changePassword}
                   >
                   Change Password
@@ -702,7 +679,7 @@ const EditProfile = ({ page }) => {
               sm={12}
               md={8}>
               <Group>
-                <p>Please enter your password to access this.</p>
+                <p>Please enter your password to access this</p>
                 <Label>
                   Password:
                   <Input
@@ -748,6 +725,40 @@ const EditProfile = ({ page }) => {
             </Col>
           </Row>
         )}
+      </Modal>
+
+      <Modal
+        id='company_change_modal'
+        show={showCompanyChangeModal}
+        setShow={setShowCompanyChangeModal}
+        title='Change Your Company'
+        size='lg'
+        isStatic>
+          <Row>
+            <Col
+              sm={12}
+              md={8}>
+              <Group>
+                <p>Please enter your company</p>
+                <Label>
+                  Company Name:
+                  <Input
+                    className='mr-75'
+                    value={newCompany}
+                    onChange={(e) => setNewCompany(e.target.value)}
+                    error={errors?.newCompany}
+                  />
+                </Label>
+                <Button
+                  className='btn btn-outline-primary btn-inline mr-75'
+                  type='submit'
+                  onClick={verifyCompany}
+                  >
+                  Request change
+                </Button>
+              </Group>
+            </Col>
+          </Row>
       </Modal>
     </>
   );

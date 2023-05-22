@@ -121,6 +121,7 @@ export const api = {
     login: '/api/auth/login',
     register: '/api/auth/register',
     verifyLicence: '/api/auth/verify-licence/:accType/:licence',
+    verifyMobile: 'api/auth/verify-mobile/:code/:number'
   },
   users: {
     list: '/api/users',
