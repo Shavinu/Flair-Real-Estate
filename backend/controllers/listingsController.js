@@ -30,8 +30,10 @@ const getaListing = async (req, res) => {
 //create new listing
 const createListing = async (req, res) => {
     try {
-        const listing = await listingSchema.validateAsync(req.body);
-        res.status(200).json(listing)
+        const vaildListing = await listingSchema.validateAsync(req.body);
+        const listing = new Listing(vaildListing);
+        const savedListing = await listing.save();
+        res.status(201).json(savedListing);
     } catch (error) {
         res.status(400).json({ error: 'cannot create listing' })
         console.log(error)
