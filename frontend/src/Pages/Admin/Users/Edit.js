@@ -12,7 +12,6 @@ import moment from "moment";
 const Edit = () => {
   const [user, setUser] = useState();
   const [groups, setGroups] = useState([]);
-
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');

@@ -1,23 +1,17 @@
-import Dashboard from "./Pages/Admin/Dashboard"
+import Home from "./Pages/Admin/Home"
 import * as Users from "./Pages/Admin/Users"
 import * as Groups from "./Pages/Admin/Groups"
 import * as Project from "./Pages/Project"
-
 import Login from "./Pages/Auth/Login"
 import Register from "./Pages/Auth/RegisterGen"
-
-import FileUpload from "./Pages/File/Upload"
-import FileStream from "./Pages/File/Stream"
-import FileUpdates from "./Pages/File/Update"
-
-// import CreateProject from "./Pages/Project/Create"
+import * as Dashboard from "./Pages/ProfileDashboard"
 
 export const views = [
   {
-    name: 'Dashboard',
+    name: 'Home',
     action: '/',
     icon: 'feather icon-home',
-    element: <Dashboard />
+    element: <Home />
   },
   {
     name: 'Users',
@@ -33,29 +27,16 @@ export const views = [
     isRoute: true,
   },
   {
-    name: 'Upload File',
-    action: '/files/upload',
-    element: <FileUpload />,
-    isRoute: true,
-  },
-  {
-    name: 'Stream File',
-    action: '/files/stream',
-    element: <FileStream />,
-    isRoute: true,
-  },
-  {
-    name: 'Update Files',
-    action: '/files/update',
-    element: <FileUpdates />,
-    isRoute: true,
-  },
-  {
     name: 'Edit Users',
     action: '/users/:id',
     icon: 'feather icon-user',
     element: <Users.Edit />,
     isRoute: true,
+  },
+  {
+    name:'View Profile',
+    action: '/profile/:id',
+    element: <Dashboard.ViewProfile />
   },
   {
     name: 'User Groups',
@@ -96,17 +77,17 @@ export const views = [
     isRoute: true
   },
   {
-    name: 'View Project',
-    action: '/projects/:id',
-    icon: 'feather icon-inbox',
-    element: <Project.View />,
-    isRoute: true 
-  },
-  {
     name: 'Edit Project',
     action: '/projects/:id/edit',
     icon: 'feather icon-inbox',
     element: <Project.Edit />,
+    isRoute: true
+  },
+  {
+    name: 'Test',
+    action: '/projects/test',
+    icon: 'feather icon-inbox',
+    element: <Project.Test />,
     isRoute: true
   },
   // {
@@ -158,6 +139,19 @@ export const views = [
   // },
 ]
 
+// export const pages = [
+//   {
+//     name:'View Profile',
+//     action: '/profile/view',
+//     element: <Dashboard.ViewProfile />
+//   },
+//   {
+//     name: 'Edit Profile',
+//     action: '/:id/profile/edit',
+//     element: <Dashboard.EditProfile />
+//   }
+// ]
+
 export const AuthViews = [
   {
     name: 'Login',
@@ -176,6 +170,7 @@ export const api = {
     login: '/api/auth/login',
     register: '/api/auth/register',
     verifyLicence: '/api/auth/verify-licence/:accType/:licence',
+    verifyMobile: 'api/auth/verify-mobile/:code/:number'
   },
   users: {
     list: '/api/users',

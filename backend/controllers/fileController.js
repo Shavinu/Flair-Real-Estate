@@ -130,7 +130,7 @@ const performUpdate = async (fileId, userId, label, filename, file) => {
     if (file) {
       //delete old file
       await bucket.delete(new mongoose.Types.ObjectId(fileId));
-  
+
       //upload new file
       const uploadStream = bucket.openUploadStreamWithId(
         new mongoose.Types.ObjectId(fileId),
@@ -143,13 +143,13 @@ const performUpdate = async (fileId, userId, label, filename, file) => {
           contentType: file.mimetype,
         }
       );
-  
+
       uploadStream.on('error', (err) => {
         throw new Error('Error occurred while uploading file', err);
       });
-  
+
       let updatedFiles = [];
-  
+
       const updatedFile = (file, filename, fileId, userId, label) => {
         return new Promise((resolve, reject) => {
           const uploadStream = bucket.openUploadStreamWithId(
@@ -163,11 +163,11 @@ const performUpdate = async (fileId, userId, label, filename, file) => {
               contentType: file.mimetype,
             }
           );
-  
+
           uploadStream.on('error', (err) => {
             reject(err);
           });
-  
+
           uploadStream.on('finish', () => {
             updatedFiles.push({
               _id: uploadStream.id,
@@ -180,18 +180,18 @@ const performUpdate = async (fileId, userId, label, filename, file) => {
             });
             resolve();
           });
-  
+
           uploadStream.end(file.buffer);
         });
       };
-  
+
       const updatePromise = updatedFile(file, filename, fileId, userId, label);
-  
+
       await Promise.resolve(updatePromise);
-  
+
       return updatedFiles[0];
     }
-  
+
     else {
       const updateData = {
         filename: filename || existingFile[0].filename,
@@ -200,7 +200,7 @@ const performUpdate = async (fileId, userId, label, filename, file) => {
           label: label || existingFile[0].metadata.label,
         },
       };
-  
+
       const updatedFile = await File.findByIdAndUpdate(fileId, updateData, { new: true });
       return updatedFile;
     };
@@ -286,7 +286,7 @@ const searchFiles = async (req, res, next) => {
 const streamFile = async (req, res, next) => {
   try {
     const { fileId } = req.params;
-    console.log({ fileId });
+    // console.log({ fileId });
     const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
       bucketName: 'uploads',
     });

@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { Container, Row, Col, Carousel, Card, Button, Modal } from "react-bootstrap";
-import "./projectCarousel.css";
+import "./ImageCarousel.css";
 
 const CardCarousel = ({ project, imageUrls }) => {
   const carouselRef = useRef(null);
@@ -28,6 +28,32 @@ const CardCarousel = ({ project, imageUrls }) => {
     setShowModal(false);
   };
 
+  const handleModalPrevClick = () => {
+    const currentImageIndex = project.projectSlideImages.findIndex(slideImage => {
+      const fileId = slideImage[Object.keys(slideImage)[0]];
+      return imageUrls[fileId] === zoomedImage;
+    });
+
+    if (currentImageIndex === 0) {
+      setZoomedImage(imageUrls[project.projectSlideImages[project.projectSlideImages.length - 1][Object.keys(project.projectSlideImages[project.projectSlideImages.length - 1])[0]]]);
+    } else {
+      setZoomedImage(imageUrls[project.projectSlideImages[currentImageIndex - 1][Object.keys(project.projectSlideImages[currentImageIndex - 1])[0]]]);
+    }
+  };
+
+  const handleModalNextClick = () => {
+    const currentImageIndex = project.projectSlideImages.findIndex(slideImage => {
+      const fileId = slideImage[Object.keys(slideImage)[0]];
+      return imageUrls[fileId] === zoomedImage;
+    });
+
+    if (currentImageIndex === project.projectSlideImages.length - 1) {
+      setZoomedImage(imageUrls[project.projectSlideImages[0][Object.keys(project.projectSlideImages[0])[0]]]);
+    } else {
+      setZoomedImage(imageUrls[project.projectSlideImages[currentImageIndex + 1][Object.keys(project.projectSlideImages[currentImageIndex + 1])[0]]]);
+    }
+  };
+
   return (
     <Container>
       <Row className="justify-content-center">
@@ -36,7 +62,7 @@ const CardCarousel = ({ project, imageUrls }) => {
           return (
             <Col md={2} sm={3} xs={4} key={index}>
               <Card className="thumb-card mb-0" onClick={() => handleThumbnailClick(index)}>
-                <Card.Img
+                <Card.Img id="thumb-img"
                   variant="top"
                   src={imageUrls[fileId]}
                   alt={Object.keys(slideImage)[0]}
@@ -80,9 +106,15 @@ const CardCarousel = ({ project, imageUrls }) => {
       </Row>
       <Modal show={showModal} onHide={handleCloseModal} centered size="lg">
         <Modal.Body>
-          <img src={zoomedImage} alt="Zoomed" style={{ width: "100%" }} />
+          <img id="modal-img" src={zoomedImage} alt="Zoomed" style={{ width: "100%" }} />
         </Modal.Body>
         <Modal.Footer>
+          <Button variant="primary" onClick={handleModalPrevClick}>
+            Prev
+          </Button>
+          <Button variant="primary" onClick={handleModalNextClick}>
+            Next
+          </Button>
           <Button variant="secondary" onClick={handleCloseModal}>
             Close
           </Button>

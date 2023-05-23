@@ -1,6 +1,6 @@
 import { Suspense, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Group, Input, Label } from '../../Components/Form';
+import { Group, Input, Label, Select } from '../../Components/Form';
 import utils from '../../Utils';
 import * as AuthServices from '../../Services/AuthService';
 import Toast from '../../Components/Toast';
@@ -13,8 +13,10 @@ const Register = ({ type, page }) => {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [company, setCompany] = useState('');
+  const [jobType, setJobType] = useState('');
   const [licence, setLicence] = useState('');
   const [verifiedLicence, setVerifiedLicence] = useState('');
+  const [mobileNo, setMobileNo] = useState('');
   const [phoneNo, setPhoneNo] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
@@ -52,6 +54,11 @@ const Register = ({ type, page }) => {
       isValid = false;
     }
 
+    if (!jobType) {
+      errors = { ...errors, jobType: 'Please provide your job title' };
+      isValid = false;
+    }
+
     if (!company) {
       errors = { ...errors, company: 'Please provide your company' };
       isValid = false;
@@ -82,9 +89,9 @@ const Register = ({ type, page }) => {
     return isValid;
   };
 
-  const onReset = (e) =>{
+  const onReset = (e) => {
     page(1);
-  }
+  };
 
   const onSubmit = (e) => {
     setIsLoading(true);
@@ -93,7 +100,7 @@ const Register = ({ type, page }) => {
       setIsLoading(false);
       return;
     }
-  
+
     AuthServices.verifyLicence(type, licence)
       .then((response) => {
         if (response?.error) {
@@ -102,21 +109,23 @@ const Register = ({ type, page }) => {
           setIsLoading(false);
           return;
         }
-  
+
         if (response?.message === 'Licence is valid') {
           setAlertMessage();
           Toast('Licence verified!', 'success');
           setVerifiedLicence(true);
-  
+
           AuthServices.register({
             firstName: firstName,
             lastName: lastName,
+            mobileNo: mobileNo,
             phoneNo: phoneNo,
             email: email,
             password: password,
             company: company,
+            jobType: jobType,
             licence: licence,
-            verifiedLicence: true,
+            verifiedLicence: verifiedLicence,
             accType: type,
           })
             .then((response) => {
@@ -147,7 +156,7 @@ const Register = ({ type, page }) => {
         setIsLoading(false);
         return;
       });
-  };  
+  };
 
   return (
     <>
@@ -214,6 +223,16 @@ const Register = ({ type, page }) => {
                         </Group>
                         <Group className='form-label-group'>
                           <Input
+                            name='mobile'
+                            value={mobileNo}
+                            placeholder='Mobile Number'
+                            onChange={(e) => setMobileNo(e.target.value)}
+                            error={errors?.mobileNo}
+                          />
+                          <Label for='mobile'>Mobile Number</Label>
+                        </Group>
+                        <Group className='form-label-group'>
+                          <Input
                             name='phone'
                             value={phoneNo}
                             placeholder='Phone Number'
@@ -233,6 +252,7 @@ const Register = ({ type, page }) => {
                           <Label for='company'>Company</Label>
                         </Group>
                         <Group className='form-label-group'>
+                          <p>If you do not have a licence, use your corporate licence</p>
                           <Input
                             name='license'
                             value={licence}
@@ -247,6 +267,19 @@ const Register = ({ type, page }) => {
                               ? 'License Number'
                               : 'Certificate Number'}
                           </Label>
+                        </Group>
+                        <Group className='form-label-group'>
+                        <Select
+                          options={[
+                            { value: 'incharge', label: 'Licence Incharge (Class 1 only)' },
+                            { value: 'agent', label: 'Licence Real Estate Agent (Class 1 or Class 2)' },
+                            { value: 'assistant', label: 'Assistant Agent' },
+                          ]}
+                          value={''}
+                          onChange={(value) => setJobType(value)}
+                          error={errors?.jobType}
+                        />
+                          <Label for='job'>Job Title</Label>
                         </Group>
                         <Group className='form-label-group'>
                           <Input
