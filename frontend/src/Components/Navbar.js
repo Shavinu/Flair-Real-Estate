@@ -57,21 +57,14 @@ const Navbar = () => {
                       <a href="#">Wollongong</a>
                     </div>
                 </div>
-                <div className="dropdown">
-                  <button className="nav-link btn">Resources</button>
-                   <div className="dropdown-options">
-                    <a href="#">Mortgage Calculator</a>
-                    <a href="#">Buying and Selling process</a>
-                    <a href="#">Property news</a>
+                <div className='dropdown'>
+                  <button className='nav-link btn'>Resources</button>
+                  <div className='dropdown-options'>
+                    <a href='#'>Mortgage Calculator</a>
+                    <a href='#'>Buying and Selling process</a>
+                    <a href='#'>Property news</a>
                   </div>
-                  <div className='dropdown'>
-                    <button className='nav-link btn'>Resources</button>
-                    <div className='dropdown-options'>
-                      <a href='#'>Mortgage Calculator</a>
-                      <a href='#'>Buying and Selling process</a>
-                      <a href='#'>Property news</a>
-                    </div>
-                  </div>
+                </div>
                   <li className='nav-item'>
                     <button className='nav-link btn'>About Us</button>
                   </li>
@@ -135,7 +128,6 @@ const Navbar = () => {
         </div>
       </nav>
     </>
-  );
 };
 
 export default Navbar;

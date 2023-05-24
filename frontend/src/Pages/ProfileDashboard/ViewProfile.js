@@ -74,14 +74,6 @@ const ViewProfile = () => {
           { name: 'Profile', link: `/profile/view/${id}`, active: true },
         ]}
         options={<Link className="btn btn-primary waves-effect waves-light" onClick={() => {setPage(2)}}/*to={`/profile/edit/${id}`}*/>Edit Profile</Link>}
-        // options={
-        //   <Button
-        //     className='btn btn-primary waves-effect waves-light'
-        //     onClick={onSubmit}
-        //     isLoading={isLoading}>
-        //     Save
-        //   </Button>
-        // }
       />
       <Row>
         <Col
