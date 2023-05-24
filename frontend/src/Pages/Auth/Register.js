@@ -275,7 +275,7 @@ const Register = ({ type, page }) => {
                             { value: 'agent', label: 'Licence Real Estate Agent (Class 1 or Class 2)' },
                             { value: 'assistant', label: 'Assistant Agent' },
                           ]}
-                          value={''}
+                          value={jobType}
                           onChange={(value) => setJobType(value)}
                           error={errors?.jobType}
                         />

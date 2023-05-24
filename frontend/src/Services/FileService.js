@@ -14,7 +14,16 @@ export const uploadMultiple = (formData) => {
 };
 
 export const searchFiles = (searchParams) => {
-  return utils.fetch.httpGet(api.files.search, searchParams);
+  let queryString = '';
+  Object.keys(searchParams).forEach((key) => {
+    if (searchParams[key] !== undefined && searchParams[key] !== null && searchParams[key] !== '') {
+      queryString += `${key}=${searchParams[key]}&`;
+    }
+  }
+  );
+  queryString = queryString.slice(0, -1);
+
+  return utils.fetch.httpGet(`${api.files.search}?${queryString}`);
 };
 
 export const updateSingleFile = (fileId, body) => {
@@ -40,3 +49,23 @@ export const downloadFile = (fileId) => {
 export const getFileUrl = (fileId) => {
   return `${process.env.REACT_APP_API_URL}${utils.url.replaceId(api.files.download, fileId)}`;
 }
+
+export const getAllFilesByUser = (userId) => {
+  return utils.fetch.httpGet(utils.url.replaceId(api.files.getAllByUser, userId));
+};
+
+export const getAllFilesByLabel = (label) => {
+  return utils.fetch.httpGet(`${api.files.getAllByLabel}?label=${label}`);
+};
+
+export const deleteFiles = (fileIds) => {
+  return utils.fetch.httpDelete(api.files.deleteMany, { fileIds: fileIds });
+};
+
+export const getFilesByParentId = (parentId) => {
+  return utils.fetch.httpGet(utils.url.replaceId(api.files.getByParentId, parentId));
+};
+
+export const getFilesByType = (type) => {
+  return utils.fetch.httpGet(utils.url.replaceId(api.files.getByType, type));
+};

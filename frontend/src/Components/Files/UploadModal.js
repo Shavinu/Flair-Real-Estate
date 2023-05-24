@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Button, Form, Modal, Alert, Row, Col } from 'react-bootstrap';
 import { api } from '../../paths';
+import { set } from 'mongoose';
 
 const FileUploadModal = () => {
+  const [userId, setUserId] = useState();
   const [show, setShow] = useState(false);
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
@@ -13,11 +15,25 @@ const FileUploadModal = () => {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
+  useEffect(() => {
+    if (!userId) {
+      const user = JSON.parse(localStorage.getItem('user'));
+      if (user) {
+        setUserId(user.payload._id);
+      }
+      else {
+        setUserId('');
+      }
+    }
+  }, []);
+
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files).map((file) => ({
       file,
-      userId: '',
+      userId: userId,
       label: '',
+      parentId: '',
+      type: ''
     }));
     setFiles(selectedFiles);
   };
@@ -41,10 +57,14 @@ const FileUploadModal = () => {
           formDataSingle.append('file', file.file);
           formDataSingle.append('userId', file.userId);
           formDataSingle.append('label', file.label);
+          formDataSingle.append('parentId', file.parentId);
+          formDataSingle.append('type', file.type);
         } else {
           formDataMultiple.append('files', file.file);
           formDataMultiple.append('userIds', file.userId);
           formDataMultiple.append('labels', file.label);
+          formDataMultiple.append('parentIds', file.parentId);
+          formDataMultiple.append('types', file.type);
         }
       });
 
@@ -90,13 +110,14 @@ const FileUploadModal = () => {
                 type="file"
                 onChange={handleFileChange}
                 multiple
+                className="form-control-file"
               />
             </Form.Group>
             {files.map((fileData, index) => (
               <div key={index}>
-                <h5>{fileData.file.name}</h5>
+                <p className='text-muted small'>{fileData.file.name}</p>
                 <Row>
-                  <Col>
+                  <Col lg={12}>
                     <Form.Group controlId={`formUserId${index}`}>
                       <Form.Label>User ID</Form.Label>
                       <Form.Control
@@ -109,7 +130,7 @@ const FileUploadModal = () => {
                       />
                     </Form.Group>
                   </Col>
-                  <Col>
+                  <Col lg={12} className='my-1'>
                     <Form.Group controlId={`formLabel${index}`}>
                       <Form.Label>Label</Form.Label>
                       <Form.Control
@@ -118,6 +139,32 @@ const FileUploadModal = () => {
                         value={fileData.label}
                         onChange={(e) =>
                           handleInputChange(index, 'label', e.target.value)
+                        }
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col lg={12} className='my-1'>
+                    <Form.Group controlId={`formParentId${index}`}>
+                      <Form.Label>Parent ID</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter parent ID"
+                        value={fileData.parentId}
+                        onChange={(e) =>
+                          handleInputChange(index, 'parentId', e.target.value)
+                        }
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col lg={12} className='my-1'>
+                    <Form.Group controlId={`formType${index}`}>
+                      <Form.Label>Type</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter type"
+                        value={fileData.type}
+                        onChange={(e) =>
+                          handleInputChange(index, 'type', e.target.value)
                         }
                       />
                     </Form.Group>
@@ -149,5 +196,3 @@ const FileUploadModal = () => {
 };
 
 export default FileUploadModal;
-
-

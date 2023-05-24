@@ -5,6 +5,7 @@ import * as Project from "./Pages/Project"
 import Login from "./Pages/Auth/Login"
 import Register from "./Pages/Auth/RegisterGen"
 import * as Dashboard from "./Pages/ProfileDashboard"
+import * as File from "./Pages/File"
 
 export const views = [
   {
@@ -34,7 +35,7 @@ export const views = [
     isRoute: true,
   },
   {
-    name:'View Profile',
+    name: 'View Profile',
     action: '/profile/:id',
     element: <Dashboard.ViewProfile />
   },
@@ -90,6 +91,21 @@ export const views = [
     element: <Project.Test />,
     isRoute: true
   },
+  {
+    name: 'File Upload',
+    action: '/files/upload',
+    icon: 'feather icon-inbox',
+    element: <File.Upload />,
+    isRoute: true
+  },
+  {
+    name: 'File Update',
+    action: '/files/update',
+    icon: 'feather icon-inbox',
+    element: <File.Update />,
+    isRoute: true
+  },
+
   // {
   //   name: 'Menu',
   //   icon: 'feather icon-menu',
@@ -198,8 +214,14 @@ export const api = {
     search: '/api/files/search',
     updateSingle: '/api/files/update',
     updateMultiple: '/api/files/update',
+    deleteMany: '/api/files/delete',
     stream: '/api/files/stream/{{id}}',
     download: '/api/files/download/{{id}}',
+    getById: '/api/files/file/{{id}}',
+    getAllByUser: '/api/files/user/files/{{id}}',
+    getAllByLabel: '/api/files/label/files/{{label}}',
+    getByParentId: '/api/files/parent/:parentId/{{id}}',
+    getByType: '/api/files/type/{{type}}',
   },
   projects: {
     create: '/api/projects/',

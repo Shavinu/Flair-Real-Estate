@@ -1,11 +1,14 @@
 const mongoose = require('mongoose');
 const File = require('../models/fileModel');
 
+// upload single file
 const uploadSingle = async (req, res, next) => {
   try {
     const file = req.file;
     const userId = req.body.userId;
     const label = req.body.label;
+    const parentId = req.body.parentId;
+    const type = req.body.type;
 
     if (!file) {
       return res.status(400).json({ error: 'No file provided' });
@@ -19,6 +22,8 @@ const uploadSingle = async (req, res, next) => {
       metadata: {
         createdBy: userId,
         label: label,
+        parentId: parentId,
+        type: type,
       },
       contentType: file.mimetype,
     });
@@ -37,6 +42,8 @@ const uploadSingle = async (req, res, next) => {
           metadata: {
             createdBy: userId,
             label: label,
+            parentId: parentId,
+            type: type,
           },
         },
       });
@@ -48,11 +55,14 @@ const uploadSingle = async (req, res, next) => {
   }
 };
 
+// upload multiple files
 const uploadMultiple = async (req, res, next) => {
   try {
     const files = req.files;
     const userIds = req.body.userIds;
     const labels = req.body.labels;
+    const parentIds = req.body.parentId;
+    const types = req.body.type;
 
     if (!files || files.length === 0) {
       return res.status(400).json({ error: 'No files provided' });
@@ -64,7 +74,7 @@ const uploadMultiple = async (req, res, next) => {
 
     let uploadedFiles = [];
 
-    const uploadFile = (file, userId, label) => {
+    const uploadFile = (file, userId, label, parentId, type) => {
       return new Promise((resolve, reject) => {
         const uploadStream = bucket.openUploadStreamWithId(
           new mongoose.Types.ObjectId(),
@@ -73,6 +83,8 @@ const uploadMultiple = async (req, res, next) => {
             metadata: {
               createdBy: userId,
               label: label,
+              parentId: parentId,
+              type: type,
             },
             contentType: file.mimetype,
           }
@@ -88,6 +100,8 @@ const uploadMultiple = async (req, res, next) => {
             filename: file.originalname,
             contentType: file.mimetype,
             metadata: {
+              parentId: parentId,
+              type: type,
               createdBy: userId,
               label: label,
             },
@@ -100,7 +114,7 @@ const uploadMultiple = async (req, res, next) => {
     };
 
     const uploadPromises = files.map((file, index) =>
-      uploadFile(file, userIds[index], labels[index])
+      uploadFile(file, userIds[index], labels[index], parentIds[index], types[index])
     );
 
     await Promise.all(uploadPromises);
@@ -114,7 +128,8 @@ const uploadMultiple = async (req, res, next) => {
   }
 };
 
-const performUpdate = async (fileId, userId, label, filename, file) => {
+// Use to modify file metadata and filename in the 'uploads' gridfs bucket.
+const performUpdate = async (fileId, userId, label, filename, parentId, type, file) => {
   const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
     bucketName: 'uploads',
   });
@@ -139,6 +154,8 @@ const performUpdate = async (fileId, userId, label, filename, file) => {
           metadata: {
             createdBy: userId,
             label: label,
+            parentId: parentId,
+            type: type,
           },
           contentType: file.mimetype,
         }
@@ -150,7 +167,7 @@ const performUpdate = async (fileId, userId, label, filename, file) => {
 
       let updatedFiles = [];
 
-      const updatedFile = (file, filename, fileId, userId, label) => {
+      const updatedFile = (file, filename, fileId, userId, label, parentId, type) => {
         return new Promise((resolve, reject) => {
           const uploadStream = bucket.openUploadStreamWithId(
             new mongoose.Types.ObjectId(fileId),
@@ -159,6 +176,8 @@ const performUpdate = async (fileId, userId, label, filename, file) => {
               metadata: {
                 createdBy: userId,
                 label: label,
+                parentId: parentId,
+                type: type,
               },
               contentType: file.mimetype,
             }
@@ -176,6 +195,8 @@ const performUpdate = async (fileId, userId, label, filename, file) => {
               metadata: {
                 createdBy: userId,
                 label: label,
+                parentId: parentId,
+                type: type,
               },
             });
             resolve();
@@ -185,7 +206,7 @@ const performUpdate = async (fileId, userId, label, filename, file) => {
         });
       };
 
-      const updatePromise = updatedFile(file, filename, fileId, userId, label);
+      const updatePromise = updatedFile(file, filename, fileId, userId, label, parentId, type);
 
       await Promise.resolve(updatePromise);
 
@@ -198,6 +219,8 @@ const performUpdate = async (fileId, userId, label, filename, file) => {
         metadata: {
           createdBy: userId || existingFile[0].metadata.createdBy,
           label: label || existingFile[0].metadata.label,
+          parentId: parentId || existingFile[0].metadata.parentId,
+          type: type || existingFile[0].metadata.type,
         },
       };
 
@@ -209,13 +232,14 @@ const performUpdate = async (fileId, userId, label, filename, file) => {
   }
 };
 
+// update single file
 const updateFile = async (req, res, next) => {
   try {
     const { fileId } = req.params;
-    const { userId, label, filename } = req.body;
+    const { userId, label, filename, parentId, type } = req.body;
     const file = req.file;
 
-    const updatedFile = await performUpdate(fileId, userId, label, filename, file);
+    const updatedFile = await performUpdate(fileId, userId, label, filename, parentId, type, file || null);
 
     res.json({
       message: 'File updated successfully',
@@ -226,20 +250,18 @@ const updateFile = async (req, res, next) => {
   }
 };
 
+// update multiple files
 const updateFiles = async (req, res, next) => {
   try {
-    const updates = JSON.parse(req.body.updates);
+    const updates = Array.isArray(req.body) ? req.body : [req.body];
     const files = req.files;
-
-    console.log(updates);
-    console.log(files);
 
     const updatedFiles = await Promise.all(
       updates.map(async (update, index) => {
-        const { _id, userId, label, filename } = update;
+        const { _id, userId, label, parentId, type, filename } = update;
         const fileId = _id;
         const file = files && files[index];
-        return await performUpdate(fileId, userId, label, filename, file || null);
+        return await performUpdate(fileId, userId, label, filename, parentId, type, file || null);
       })
     );
 
@@ -253,23 +275,25 @@ const updateFiles = async (req, res, next) => {
   }
 };
 
-//search for files in database by any of the following: filename, label, or user id
+// search for files using query params
 const searchFiles = async (req, res, next) => {
   try {
-    const { fileId, createdBy, label } = req.query;
+    const { fileId, filename, createdBy, label, parentId, type } = req.query;
 
     const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
       bucketName: 'uploads',
     });
 
     const searchQuery = {
-      //if no query params are provided, return all files
       ...(fileId && { _id: new mongoose.Types.ObjectId(fileId) }),
+      ...(filename && { filename: filename }),
       ...(createdBy && { 'metadata.createdBy': createdBy }),
       ...(label && { 'metadata.label': label }),
+      ...(parentId && { 'metadata.parentId': parentId }),
+      ...(type && { 'metadata.type': type }),
     };
 
-    const files = await bucket.find(searchQuery).toArray();
+    const files = await bucket.find(searchQuery).sort({ uploadDate: -1 }).toArray();
 
     if (!files || files.length === 0) {
       return res.status(404).json({ message: "No files found" });
@@ -282,7 +306,7 @@ const searchFiles = async (req, res, next) => {
 };
 
 
-//stream file from database to client
+// stream file from database to client
 const streamFile = async (req, res, next) => {
   try {
     const { fileId } = req.params;
@@ -313,7 +337,7 @@ const streamFile = async (req, res, next) => {
 };
 
 
-//download file from database and server storage folder
+// download file from database and server storage folder
 const downloadFile = async (req, res, next) => {
   try {
     const { fileId } = req.params;
@@ -342,7 +366,7 @@ const downloadFile = async (req, res, next) => {
   }
 };
 
-//get file from database by id
+// get file from database by id
 const getFileById = async (req, res, next) => {
   try {
     const { fileId } = req.params;
@@ -362,7 +386,7 @@ const getFileById = async (req, res, next) => {
   }
 };
 
-//get all files from database for a specific user
+// get all files from database for a specific user
 const getAllFilesByUser = async (req, res, next) => {
   try {
     const { userId } = req.query;
@@ -378,7 +402,7 @@ const getAllFilesByUser = async (req, res, next) => {
   }
 };
 
-//get all files under a certain label
+// get all files under a certain label
 const getAllFilesByLabel = async (req, res, next) => {
   try {
     const { label } = req.query;
@@ -388,13 +412,60 @@ const getAllFilesByLabel = async (req, res, next) => {
 
     const files = await bucket.find({ 'metadata.label': label }).toArray();
 
+    if (!files || files.length === 0) {
+      return res.status(404).json({ message: "No files found with the provided label" });
+    }
+
     res.status(200).json(files);
   } catch (err) {
     next(err);
   }
 };
 
-//delete files from database provided with fileIds
+// get all files under a certain parent id
+const getFilesByParentId = async (req, res, next) => {
+  try {
+    const { parentId } = req.params;
+
+    const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
+      bucketName: 'uploads',
+    });
+
+    const files = await bucket.find({ 'metadata.parentId': parentId }).toArray();
+
+    if (!files || files.length === 0) {
+      return res.status(404).json({ message: "No files found with the provided parentId" });
+    }
+
+    res.status(200).json({ files });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// get all files of a certain type
+const getFilesByType = async (req, res, next) => {
+  try {
+    const { type } = req.params;
+
+    const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
+      bucketName: 'uploads',
+    });
+
+    const files = await bucket.find({ 'metadata.type': type }).toArray();
+
+    if (!files || files.length === 0) {
+      return res.status(404).json({ message: "No files found of the provided type" });
+    }
+
+    res.status(200).json({ files });
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+// delete files from database provided with fileIds
 const deleteFiles = async (req, res, next) => {
   try {
     const { fileIds } = req.body;
@@ -443,5 +514,7 @@ module.exports = {
   getAllFilesByUser,
   getAllFilesByLabel,
   deleteFiles,
+  getFilesByParentId,
+  getFilesByType,
 };
 
