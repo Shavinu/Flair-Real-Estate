@@ -7,12 +7,38 @@ const options = [
   { value: 'percentage', label: 'Percentage' },
 ];
 
-const ProjectCommission = ({ onCommissionChange, setErrors, error }) => {
+const ProjectCommission = ({ onCommissionChange, setErrors, error, initialData, reset }) => {
   const [exists, setExists] = useState(false);
   const [type, setType] = useState(null);
   const [amount, setAmount] = useState('');
   const [percent, setPercent] = useState('');
+  const [initialDataSet, setInitialDataSet] = useState(false);
   const [localError, setLocalError] = useState(null);
+
+  useEffect(() => {
+    if(!initialDataSet && initialData && initialData.length > 0) {
+      const data = initialData[0];
+      setExists(data.exists);
+      setType(options.find(option => option.value === data.type));
+      if(data.type === 'fixed') {
+        setAmount(data.amount.toString());
+      } else if(data.type === 'percentage') {
+        setPercent(data.percent.toString());
+      }
+      setInitialDataSet(true);
+    }
+  }, [initialData]);
+
+  useEffect(() => {
+    if (reset) {
+      setExists(false);
+      setType(null);
+      setAmount('');
+      setPercent('');
+      setLocalError(null);
+      setInitialDataSet(false);
+    }
+  }, [reset]);
 
   useEffect(() => {
     if (localError) {
@@ -30,27 +56,10 @@ const ProjectCommission = ({ onCommissionChange, setErrors, error }) => {
     onCommissionChange({
       exists,
       type: type ? type.value : null,
-      amount: amount ? parseFloat(amount.replace(/,/g, '')) : 0,
-      percent: percent ? parseFloat(percent) : 0,
+      amount: type && type.value === 'fixed' ? parseFloat(amount) : null,
+      percent: type && type.value === 'percentage' ? parseFloat(percent) : null,
     });
   }, [exists, type, amount, percent, onCommissionChange]);
-
-  //   useEffect(() => {
-  //     if (isSubmitted && (minPrice === null && maxPrice === null)) {
-  //       setLocalError('Please select a price range');
-  //     }
-  //     else {
-  //       setLocalError(null);
-  //     }
-  //   }, [minPrice, maxPrice, isSubmitted]);
-
-  //   onCommissionChange({
-  //     exists,
-  //     type: type ? type.value : null,
-  //     amount: amount ? parseFloat(amount.replace(/,/g, '')) : null,
-  //     percent: percent ? parseFloat(percent) : null,
-  //   }, errors);
-  // }, [exists, type, amount, percent]);
 
   const checkErrors = ({ exists, type, amount, percent }) => {
     if (exists && !type) {

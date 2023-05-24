@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
 import mbxClient from '@mapbox/mapbox-sdk';
 import mbxGeocoding from '@mapbox/mapbox-sdk/services/geocoding';
@@ -15,9 +15,11 @@ if (mapboxApiKey) {
   geocodingClient = mbxGeocoding(mapboxClient);
 }
 
-const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange }) => {
+const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange, initialData, reset }) => {
   const [inputValue, setInputValue] = useState('');
   const [options, setOptions] = useState([]);
+  const [resetData, setResetData] = useState([]);
+  const [initialDataSet, setInitialDataSet] = useState(false);
 
   const [viewport, setViewport] = useState({
     latitude: -33.8688,
@@ -30,7 +32,67 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange 
     zoom: 8,
   });
 
+  // useEffect(() => {
+  //   if (initialData) {
+  //     const { locationName, longitude, latitude } = initialData[0];
+
+  //     setInputValue(locationName);
+
+  //     setMarker({ latitude, longitude });
+
+  //     const newViewport = { latitude, longitude, zoom: 8 };
+  //     setViewport(newViewport);
+  //     setViewState(newViewport);
+  //   }
+  // }, [initialData]);
+
   const [marker, setMarker] = useState(null);
+
+  useEffect(() => {
+    if (initialData && !initialDataSet) {
+      const { locationName, longitude, latitude } = initialData[0];
+      setResetData(initialData);
+
+      setInputValue(locationName);
+
+      setMarker({ latitude, longitude });
+
+      const newViewport = { latitude, longitude, zoom: 8 };
+      setViewport(newViewport);
+      setViewState(newViewport);
+
+      const selectedOption = {
+        value: locationName,
+        label: locationName,
+      };
+      setOptions([selectedOption]);
+      handleSelectChange(selectedOption);
+
+      setInitialDataSet(true);
+    }
+  }, [initialData]);
+
+  useEffect(() => {
+    if (reset) {
+      const { locationName, longitude, latitude } = resetData[0];
+
+      setInputValue(locationName);
+
+      setMarker({ latitude, longitude });
+
+      const newViewport = { latitude, longitude, zoom: 8 };
+      setViewport(newViewport);
+      setViewState(newViewport);
+
+      const selectedOption = {
+        value: locationName,
+        label: locationName,
+      };
+      setOptions([selectedOption]);
+      handleSelectChange(selectedOption);
+    }
+  }, [reset]);
+
 
   const onViewportChange = (newViewport) => {
     setViewport((prevState) => ({
@@ -82,6 +144,26 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange 
     }
   };
 
+  const handleReset = () => {
+    const { locationName, longitude, latitude } = resetData[0];
+
+      setInputValue(locationName);
+
+      setMarker({ latitude, longitude });
+
+      const newViewport = { latitude, longitude, zoom: 8 };
+      setViewport(newViewport);
+      setViewState(newViewport);
+
+      const selectedOption = {
+        value: locationName,
+        label: locationName,
+      };
+      setOptions([selectedOption]);
+      handleSelectChange(selectedOption);
+  }
+
+
   const handleInputChange = (value) => {
 
     if ((value && !options.length) || (value !== inputValue)) {
@@ -108,32 +190,34 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange 
   };
 
   const handleSelectChange = (selectedOption) => {
-    onChange(selectedOption.value);
-
-    geocodingClient
-      .forwardGeocode({
-        query: selectedOption.value,
-        countries: ['au'],
-        limit: 1,
-      })
-      .send()
-      .then((response) => {
-        const features = response.body.features;
-        if (features.length > 0) {
-          const { center } = features[0];
-          const newViewport = {
-            latitude: center[1],
-            longitude: center[0]
-          };
-
-          const distance = Math.sqrt(Math.pow((newViewport.latitude - viewport.latitude), 2) + Math.pow((newViewport.longitude - viewport.longitude), 2));
-          console.log(distance);
-          setViewState(newViewport);
-          setMarker({ latitude: center[1], longitude: center[0] });
-          onViewportChange(newViewport);
-        }
-      });
-  };
+    if (selectedOption) {
+      onChange(selectedOption.value);
+  
+      geocodingClient
+        .forwardGeocode({
+          query: selectedOption.value,
+          countries: ['au'],
+          limit: 1,
+        })
+        .send()
+        .then((response) => {
+          const features = response.body.features;
+          if (features.length > 0) {
+            const { center } = features[0];
+            const newViewport = {
+              latitude: center[1],
+              longitude: center[0]
+            };
+  
+            const distance = Math.sqrt(Math.pow((newViewport.latitude - viewport.latitude), 2) + Math.pow((newViewport.longitude - viewport.longitude), 2));
+            // console.log(distance);
+            setViewState(newViewport);
+            setMarker({ latitude: center[1], longitude: center[0] });
+            onViewportChange(newViewport);
+          }
+        });
+    }
+  };  
 
   const handleRemoveMarker = () => {
     setMarker(null);
@@ -163,6 +247,7 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange 
             inputValue={inputValue}
             onInputChange={handleInputChange}
             onChange={handleSelectChange}
+            onBlur={e => e.preventDefault()}
             options={options}
             placeholder="Search for a location"
           />
@@ -178,12 +263,18 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange 
             mapStyle="mapbox://styles/mapbox/streets-v11"
             onClick={onClickMap}
           >
+            {/* if initialData is set add a new button called Reset that resets the map to initialData location */}
             <Button className='btn btn-danger border-dark' style={{ position: 'absolute', top: 10, left: 10 }}
               onClick={handleRemoveMarker} disabled={!marker}>Remove Marker
             </Button>
             <Button className='btn btn-info border-dark' style={{ position: 'absolute', top: 60, left: 10 }}
               onClick={goToMarker} disabled={!marker}>Go to Marker
             </Button>
+            {resetData && (
+              <Button className='btn btn-warning border-dark' style={{ position: 'absolute', top: 110, left: 10 }}
+                onClick={handleReset} hidden={!resetData}>Reset
+              </Button>
+            )}
             {marker && (
               <Marker
                 color='red'

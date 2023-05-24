@@ -4,106 +4,251 @@ import { Form } from 'react-bootstrap';
 import * as UserService from '../../../Services/UserService'
 import * as GroupService from '../../../Services/GroupService'
 
-const SelectProjectMembers = ({ user, onSubmitEditableBy }) => {
-  const [groupId, setGroupId] = useState(null);
+const SelectProjectMembers = ({ user, onSubmitEditableBy, initialData, reset }) => {
+  const [groupId, setGroupId] = useState('');
   const [groupMembers, setGroupMembers] = useState([]);
   const [allowGroupEdit, setAllowGroupEdit] = useState(true);
   const [selectedGroupMembers, setSelectedGroupMembers] = useState([{ value: 'all', label: 'All members' }]);
   const [subgroups, setSubgroups] = useState([]);
   const [subgroupMembers, setSubgroupMembers] = useState([]);
-  const [allowSubgroupEdit, setAllowSubgroupEdit] = useState(false);
+  const [allowSubgroupEdit, setAllowSubgroupEdit] = useState('');
   const [selectedSubgroups, setSelectedSubgroups] = useState([]);
   const [selectedSubgroupMembers, setSelectedSubgroupMembers] = useState([{ value: 'all', label: 'All members' }]);
+  const [dataFetched, setDataFetched] = useState(false);
+  const [initalValueSet, setInitialValueSet] = useState(false);
 
   const getEditableBy = () => {
     let editableBy = [];
-
+  
     if (groupId) {
+      const group = {
+        group: groupId,
+        includeAllGroupMembers: false,
+        groupMembers: [],
+        includeSubGroups: false,
+        subgroups: []
+      };
+  
       if (allowGroupEdit && selectedGroupMembers.length > 0) {
-        const group = {
-          group: groupId,
-          includeAllGroupMembers: false,
-          groupMembers: [],
-          includeSubGroups: false,
-          subgroups: []
-        };
+        // Check if "all" is selected
         if (selectedGroupMembers.some(member => member.value === 'all')) {
           group.includeAllGroupMembers = true;
         } else {
           group.groupMembers.push(...selectedGroupMembers.map(member => member.value));
         }
-
-        if (allowSubgroupEdit && (selectedSubgroups.length > 0 || selectedSubgroupMembers.some(member => member.value === 'all'))) {
-          group.includeSubGroups = true;
-          for (const subgroup of selectedSubgroups) {
-            const subgroupMembers = selectedSubgroupMembers
-              .filter(member => member.group === subgroup.value)
-              .map(member => member.value);
-
-            // Only add the subgroup to the form data if it has at least one member selected
-            if (subgroupMembers.length > 0 || selectedSubgroupMembers.some(member => member.value === 'all')) {
-              const subgroupObj = {
-                subgroup: subgroup.value,
-                includeAllSubgroupMembers: selectedSubgroupMembers.some(member => member.value === 'all'),
-                subgroupMembers: subgroupMembers
-              };
-              group.subgroups.push(subgroupObj);
-            }
+      }
+  
+      if (allowSubgroupEdit && selectedSubgroups.length > 0) {
+        group.includeSubGroups = true;
+  
+        for (const subgroup of selectedSubgroups) {
+          const subgroupMembers = selectedSubgroupMembers
+            .filter(member => member.group === subgroup.value)
+            .map(member => member.value);
+  
+          // Only add the subgroup to the form data if it has at least one member selected
+          if (subgroupMembers.length > 0 || selectedSubgroupMembers.some(member => member.value === 'all')) {
+            const subgroupObj = {
+              subgroup: subgroup.value,
+              includeAllSubgroupMembers: selectedSubgroupMembers.some(member => member.value === 'all'),
+              subgroupMembers: subgroupMembers
+            };
+            group.subgroups.push(subgroupObj);
           }
         }
-        editableBy.push(group);
       }
+  
+      editableBy[0] = group;
     }
-
+  
     return editableBy;
-  };
+  };  
 
   useEffect(() => {
-    onSubmitEditableBy(getEditableBy);
-  }, [onSubmitEditableBy, groupId, allowGroupEdit, selectedGroupMembers, allowSubgroupEdit, selectedSubgroups, selectedSubgroupMembers]);
+    if (initalValueSet) {
+      const editableBy = getEditableBy();
+      onSubmitEditableBy(editableBy);
+    }
+  }, [selectedGroupMembers, selectedSubgroups, selectedSubgroupMembers, initalValueSet, allowSubgroupEdit, allowGroupEdit]);
+
+  useEffect(() => {
+    if (reset) {
+      //set to initial values
+      setGroupId('');
+      setGroupMembers([]);
+      setAllowGroupEdit(true);
+      setSelectedGroupMembers([{ value: 'all', label: 'All members' }]);
+      setSubgroups([]);
+      setSubgroupMembers([]);
+      setAllowSubgroupEdit('');
+      setSelectedSubgroups([]);
+      setSelectedSubgroupMembers([{ value: 'all', label: 'All members' }]);
+      setDataFetched(false);
+      setInitialValueSet(false);
+    }
+  }, [reset]);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        if(user){
+        if (user) {
           //get user's details
           const userDetails = await UserService.getUserDetailById(user);
-          // console.log(userDetails);
-  
+
           //if userDetails.group does not exist return
           if (!userDetails.group) return;
           setGroupId(userDetails.group);
-  
+
           // Fetch the users in the group
           const users = await GroupService.getUsersByGroupId(userDetails.group);
-  
+
           const options = users.map(user => ({
             value: user._id,
             label: `${user.firstName} ${user.lastName}`
           }));
-  
+
           // Fetch the subgroups in the group
           const fetchedSubgroups = await GroupService.getSubGroupsByParentGroupId(userDetails.group);
-  
+
           const subgroups = fetchedSubgroups.map(subgroup => ({
             value: subgroup._id,
             label: subgroup.groupName
           }));
-  
+
           // Add an "All" option
           options.unshift({ value: 'all', label: 'All members' });
           setGroupMembers(options);
-  
+
           setSubgroups(subgroups);
-          // setSelectedSubgroups(subgroups);
         }
-        } catch (error) {
-          console.log(error);
-        }
+      } catch (error) {
+        console.log(error);
+      }
     };
 
     fetchUsers();
+    setDataFetched(true);
   }, [user]);
+
+
+  useEffect(() => {
+    if (!initalValueSet && initialData && initialData.length > 0) {
+      async function fetchInitialGroup() {
+        try {
+          if (initialData.length > 0) {
+            const data = initialData[0];
+
+            if (data.group) {
+              setGroupId(data.group);
+
+              //fetch group members
+              const users = await GroupService.getUsersByGroupId(data.group);
+              const options = users.map(user => ({
+                value: user._id,
+                label: `${user.firstName} ${user.lastName}`
+              }));
+
+              // Add an "All" option
+              options.unshift({ value: 'all', label: 'All members' });
+
+              // if includeAllGroupMembers is true, set selectedGroupMembers to 'All'
+              if (data.includeAllGroupMembers) {
+                setSelectedGroupMembers([{ value: 'all', label: 'All members' }]);
+              } else if(data.groupMembers.length > 0) {
+                // else set selectedGroupMembers to groupMembers
+                setSelectedGroupMembers(options.filter(member => data.groupMembers.includes(member.value)));
+              } else {
+                setSelectedGroupMembers([]);
+                setAllowGroupEdit(false);
+              }
+            }
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
+      async function fetchInitialSubgroup() {
+        try {
+          if (initialData.length > 0) {
+            const data = initialData[0];
+
+            if (data.subgroups) {
+              setAllowSubgroupEdit(true);
+
+              // get all subgroups in the group
+              const fetchedSubgroups = await GroupService.getSubGroupsByParentGroupId(data.group);
+
+              setSubgroups(fetchedSubgroups.map(subgroup => ({
+                value: subgroup._id,
+                label: subgroup.groupName
+              })));
+
+              // set selectedSubgroups to the subgroups in the initialData
+              const selectedSubgroups = fetchedSubgroups.filter(subgroup => data.subgroups.some(subgroupData => subgroupData.subgroup === subgroup._id));
+
+              setSelectedSubgroups(selectedSubgroups.map(subgroup => ({
+                value: subgroup._id,
+                label: subgroup.groupName
+              })));
+            }
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
+      async function fetchInitialSubgroupMembers() {
+        try {
+          if (initialData.length > 0) {
+            const data = initialData[0];
+
+            if (data.subgroups) {
+              // get all subgroups in the group
+              const fetchedSubgroups = await GroupService.getSubGroupsByParentGroupId(data.group);
+
+              // filter out the subgroups that are not in the initialData
+              const subgroups = fetchedSubgroups.filter(subgroup => data.subgroups.some(subgroupData => subgroupData.subgroup === subgroup._id));
+
+              // console.log(subgroups);
+
+              // get all users in the subgroups
+              const subgroupMembers = [];
+
+              for (const subgroup of subgroups) {
+                const users = await GroupService.getUsersByGroupId(subgroup._id);
+                subgroupMembers.push(...users.map(user => ({
+                  value: user._id,
+                  label: `${user.firstName} ${user.lastName}`,
+                  group: subgroup._id
+                })));
+              }
+              // add an "All" option
+              subgroupMembers.unshift({ value: 'all', label: 'All members' });
+
+              setSubgroupMembers(subgroupMembers);
+
+              // if any of the subgroups has includeAllSubgroupMembers set to true, set selectedSubgroupMembers to 'All'
+              if (data.subgroups.some(subgroup => subgroup.includeAllSubgroupMembers)) {
+                setSelectedSubgroupMembers([{ value: 'all', label: 'All members' }]);
+              } else {
+                // else set selectedSubgroupMembers to the subgroupMembers in the initialData
+                const selectedSubgroupMembers = subgroupMembers.filter(member => data.subgroups.some(subgroup => subgroup.subgroupMembers.includes(member.value)));
+                setSelectedSubgroupMembers(selectedSubgroupMembers);
+              }
+            }
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
+      fetchInitialGroup();
+      fetchInitialSubgroup();
+      fetchInitialSubgroupMembers();
+      setInitialValueSet(true);
+    }
+  }, [dataFetched, initalValueSet, initialData]);
 
   const handleGroupMemberChange = (newSelectedGroupMembers) => {
     // If 'All' is already selected, and newSelectedGroupMembers has other options, remove 'All'
@@ -120,10 +265,8 @@ const SelectProjectMembers = ({ user, onSubmitEditableBy }) => {
     if (newSelectedGroupMembers.length === 0) {
       newSelectedGroupMembers = [{ value: 'all', label: 'All members' }];
     }
-
     setSelectedGroupMembers(newSelectedGroupMembers);
   };
-
 
   const handleSubgroupChange = async (newSelectedSubgroups) => {
     try {
@@ -168,12 +311,18 @@ const SelectProjectMembers = ({ user, onSubmitEditableBy }) => {
     }
 
     // If 'All' is not selected, and user selects 'All', remove all other options
-    if (!selectedSubgroupMembers.some(member => member.value === 'all') && newSelectedSubgroupMembers.some(member => member.value === 'all')) {
+    if (selectedSubgroupMembers.some(member => member.value === 'all') && newSelectedSubgroupMembers.some(member => member.value === 'all')) {
       newSelectedSubgroupMembers = [{ value: 'all', label: 'All members' }];
     }
 
     //If newSelectedSubgroupMembers is empty, add 'All' option
     if (newSelectedSubgroupMembers.length === 0) {
+      newSelectedSubgroupMembers = [{ value: 'all', label: 'All members' }];
+    }
+
+    // If 'All' is selected in the newSelectedSubgroupMembers
+    if (newSelectedSubgroupMembers.some(member => member.value === 'all')) {
+      // Remove all other options
       newSelectedSubgroupMembers = [{ value: 'all', label: 'All members' }];
     }
 
@@ -192,7 +341,7 @@ const SelectProjectMembers = ({ user, onSubmitEditableBy }) => {
   };
 
 
-  if (groupId === null) {
+  if (groupId === '' || groupId === null) {
     return <p>You're not part of any groups.</p>;
   }
 
@@ -230,7 +379,7 @@ const SelectProjectMembers = ({ user, onSubmitEditableBy }) => {
             isDisabled={!allowSubgroupEdit}
             onChange={handleSubgroupChange}
           />
-          {allowSubgroupEdit && subgroupMembers.length > 1 && (
+          {allowSubgroupEdit && selectedSubgroups.length > 0 && (
             <Select
               options={subgroupMembers}
               value={selectedSubgroupMembers}
