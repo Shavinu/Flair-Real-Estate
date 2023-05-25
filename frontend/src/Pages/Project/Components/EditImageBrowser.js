@@ -195,10 +195,12 @@ const EditImageBrowser = ({ titleImage, setTitleImage, slideshowImages, setSlide
         <Row>
           <Col>
             {slideshowImages.map((image, index) =>
-              <Card key={index} style={{ display: 'inline-block', marginRight: '10px', objectFit: "cover" }}>
+            <div style={{ position: 'relative', display: 'inline-block', marginTop: '20px' }}>
+              <Card key={index} style={{ marginRight: '20px' }}>
                 <Card.Img variant="top" src={image.url} alt="Slideshow" style={{ height: '150px', width: '200px', objectFit: "cover" }} />
-                <Button variant="btn btn-danger btn-sm border" style={{ position: 'absolute', top: '0', right: '0' }} onClick={() => removeSlideshowImage(index)}>Delete</Button>
+                <Button variant="btn btn-danger btn-sm border" style={{ position: 'absolute', top: '-10px', right: '-10px' }} onClick={() => removeSlideshowImage(index)}>Delete</Button>
               </Card>
+              </div>
             )}
           </Col>
         </Row>
