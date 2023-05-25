@@ -36,7 +36,7 @@ export const views = [
   {
     name:'View Profile',
     action: '/profile/:id',
-    element: <Dashboard.ViewProfile />
+    element: <Dashboard.ViewProfile />,
   },
   {
     name: 'User Groups',

@@ -35,7 +35,7 @@ const Modal: React.FunctionComponent<ModalProps> = (props) => {
 
   useEffect(() => {
     if (isStatic) {
-      document.getElementById(id)?.setAttribute('data-backdrop', 'false');
+      document.getElementById(id)?.setAttribute('data-backdrop', 'true');
       // $(id).modal({ backdrop: 'static', keyboard: false });
     }
   }, [id, isStatic]);
@@ -59,13 +59,13 @@ const Modal: React.FunctionComponent<ModalProps> = (props) => {
             {children}
           </div>
 
-          <div className="modal-footer">
-            <button type="button" className="btn btn-flat-secondary" data-dismiss="modal" onClick={onCloseModal}>Close</button>
+          {/* <div className="modal-footer">
+            <button type="button" className="btn btn-flat-secondary" data-dismiss="modal" onClick={onCloseModal}>Cancel</button>
 
             {onSubmit && <button type="button" className="btn btn-flat-success" onClick={onSubmit}>
               <i className="fa fa-check"></i> {submitText ?? 'Submit'}
             </button>}
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

@@ -17,35 +17,49 @@ const Login = () => {
   const navigate = useNavigate();
 
   const isValid = () => {
-    let isValid = true
-    let errors = {}
+    let isValid = true;
+    let errors = {};
 
     if (!email) {
-      errors = { ...errors, email: 'Please provide email address' }
-      isValid = false
+      errors = { ...errors, email: 'Please provide email address' };
+      isValid = false;
     }
 
     if (email && !utils.string.isValidEmail(email)) {
-      errors = { ...errors, email: 'Please provide a valid email address' }
-      isValid = false
+      errors = { ...errors, email: 'Please provide a valid email address' };
+      isValid = false;
     }
 
     if (!password) {
-      errors = { ...errors, password: 'Please provide a password' }
-      isValid = false
+      errors = { ...errors, password: 'Please provide a password' };
+      isValid = false;
     }
 
     setErrors(errors);
 
-    return isValid
-  }
+    return isValid;
+  };
+
+  const errorShake = () => {
+    window.jQuery('button[type=submit]').addClass('animated headShake bg-red');
+
+    window
+      .jQuery('button[type=submit]')
+      .on(
+        'webkitAnimationEnd oanimationend msAnimationEnd animationend',
+        function (e) {
+          window.jQuery('button[type=submit]').delay(200).removeClass('animated headShake bg-red');
+        }
+      );
+  };
 
   const onSubmit = (e) => {
     setIsLoading(true);
     e.preventDefault();
     if (!isValid()) {
       setIsLoading(false);
-      return
+      errorShake();
+      return;
     }
 
     AuthServices.login({
@@ -58,15 +72,17 @@ const Login = () => {
         navigate('/');
       })
       .catch((response) => {
-        if (response.response?.data?.error && response.response?.data?.error.message) {
+        if (
+          response.response?.data?.error &&
+          response.response?.data?.error.message
+        ) {
           setAlertMessage(response.response.data.error.message);
         }
-        Toast('Login failed!', 'warning');
+        // Toast('Login failed!', 'warning');
+        errorShake();
       })
-      .finally(() =>
-        setIsLoading(false)
-      )
-  }
+      .finally(() => setIsLoading(false));
+  };
 
   return (
     <>
@@ -90,28 +106,43 @@ const Login = () => {
                   <p className='px-2'>
                     Welcome back, please login to your account.
                   </p>
-                  {alertMessage &&
-                    <Alert className="mx-2" type="danger" message={alertMessage} icon={<i className="feather icon-info mr-1 align-middle"></i>} />
-                  }
+                  {alertMessage && (
+                    <Alert
+                      className='mx-2'
+                      type='danger'
+                      message={alertMessage}
+                      icon={
+                        <i className='feather icon-info mr-1 align-middle'></i>
+                      }
+                    />
+                  )}
                   <div className='card-content'>
                     <div className='card-body pt-0'>
-                      <form onSubmit={onSubmit} className="pt-1">
-                        <Group className="form-label-group" hasIconLeft>
-                          <Input name="email"
+                      <form
+                        onSubmit={onSubmit}
+                        className='pt-1'>
+                        <Group
+                          className='form-label-group'
+                          hasIconLeft>
+                          <Input
+                            name='email'
                             value={email}
-                            icon="feather icon-user"
-                            placeholder="Email"
+                            icon='feather icon-user'
+                            placeholder='Email'
                             onChange={(e) => {
                               setEmail(e.target.value);
                             }}
                             error={errors?.email}
                           />
-                          <Label for="email">Email</Label>
+                          <Label for='email'>Email</Label>
                         </Group>
 
-                        <Group className="form-label-group" hasIconLeft>
-                          <Input type="password"
-                            name="password"
+                        <Group
+                          className='form-label-group'
+                          hasIconLeft>
+                          <Input
+                            type='password'
+                            name='password'
                             placeholder='Password'
                             icon='feather icon-lock'
                             value={password}
@@ -120,7 +151,7 @@ const Login = () => {
                             }}
                             error={errors?.password}
                           />
-                          <Label for="password">Password</Label>
+                          <Label for='password'>Password</Label>
                         </Group>
 
                         <div className='form-group d-flex justify-content-between align-items-center'>
@@ -145,20 +176,27 @@ const Login = () => {
                             </a>
                           </div>
                         </div>
-                        <Link
-                          to='/auth/register'
-                          className='btn btn-outline-primary float-left btn-inline'>
-                          Register
-                        </Link>
-                        <Button className='btn btn-primary float-right btn-inline'
-                          type="submit"
+                        <Button
+                          className='btn btn-primary float-right btn-inline'
+                          type='submit'
                           isLoading={isLoading}
-                          onClick={onSubmit}
-                        >Login</Button>
+                          onClick={onSubmit}>
+                          Login
+                        </Button>
                       </form>
                     </div>
                   </div>
-                  <div className='login-footer'>
+                  <p>
+                    Not a member?{' '}
+                    <span>
+                      <Link
+                        to='/auth/register'
+                        className=''>
+                        Register Now
+                      </Link>
+                    </span>
+                  </p>
+                  {/* <div className='login-footer'>
                     <div className='divider'>
                       <div className='divider-text'>OR</div>
                     </div>
@@ -184,13 +222,13 @@ const Login = () => {
                         <span className='fa fa-github-alt'></span>
                       </a>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </section >
+      </section>
     </>
   );
 };

@@ -8,6 +8,8 @@ import * as AuthServices from '../../Services/AuthService';
 import utils from '../../Utils';
 import Toast from '../../Components/Toast';
 import moment from 'moment';
+import * as GroupService from '../../Services/GroupService';
+
 
 const EditProfile = ({ page }) => {
   const [user, setUser] = useState();
@@ -26,27 +28,29 @@ const EditProfile = ({ page }) => {
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("");
   const [postcode, setPostcode] = useState("");
-  // const [password, setPassword] = useState();
-  // const [confirmationPassword, setConfirmationPassword] = useState();
-
+  const [group, setGroup] = useState("");
   const [errors, setErrors] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { id } = useParams();
 
-  const [showPasswordChangeModal, setShowPasswordChangeModal] = useState(false);
+  // const [showPasswordChangeModal, setShowPasswordChangeModal] = useState(false);
   const [modalStep, setModalStep] = useState(1);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
-  const [showEmailChangeModal, setShowEmailChangeModal] = useState(false);
+  // const [showEmailChangeModal, setShowEmailChangeModal] = useState(false);
   const [newEmail, setNewEmail] = useState("");
-  const [showMobileChangeModal, setShowMobileChangeModal] = useState(false);
-  const [newMobile, setNewMobile] = useState("");
-  const [mobileVerificationCode, setMobileVerificationCode] = useState("");
-  const [showCompanyChangeModal, setShowCompanyChangeModal] = useState("");
+  // const [showCompanyChangeModal, setShowCompanyChangeModal] = useState("");
   const [newCompany, setNewCompany] = useState("");
 
-  const [alertMessage, setAlertMessage] = useState('');
+  // const [alertMessage, setAlertMessage] = useState('');
+
+  const getGroupDetailById = (id) => {
+    GroupService.getGroupDetailById(id)
+      .then(response => {
+        setGroup(response.groupName);
+      })
+  }
 
   const getUserDetailById = () => {
     UserService.getUserDetailById(id).then((response) => {
@@ -68,6 +72,7 @@ const EditProfile = ({ page }) => {
       setCity(response.city);
       setCountry(response.country);
       setPostcode(response.postcode);
+      getGroupDetailById(response.group);
     });
   };
 
@@ -178,18 +183,23 @@ const EditProfile = ({ page }) => {
       password: currentPassword,
     })
       .then((response) => {
-        setAlertMessage();
+        // setAlertMessage();
         setCurrentPassword("");
         setModalStep(2);
-        Toast('Login successfully!', 'success');
+        // Toast('Login successfully!', 'success');
       })
       .catch((response) => {
         if (response.response?.data?.error && response.response?.data?.error.message) {
-          setAlertMessage(response.response.data.error.message);
+          // setAlertMessage(response.response.data.error.message);
         }
         Toast('Password is incorrect', 'warning');
       })
-      .finally(() => setIsLoading(false));
+      // .finally(() => setIsLoading(false));
+  };
+
+  var hideModal = modalName => {
+    console.log("here1");
+    window.jQuery("#" + modalName).modal("hide");
   };
 
   const changePassword = (e) => {
@@ -209,7 +219,7 @@ const EditProfile = ({ page }) => {
         Toast('Password has been updated successfully!', 'success');
         getUserDetailById(id);
         setErrors();
-        // setShowPasswordChangeModal(false);
+        hideModal("password_change_modal")
         setModalStep(1);
         setNewPassword("");
         setConfirmNewPassword("");
@@ -234,13 +244,13 @@ const EditProfile = ({ page }) => {
 
     UserService.updateUser(id, body)
       .then((response) => {
-        Toast('Email has been updated successfully!', 'success');
         getUserDetailById(id);
         setErrors();
         setModalStep(1);
-        // setShowEmailChangeModal(false);
+        hideModal("email_change_modal");
         setEmail(newEmail);
         setNewEmail("");
+        Toast('Email has been updated successfully!', 'success');
       })
       .catch(() => {
         Toast('Failed to update email', 'danger');
@@ -301,7 +311,7 @@ const EditProfile = ({ page }) => {
       <ContentHeader
         headerTitle='Edit Profile'
         breadcrumb={[
-          { name: 'Home', link: '/' },
+          { name: 'User' },
           { name: 'Profile', link: `/profile/edit/${id}`, active: true },
         ]}
         options={
@@ -313,6 +323,7 @@ const EditProfile = ({ page }) => {
               Cancel
             </Button>
             <Button
+              type='submit'
               className='btn btn-primary waves-effect waves-light mr-75'
               onClick={onSubmit}
               isLoading={isLoading}>
@@ -592,12 +603,32 @@ const EditProfile = ({ page }) => {
             </CardBody>
           </Card>
         </Col>
+        <Col sm={12} md={4}>
+        <Card header='Group'>
+          <CardBody>
+            <Row>
+            <Col >
+                <Group>
+                <div name='group'>
+                {
+                  group ? (
+                    <div>{group}</div>
+                  ) : (
+                    <div>You are not in any group</div>
+                  )
+                }
+                </div>
+
+                </Group>
+              </Col>
+            </Row>
+          </CardBody>
+          </Card>
+        </Col>
       </Row>
 
       <Modal
         id='password_change_modal'
-        show={showPasswordChangeModal}
-        setShow={setShowPasswordChangeModal}
         title='Change Password'
         size='lg'
         isStatic>
@@ -668,8 +699,6 @@ const EditProfile = ({ page }) => {
 
       <Modal
         id='email_change_modal'
-        show={showEmailChangeModal}
-        setShow={setShowEmailChangeModal}
         title='Change Email'
         size='lg'
         isStatic>
@@ -729,8 +758,6 @@ const EditProfile = ({ page }) => {
 
       <Modal
         id='company_change_modal'
-        show={showCompanyChangeModal}
-        setShow={setShowCompanyChangeModal}
         title='Change Your Company'
         size='lg'
         isStatic>

@@ -14,6 +14,8 @@ import utils from '../../Utils';
 import Toast from '../../Components/Toast';
 import moment from 'moment';
 import EditProfile from './EditProfile';
+import * as GroupService from '../../Services/GroupService';
+
 
 const ViewProfile = () => {
   const [page, setPage] = useState(1);
@@ -33,9 +35,15 @@ const ViewProfile = () => {
   const [city, setCity] = useState();
   const [country, setCountry] = useState();
   const [postcode, setPostcode] = useState();
-  // const [errors, setErrors] = useState();
-  // const [isLoading, setIsLoading] = useState(false);
+  const [group, setGroup] = useState("");
   const { id } = useParams();
+
+  const getGroupDetailById = (id) => {
+    GroupService.getGroupDetailById(id)
+      .then(response => {
+        setGroup(response.groupName);
+      })
+  }
 
   const getUserDetailById = (id) => {
     UserService.getUserDetailById(id).then((response) => {
@@ -55,6 +63,7 @@ const ViewProfile = () => {
       setCity(response.city);
       setCountry(response.country);
       setPostcode(response.postcode);
+      getGroupDetailById(response.group);
     });
   };
 
@@ -70,10 +79,10 @@ const ViewProfile = () => {
       <ContentHeader
         headerTitle='My Profile'
         breadcrumb={[
-          { name: 'Home', link: '/' },
+          { name: 'User', link: ''},
           { name: 'Profile', link: `/profile/view/${id}`, active: true },
         ]}
-        options={<Link className="btn btn-primary waves-effect waves-light" onClick={() => {setPage(2)}}/*to={`/profile/edit/${id}`}*/>Edit Profile</Link>}
+        options={<Link className="btn btn-primary waves-effect waves-light" onClick={() => {setPage(2)}}>Edit Profile</Link>}
       />
       <Row>
         <Col
@@ -190,6 +199,27 @@ const ViewProfile = () => {
                 </Col>
               </Row>
             </CardBody>
+          </Card>
+        </Col>
+        <Col sm={12} md={4}>
+        <Card header='Group'>
+          <CardBody>
+            <Row>
+            <Col >
+              <Group>
+                <div name='group'>
+                {
+                  group ? (
+                    <div>{group}</div>
+                  ) : (
+                    <div>You are not in any group</div>
+                  )
+                }
+                </div>
+              </Group>
+              </Col>
+            </Row>
+          </CardBody>
           </Card>
         </Col>
       </Row>

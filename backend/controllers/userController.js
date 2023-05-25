@@ -9,6 +9,7 @@ const { userSchema } = require('../helpers/validation');
 
 //get all users
 const getUsers = async (req, res) => {
+
   const users = await User.find().sort({ CreateAt: -1 });
 
   res.status(200).json(users);
@@ -35,18 +36,21 @@ const createUser = async (req, res) => {
   try {
     const validatedResult = await userSchema.validateAsync(req.body);
 
-    const existingUser = await User.findOne({ email: validatedResult.email })
-    if (existingUser) throw createError.BadRequest(`${validatedResult.email} is already registered!`)
+    const existingUser = await User.findOne({ email: validatedResult.email });
+    if (existingUser)
+      throw createError.BadRequest(
+        `${validatedResult.email} is already registered!`
+      );
 
     const user = new User(validatedResult);
-    user.password = user.generateHash(validatedResult.password)
+    user.password = user.generateHash(validatedResult.password);
     const savedUser = await user.save();
-    res.status(200).json(savedUser)
+    res.status(200).json(savedUser);
   } catch (error) {
-    res.status(400).json({ error: 'cannot create user' })
-    console.log(error)
+    res.status(400).json({ error: 'cannot create user' });
+    console.log(error);
   }
-}
+};
 
 //delete user
 const deleteUser = async (req, res) => {
@@ -85,7 +89,7 @@ const updateUser = async (req, res) => {
   }
 
   if (req.body.password) {
-    user.password = user.generateHash(req.body.password)
+    user.password = user.generateHash(req.body.password);
     user.save();
   }
 
@@ -96,7 +100,7 @@ const deleteManyUsers = async (req, res) => {
   const { ids } = req.body;
   const users = await User.deleteMany({ _id: { $in: ids } });
   res.status(200).json(users);
-}
+};
 
 module.exports = {
   getUsers,
