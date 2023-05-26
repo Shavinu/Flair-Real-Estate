@@ -14,6 +14,7 @@ const {
     downloadFile,
     getFileById,
     getAllFilesByUser,
+    getAllFilesByName,
     getAllFilesByLabel,
     deleteFile,
     deleteFiles,
@@ -59,11 +60,15 @@ router.get('/file/:fileId', getFileById);
 
 // Get all files by a specific user
 // Request query: userId
-router.get('/user/files', getAllFilesByUser);
+router.get('/user/:userId', getAllFilesByUser);
+
+// Get all files with a specific name
+// Request query: filename
+router.get('/filename/:filename', getAllFilesByName);
 
 // Get all files with a specific label
 // Request query: label
-router.get('/label/files', getAllFilesByLabel);
+router.get('/label/:label', getAllFilesByLabel);
 
 // Delete a specific file
 // Request params: fileId
@@ -71,7 +76,7 @@ router.delete('/delete/:fileId', deleteFile);
 
 // Delete specific files
 // Request body: fileIds (array)
-router.delete('/delete', deleteFiles);
+router.post('/delete', deleteFiles);
 
 // Get all files with a specific parentId
 // Request params: parentId

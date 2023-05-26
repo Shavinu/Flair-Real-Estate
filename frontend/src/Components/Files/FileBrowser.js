@@ -27,6 +27,7 @@ function FileBrowser() {
       const user = JSON.parse(localStorage.getItem('user'));
       if (user) {
         setUserId(user.payload._id);
+        setCreatedBy(user.payload._id);
       }
       else {
         setUserId('');
@@ -38,7 +39,6 @@ function FileBrowser() {
   const fetchFiles = useCallback(async () => {
     setLoading(true);
     const response = await FileService.searchFiles(searchParams);
-    console.log(response);
     setFiles(response.files);
     setInitialFiles(response.files);
     setLoading(false);
@@ -51,6 +51,11 @@ function FileBrowser() {
   const handleSearch = () => {
     setSearchParams({ createdBy, filename, label, parentId, type });
     console.log(searchParams);
+    fetchFiles();
+  };
+
+  const refreshFiles = () => {
+    setSearchParams({});
     fetchFiles();
   };
 
@@ -92,7 +97,7 @@ function FileBrowser() {
       try {
         await FileService.updateSingleFile(fileId, formData);
         window.toastr.success('File Updated Successfully', { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
-        fetchFiles();
+        refreshFiles();
       } catch (error) {
         window.toastr.error(error.message, { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-times', "closeButton": true });
       }
@@ -137,7 +142,7 @@ function FileBrowser() {
       try {
         await FileService.updateMultipleFiles(formData);
         window.toastr.success('Files Updated Successfully', { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
-        fetchFiles();
+        refreshFiles();
       }
       catch (error) {
         window.toastr.error(error.message, { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-times', "closeButton": true });
@@ -153,7 +158,25 @@ function FileBrowser() {
       try {
         await FileService.deleteFile(file._id);
         window.toastr.success('File Deleted Successfully', { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
-        fetchFiles();
+        refreshFiles();
+      } catch (error) {
+        window.toastr.error(error.message, { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-times', "closeButton": true });
+      }
+    } else {
+      return;
+    }
+  };
+
+  const handleDeleteMultiple = async () => {
+    if (window.confirm(`Are you sure you want to delete all ${files.length} files?`)) {
+      try {
+        const formData = new FormData();
+        formData.append('fileIds', JSON.stringify(files.map((file) => file._id)));
+        console.log(formData);
+        await FileService.deleteFiles(formData);
+
+        window.toastr.success('Files Deleted Successfully', { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
+        refreshFiles();
       } catch (error) {
         window.toastr.error(error.message, { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-times', "closeButton": true });
       }
@@ -218,7 +241,7 @@ function FileBrowser() {
 
       setUploadSuccess(true);
       window.toastr.success('File(s) Uploaded Successfully', { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
-      fetchFiles();
+      refreshFiles();
       setUploadError('');
       handleUploadModalClose();
     } catch (error) {
@@ -240,34 +263,223 @@ function FileBrowser() {
     setShowUpload(true);
   }
 
+  // Get Logic
+  const handleGetByUserId = async (createdBy) => {
+    try {
+      if (createdBy === '') {
+        window.toastr.warning('Please enter a valid User ID', { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
+        return;
+      }
+      setLoading(true);
+      const response = await FileService.getAllFilesByUser(createdBy);
+      console.log(response)
+      if (response.status === 201) {
+        window.toastr.info(response.message, { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
+      } else if (response.files.length > 0) {
+        setFiles(response.files);
+        setInitialFiles(response.files);
+        window.toastr.success('Files Fetched Successfully', { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
+
+      } else {
+        window.toastr.info('No files found', { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
+      }
+
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        window.toastr.error(`${error.response.data.message}`, { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
+      } else {
+        console.error(`Error occurred while fetching files: ${error}`);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGetByFilename = async (filename) => {
+    try {
+      if (filename === '') {
+        window.toastr.warning('Please enter a valid Filename', { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
+        return;
+      }
+      setLoading(true);
+      const response = await FileService.getAllFilesByFileName(filename);
+      if (response.status === 201) {
+        window.toastr.info(response.message, { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
+      } else if (response.files.length > 0) {
+        setFiles(response.files);
+        setInitialFiles(response.files);
+        window.toastr.success('Files Fetched Successfully', { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
+      } else {
+        window.toastr.info('No files found', { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        window.toastr.error(`${error.response.data.message}`, { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
+      } else {
+        console.error(`Error occurred while fetching files: ${error}`);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGetByParentId = async (parentId) => {
+    try {
+      if (parentId === '') {
+        window.toastr.warning('Please enter a valid Parent ID', { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
+        return;
+      }
+      setLoading(true);
+      const response = await FileService.getFilesByParentId(parentId);
+      if (response.status === 201) {
+        window.toastr.info(response.message, { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
+      } else if (response.files.length > 0) {
+        setFiles(response.files);
+        setInitialFiles(response.files);
+        window.toastr.success('Files Fetched Successfully', { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
+      } else {
+        window.toastr.info('No files found', { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        window.toastr.error(`${error.response.data.message}`, { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
+      } else {
+        console.error(`Error occurred while fetching files: ${error}`);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGetByLabel = async (label) => {
+    try {
+      if (label === '') {
+        window.toastr.warning('Please enter a valid Label', { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
+        return;
+      }
+      setLoading(true);
+      const response = await FileService.getAllFilesByLabel(label);
+      if (response.status === 201) {
+        window.toastr.info(response.message, { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
+      } else if (response.files.length > 0) {
+        setFiles(response.files);
+        setInitialFiles(response.files);
+        window.toastr.success('Files Fetched Successfully', { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
+      } else {
+        window.toastr.info('No files found', { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        window.toastr.error(`${error.response.data.message}`, { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
+      } else {
+        console.error(`Error occurred while fetching files: ${error}`);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGetByType = async (type) => {
+    try {
+      if (type === '') {
+        window.toastr.warning('Please enter a valid Type', { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
+        return;
+      }
+      setLoading(true);
+      const response = await FileService.getFilesByType(type);
+      if (response.status === 201) {
+        window.toastr.info(response.message, { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
+      } else if (response.files.length > 0) {
+        setFiles(files);
+        setInitialFiles(files);
+        window.toastr.success('Files Fetched Successfully', { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
+      } else {
+        window.toastr.info('No files found', { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        window.toastr.error(`${error.response.data.message}`, { "showMethod": "slideDown", positionClass: 'toast-top-right', icon: 'fa fa-check', "closeButton": true });
+      } else {
+        console.error(`Error occurred while fetching files: ${error}`);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReset = () => {
+    setFiles(initialFiles);
+    setCreatedBy(userId);
+    setFilename('');
+    setParentId('');
+    setLabel('');
+    setType('');
+  }
+
   return (
     <>
       <div>
         <p className="h4 m-auto">Search Files</p>
         <Form className="mt-1 mb-1 p-1 rounded shadow">
-          <Form.Group controlId="formUserId">
-            <Form.Label>User ID</Form.Label>
-            <Form.Control type="text" placeholder="Enter User ID" defaultValue={userId} onChange={(e) => setCreatedBy(e.target.value)} />
-          </Form.Group>
-          <Form.Group controlId="formLabel">
-            <Form.Label>File Name</Form.Label>
-            <Form.Control type="text" placeholder="Enter File Name" value={filename} onChange={(e) => setFilename(e.target.value)} />
-          </Form.Group>
-          <Form.Group controlId="formLabel">
-            <Form.Label>Label</Form.Label>
-            <Form.Control type="text" placeholder="Enter Label" value={label} onChange={(e) => setLabel(e.target.value)} />
-          </Form.Group>
-          <Form.Group controlId="formParentId">
-            <Form.Label>Parent ID</Form.Label>
-            <Form.Control type="text" placeholder="Enter Parent ID" value={parentId} onChange={(e) => setParentId(e.target.value)} />
-          </Form.Group>
-          <Form.Group controlId="formType">
-            <Form.Label>Type</Form.Label>
-            <Form.Control type="text" placeholder="Enter Type" value={type} onChange={(e) => setType(e.target.value)} />
-          </Form.Group>
-          <Button className="my-1" variant="primary" onClick={handleSearch}>Search</Button>
-        </Form>
+          <Row className="align-items-center">
+            <Col lg={12} md={12} sm={12}>
+              <Form.Group as={Row} controlId="formUserId">
+                <Col md={8}>
+                  <Form.Label>User ID</Form.Label>
+                  <Form.Control type="text" placeholder="Enter User ID" defaultValue={userId} value={createdBy} onChange={(e) => setCreatedBy(e.target.value)} />
+                </Col>
+                <Col md={4}>
+                  <Button variant="primary" onClick={() => handleGetByUserId(createdBy)} className="mt-2">Get By User ID</Button>
+                </Col>
+              </Form.Group>
 
+              <Form.Group as={Row} controlId="formLabel">
+                <Col md={8}>
+                  <Form.Label>File Name</Form.Label>
+                  <Form.Control type="text" placeholder="Enter File Name" value={filename} onChange={(e) => setFilename(e.target.value)} />
+                </Col>
+                <Col md={4}>
+                  <Button variant="primary" onClick={() => handleGetByFilename(filename)} className="mt-2">Get By FileName</Button>
+                </Col>
+              </Form.Group>
+
+              <Form.Group as={Row} controlId="formLabel">
+                <Col md={8}>
+                  <Form.Label>Label</Form.Label>
+                  <Form.Control type="text" placeholder="Enter Label" value={label} onChange={(e) => setLabel(e.target.value)} />
+                </Col>
+                <Col md={4}>
+                  <Button variant="primary" onClick={() => handleGetByLabel(label)} className="mt-2">Get By Label</Button>
+                </Col>
+              </Form.Group>
+
+              <Form.Group as={Row} controlId="formParentId">
+                <Col md={8}>
+                  <Form.Label>Parent ID</Form.Label>
+                  <Form.Control type="text" placeholder="Enter Parent ID" value={parentId} onChange={(e) => setParentId(e.target.value)} />
+                </Col>
+                <Col md={4}>
+                  <Button variant="primary" onClick={() => handleGetByParentId(parentId)} className="mt-2">Get By Parent ID</Button>
+                </Col>
+              </Form.Group>
+
+              <Form.Group as={Row} controlId="formType">
+                <Col md={8}>
+                  <Form.Label>Type</Form.Label>
+                  <Form.Control type="text" placeholder="Enter Type" value={type} onChange={(e) => setType(e.target.value)} />
+                </Col>
+                <Col md={4}>
+                  <Button variant="primary" onClick={() => handleGetByType(type)} className="mt-2">Get By Type</Button>
+                </Col>
+              </Form.Group>
+
+            </Col>
+          </Row>
+          <Row className="align-items-center m-auto">
+            <Button className="my-1" variant="primary" onClick={handleSearch}>Search</Button>
+            <Button className="my-1 ml-2" variant="primary" onClick={handleReset}>Reset</Button>
+          </Row>
+        </Form>
         <div className="d-flex justify-content-end">
           <Button
             variant="primary"
@@ -283,6 +495,14 @@ function FileBrowser() {
             style={{ height: "40px", width: "90px", padding: "0px" }}
           >
             Update All
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() => handleDeleteMultiple()}
+            className="ml-2"
+            style={{ height: "40px", width: "90px", padding: "0px" }}
+          >
+            Delete All
           </Button>
         </div>
       </div>

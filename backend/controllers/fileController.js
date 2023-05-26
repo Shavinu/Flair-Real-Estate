@@ -55,7 +55,7 @@ const uploadSingle = async (req, res, next) => {
 
     uploadStream.end(file.buffer);
   } catch (err) {
-    next(err);
+    res.status(400).json({ error: err.message });
   }
 };
 
@@ -131,7 +131,7 @@ const uploadMultiple = async (req, res, next) => {
       files: uploadedFiles,
     });
   } catch (err) {
-    next(err);
+    res.status(400).json({ error: err.message });
   }
 };
 
@@ -151,7 +151,14 @@ const performUpdate = async (fileId, userId, label, displayOnTop, filename, pare
   try {
     if (file) {
       //delete old file
-      await bucket.delete(new mongoose.Types.ObjectId(fileId));
+      const db = mongoose.connection.db;
+      const fileCollection = db.collection('uploads.files');
+      const chunksCollection = db.collection('uploads.chunks');
+
+      const fileObjectId = new mongoose.Types.ObjectId(fileId);
+
+      await fileCollection.deleteOne({ _id: fileObjectId });
+      await chunksCollection.deleteMany({ files_id: fileObjectId });
 
       //upload new file
       const uploadStream = bucket.openUploadStreamWithId(
@@ -239,7 +246,7 @@ const performUpdate = async (fileId, userId, label, displayOnTop, filename, pare
       return updatedFile;
     };
   } catch (error) {
-    console.log(error);
+    res.status(400).json({ error: err.message });
   }
 };
 
@@ -257,7 +264,7 @@ const updateFile = async (req, res, next) => {
       file: updatedFile,
     });
   } catch (err) {
-    next(err);
+    res.status(400).json({ error: err.message });
   }
 };
 
@@ -265,7 +272,6 @@ const updateFile = async (req, res, next) => {
 const updateFiles = async (req, res, next) => {
   try {
     const updates = JSON.parse(req.body.updates);
-    console.log(updates);
     const files = req.files;
 
     const updatedFiles = await Promise.all(
@@ -284,7 +290,7 @@ const updateFiles = async (req, res, next) => {
     });
   } catch (err) {
     console.log(err);
-    next(err);
+    res.status(400).json({ error: err.message });
   }
 };
 
@@ -315,7 +321,7 @@ const searchFiles = async (req, res, next) => {
 
     res.status(200).json({ files });
   } catch (err) {
-    next(err);
+    res.status(400).json({ error: err.message });
   }
 };
 
@@ -324,7 +330,6 @@ const searchFiles = async (req, res, next) => {
 const streamFile = async (req, res, next) => {
   try {
     const { fileId } = req.params;
-    // console.log({ fileId });
     const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
       bucketName: 'uploads',
     });
@@ -346,7 +351,7 @@ const streamFile = async (req, res, next) => {
       res.status(500).json({ error: 'Error occurred while streaming file' });
     });
   } catch (err) {
-    next(err);
+    res.status(400).json({ error: err.message });
   }
 };
 
@@ -376,7 +381,7 @@ const downloadFile = async (req, res, next) => {
       res.status(500).json({ error: 'Error occurred while downloading file' });
     });
   } catch (err) {
-    next(err);
+    res.status(400).json({ error: err.message });
   }
 };
 
@@ -391,35 +396,59 @@ const getFileById = async (req, res, next) => {
     const fileInfo = await bucket.find({ _id: new mongoose.Types.ObjectId(fileId) }).toArray();
 
     if (!fileInfo || fileInfo.length === 0) {
-      return res.status(404).json({ error: 'File not found' });
+      return res.status(201).json({ message: "No files found for the provided fileId", status: 201 });
     }
 
     res.status(200).json(fileInfo[0]);
   } catch (err) {
-    next(err);
+    res.status(400).json({ error: err.message });
   }
 };
 
 // get all files from database for a specific user
 const getAllFilesByUser = async (req, res, next) => {
   try {
-    const { userId } = req.query;
+    const { userId } = req.params;
     const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
       bucketName: 'uploads',
     });
 
     const files = await bucket.find({ 'metadata.createdBy': userId }).toArray();
 
-    res.status(200).json(files);
+    if (!files || files.length === 0) {
+      return res.status(201).json({ message: "No files found for the provided user", status: 201 });
+    }
+
+    res.status(200).json({ files });
   } catch (err) {
-    next(err);
+    res.status(400).json({ error: err.message });
+  }
+};
+
+// get all files from database for a specific file name
+const getAllFilesByName = async (req, res, next) => {
+  try {
+    const { filename } = req.params;
+    const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
+      bucketName: 'uploads',
+    });
+
+    const files = await bucket.find({ filename: filename }).toArray();
+
+    if (!files || files.length === 0) {
+      return res.status(201).json({ message: "No files found with the provided name", status: 201 });
+    }
+
+    res.status(200).json({ files });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
   }
 };
 
 // get all files under a certain label
 const getAllFilesByLabel = async (req, res, next) => {
   try {
-    const { label } = req.query;
+    const { label } = req.params;
     const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
       bucketName: 'uploads',
     });
@@ -427,12 +456,12 @@ const getAllFilesByLabel = async (req, res, next) => {
     const files = await bucket.find({ 'metadata.label': label }).toArray();
 
     if (!files || files.length === 0) {
-      return res.status(404).json({ message: "No files found with the provided label" });
+      return res.status(201).json({ message: "No files found with the provided label", status: 201 });
     }
 
-    res.status(200).json(files);
+    res.status(200).json({ files });
   } catch (err) {
-    next(err);
+    res.status(400).json({ error: err.message });
   }
 };
 
@@ -448,12 +477,12 @@ const getFilesByParentId = async (req, res, next) => {
     const files = await bucket.find({ 'metadata.parentId': parentId }).toArray();
 
     if (!files || files.length === 0) {
-      return res.status(404).json({ message: "No files found with the provided parentId" });
+      return res.status(201).json({ message: "No files found with the provided parentId", status: 201 });
     }
 
     res.status(200).json({ files });
   } catch (err) {
-    next(err);
+    res.status(400).json({ error: err.message });
   }
 };
 
@@ -469,12 +498,12 @@ const getFilesByType = async (req, res, next) => {
     const files = await bucket.find({ 'metadata.type': type }).toArray();
 
     if (!files || files.length === 0) {
-      return res.status(404).json({ message: "No files found of the provided type" });
+      return res.status(201).json({ message: "No files found of the provided type", status: 201 });
     }
 
     res.status(200).json({ files });
   } catch (err) {
-    next(err);
+    res.status(400).json({ error: err.message });
   }
 };
 
@@ -507,7 +536,8 @@ const deleteFile = async (req, res, next) => {
 // delete files from database provided with fileIds
 const deleteFiles = async (req, res, next) => {
   try {
-    const { fileIds } = req.body;
+    let { fileIds } = req.body;
+    fileIds = JSON.parse(fileIds);
     const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
       bucketName: 'uploads',
     });
@@ -551,10 +581,10 @@ module.exports = {
   downloadFile,
   getFileById,
   getAllFilesByUser,
+  getAllFilesByName,
   getAllFilesByLabel,
   deleteFile,
   deleteFiles,
   getFilesByParentId,
   getFilesByType,
 };
-

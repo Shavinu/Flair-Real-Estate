@@ -49,14 +49,24 @@ export const downloadFile = (fileId) => {
 
 export const getFileUrl = (fileId) => {
   return `${process.env.REACT_APP_API_URL}${utils.url.replaceId(api.files.download, fileId)}`;
-}
+};
+
+export const getFileById = (fileId) => {
+  return utils.fetch.httpGet(utils.url.replaceId(api.files.getById, fileId));
+};
 
 export const getAllFilesByUser = (userId) => {
   return utils.fetch.httpGet(utils.url.replaceId(api.files.getAllByUser, userId));
 };
 
+export const getAllFilesByFileName = (fileName) => {
+  const url = api.files.getAllByFileName.replace(':filename', fileName);
+  return utils.fetch.httpGet(url);
+};
+
 export const getAllFilesByLabel = (label) => {
-  return utils.fetch.httpGet(`${api.files.getAllByLabel}?label=${label}`);
+  const url = api.files.getAllByLabel.replace(':label', label);
+  return utils.fetch.httpGet(url);
 };
 
 export const deleteFile = async (fileId) => {
@@ -64,13 +74,14 @@ export const deleteFile = async (fileId) => {
 };
 
 export const deleteFiles = (fileIds) => {
-  return utils.fetch.httpDelete(api.files.deleteMany, { fileIds: fileIds });
+  return utils.fetch.httpPost(api.files.deleteMany, fileIds);
 };
 
-export const getFilesByParentId = (parentId) => {
-  return utils.fetch.httpGet(utils.url.replaceId(api.files.getByParentId, parentId));
+export const getFilesByParentId = (id) => {
+  return utils.fetch.httpGet(utils.url.replaceId(api.files.getByParentId, id));
 };
 
 export const getFilesByType = (type) => {
-  return utils.fetch.httpGet(utils.url.replaceId(api.files.getByType, type));
+  const url = api.files.getByType.replace(':type', type);
+  return utils.fetch.httpGet(url);
 };
