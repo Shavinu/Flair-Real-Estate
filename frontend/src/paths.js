@@ -99,10 +99,10 @@ export const views = [
     isRoute: true
   },
   {
-    name: 'File Update',
-    action: '/files/update',
+    name: 'File Browser',
+    action: '/files/browser',
     icon: 'feather icon-inbox',
-    element: <File.Update />,
+    element: <File.Browser />,
     isRoute: true
   },
 
@@ -212,8 +212,9 @@ export const api = {
     uploadSingle: '/api/files/uploadSingle',
     uploadMultiple: '/api/files/uploadMultiple',
     search: '/api/files/search',
-    updateSingle: '/api/files/update',
+    updateSingle: '/api/files/update/{{id}}',
     updateMultiple: '/api/files/update',
+    deleteSingle: '/api/files/delete/{{id}}',
     deleteMany: '/api/files/delete',
     stream: '/api/files/stream/{{id}}',
     download: '/api/files/download/{{id}}',

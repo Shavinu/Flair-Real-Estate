@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const util = require('util');
 const File = require('../models/fileModel');
 
 // upload single file
@@ -7,6 +8,7 @@ const uploadSingle = async (req, res, next) => {
     const file = req.file;
     const userId = req.body.userId;
     const label = req.body.label;
+    const displayOnTop = req.body.displayOnTop === 'true';
     const parentId = req.body.parentId;
     const type = req.body.type;
 
@@ -22,6 +24,7 @@ const uploadSingle = async (req, res, next) => {
       metadata: {
         createdBy: userId,
         label: label,
+        displayOnTop: displayOnTop,
         parentId: parentId,
         type: type,
       },
@@ -42,6 +45,7 @@ const uploadSingle = async (req, res, next) => {
           metadata: {
             createdBy: userId,
             label: label,
+            displayOnTop: displayOnTop,
             parentId: parentId,
             type: type,
           },
@@ -61,8 +65,9 @@ const uploadMultiple = async (req, res, next) => {
     const files = req.files;
     const userIds = req.body.userIds;
     const labels = req.body.labels;
-    const parentIds = req.body.parentId;
-    const types = req.body.type;
+    const displayOnTops = req.body.displayOnTops.map(display => display === 'true');
+    const parentIds = req.body.parentIds;
+    const types = req.body.types;
 
     if (!files || files.length === 0) {
       return res.status(400).json({ error: 'No files provided' });
@@ -74,7 +79,7 @@ const uploadMultiple = async (req, res, next) => {
 
     let uploadedFiles = [];
 
-    const uploadFile = (file, userId, label, parentId, type) => {
+    const uploadFile = (file, userId, label, displayOnTop, parentId, type) => {
       return new Promise((resolve, reject) => {
         const uploadStream = bucket.openUploadStreamWithId(
           new mongoose.Types.ObjectId(),
@@ -83,6 +88,7 @@ const uploadMultiple = async (req, res, next) => {
             metadata: {
               createdBy: userId,
               label: label,
+              displayOnTop: displayOnTop,
               parentId: parentId,
               type: type,
             },
@@ -104,6 +110,7 @@ const uploadMultiple = async (req, res, next) => {
               type: type,
               createdBy: userId,
               label: label,
+              displayOnTop: displayOnTop,
             },
           });
           resolve();
@@ -114,7 +121,7 @@ const uploadMultiple = async (req, res, next) => {
     };
 
     const uploadPromises = files.map((file, index) =>
-      uploadFile(file, userIds[index], labels[index], parentIds[index], types[index])
+      uploadFile(file, userIds[index], labels[index], displayOnTops[index], parentIds[index], types[index])
     );
 
     await Promise.all(uploadPromises);
@@ -129,7 +136,7 @@ const uploadMultiple = async (req, res, next) => {
 };
 
 // Use to modify file metadata and filename in the 'uploads' gridfs bucket.
-const performUpdate = async (fileId, userId, label, filename, parentId, type, file) => {
+const performUpdate = async (fileId, userId, label, displayOnTop, filename, parentId, type, file) => {
   const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
     bucketName: 'uploads',
   });
@@ -154,6 +161,7 @@ const performUpdate = async (fileId, userId, label, filename, parentId, type, fi
           metadata: {
             createdBy: userId,
             label: label,
+            displayOnTop: displayOnTop,
             parentId: parentId,
             type: type,
           },
@@ -167,7 +175,7 @@ const performUpdate = async (fileId, userId, label, filename, parentId, type, fi
 
       let updatedFiles = [];
 
-      const updatedFile = (file, filename, fileId, userId, label, parentId, type) => {
+      const updatedFile = (file, filename, fileId, userId, label, displayOnTop, parentId, type) => {
         return new Promise((resolve, reject) => {
           const uploadStream = bucket.openUploadStreamWithId(
             new mongoose.Types.ObjectId(fileId),
@@ -176,6 +184,7 @@ const performUpdate = async (fileId, userId, label, filename, parentId, type, fi
               metadata: {
                 createdBy: userId,
                 label: label,
+                displayOnTop: displayOnTop,
                 parentId: parentId,
                 type: type,
               },
@@ -195,6 +204,7 @@ const performUpdate = async (fileId, userId, label, filename, parentId, type, fi
               metadata: {
                 createdBy: userId,
                 label: label,
+                displayOnTop: displayOnTop,
                 parentId: parentId,
                 type: type,
               },
@@ -206,7 +216,7 @@ const performUpdate = async (fileId, userId, label, filename, parentId, type, fi
         });
       };
 
-      const updatePromise = updatedFile(file, filename, fileId, userId, label, parentId, type);
+      const updatePromise = updatedFile(file, filename, fileId, userId, label, displayOnTop, parentId, type);
 
       await Promise.resolve(updatePromise);
 
@@ -219,6 +229,7 @@ const performUpdate = async (fileId, userId, label, filename, parentId, type, fi
         metadata: {
           createdBy: userId || existingFile[0].metadata.createdBy,
           label: label || existingFile[0].metadata.label,
+          displayOnTop: displayOnTop !== undefined ? displayOnTop : existingFile[0].metadata.displayOnTop,
           parentId: parentId || existingFile[0].metadata.parentId,
           type: type || existingFile[0].metadata.type,
         },
@@ -236,10 +247,10 @@ const performUpdate = async (fileId, userId, label, filename, parentId, type, fi
 const updateFile = async (req, res, next) => {
   try {
     const { fileId } = req.params;
-    const { userId, label, filename, parentId, type } = req.body;
+    const { userId, label, displayOnTop, filename, parentId, type } = req.body;
     const file = req.file;
 
-    const updatedFile = await performUpdate(fileId, userId, label, filename, parentId, type, file || null);
+    const updatedFile = await performUpdate(fileId, userId, label, displayOnTop, filename, parentId, type, file || null);
 
     res.json({
       message: 'File updated successfully',
@@ -253,15 +264,17 @@ const updateFile = async (req, res, next) => {
 // update multiple files
 const updateFiles = async (req, res, next) => {
   try {
-    const updates = Array.isArray(req.body) ? req.body : [req.body];
+    const updates = JSON.parse(req.body.updates);
+    console.log(updates);
     const files = req.files;
 
     const updatedFiles = await Promise.all(
       updates.map(async (update, index) => {
-        const { _id, userId, label, parentId, type, filename } = update;
+        const { _id, metadata, filename } = update;
         const fileId = _id;
-        const file = files && files[index];
-        return await performUpdate(fileId, userId, label, filename, parentId, type, file || null);
+        const file = files ? files[index] : null;
+        const { userId, label, displayOnTop, parentId, type } = metadata;
+        return await performUpdate(fileId, userId, label, displayOnTop, filename, parentId, type, file || null);
       })
     );
 
@@ -278,7 +291,7 @@ const updateFiles = async (req, res, next) => {
 // search for files using query params
 const searchFiles = async (req, res, next) => {
   try {
-    const { fileId, filename, createdBy, label, parentId, type } = req.query;
+    const { fileId, filename, createdBy, label, displayOnTop, parentId, type } = req.query;
 
     const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
       bucketName: 'uploads',
@@ -289,6 +302,7 @@ const searchFiles = async (req, res, next) => {
       ...(filename && { filename: filename }),
       ...(createdBy && { 'metadata.createdBy': createdBy }),
       ...(label && { 'metadata.label': label }),
+      ...(displayOnTop && { 'metadata.displayOnTop': displayOnTop }),
       ...(parentId && { 'metadata.parentId': parentId }),
       ...(type && { 'metadata.type': type }),
     };
@@ -296,7 +310,7 @@ const searchFiles = async (req, res, next) => {
     const files = await bucket.find(searchQuery).sort({ uploadDate: -1 }).toArray();
 
     if (!files || files.length === 0) {
-      return res.status(404).json({ message: "No files found" });
+      return res.status(200).json({ message: "No files found" });
     }
 
     res.status(200).json({ files });
@@ -464,6 +478,31 @@ const getFilesByType = async (req, res, next) => {
   }
 };
 
+// delete file from database provided with fileId
+const deleteFile = async (req, res, next) => {
+  try {
+    const { fileId } = req.params;
+    const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
+      bucketName: 'uploads',
+    });
+
+    const db = mongoose.connection.db;
+    const fileCollection = db.collection('uploads.files');
+    const chunksCollection = db.collection('uploads.chunks');
+
+    const fileResult = await fileCollection.deleteOne({ _id: new mongoose.Types.ObjectId(fileId) });
+    await chunksCollection.deleteMany({ files_id: new mongoose.Types.ObjectId(fileId) });
+
+    if (fileResult.deletedCount === 0) {
+      throw new Error(`File not found for id ${fileId}`);
+    }
+
+    res.status(200).json({ message: 'File deleted successfully' });
+
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
 
 // delete files from database provided with fileIds
 const deleteFiles = async (req, res, next) => {
@@ -477,28 +516,28 @@ const deleteFiles = async (req, res, next) => {
       return res.status(400).json({ error: 'No file IDs provided for deletion' });
     }
 
-    const deleteFile = (fileId) => {
-      return new Promise((resolve, reject) => {
-        bucket.delete(new mongoose.Types.ObjectId(fileId), (err) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve();
-          }
-        });
-      });
+    const db = mongoose.connection.db;
+    const fileCollection = db.collection('uploads.files');
+    const chunksCollection = db.collection('uploads.chunks');
+
+    const deleteFile = async (fileId) => {
+      const fileResult = await fileCollection.deleteOne({ _id: new mongoose.Types.ObjectId(fileId) });
+      await chunksCollection.deleteMany({ files_id: new mongoose.Types.ObjectId(fileId) });
+
+      if (fileResult.deletedCount === 0) {
+        throw new Error(`File not found for id ${fileId}`);
+      }
     };
 
-    const deletePromises = fileIds.map(deleteFile);
-
-    await Promise.all(deletePromises);
+    await Promise.all(fileIds.map(deleteFile));
 
     res.status(200).json({
       message: 'Files deleted successfully',
       deletedFilesCount: fileIds.length,
     });
+
   } catch (err) {
-    next(err);
+    res.status(400).json({ error: err.message });
   }
 };
 
@@ -513,6 +552,7 @@ module.exports = {
   getFileById,
   getAllFilesByUser,
   getAllFilesByLabel,
+  deleteFile,
   deleteFiles,
   getFilesByParentId,
   getFilesByType,

@@ -1,9 +1,9 @@
 import Upload from './Upload';
-import Update from './Update';
+import Browser from './Browser';
 import Stream from './Stream';
 
 export {
   Upload,
-  Update,
+  Browser,
   Stream,
 };

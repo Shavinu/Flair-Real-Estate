@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import * as FileService from '../../Services/FileService';
 import axios from 'axios';
 import { Button, Form, Modal, Alert, Row, Col } from 'react-bootstrap';
 import { api } from '../../paths';
@@ -69,16 +70,11 @@ const FileUploadModal = () => {
       });
 
       const endpoint =
-        files.length > 1 ? api.files.uploadMultiple : api.files.uploadSingle;
+        files.length > 1 ? FileService.uploadMultiple : FileService.uploadSingle;
 
       const formData = files.length > 1 ? formDataMultiple : formDataSingle;
 
-      axios.defaults.baseURL = process.env.REACT_APP_API_URL;
-      const response = await axios.post(endpoint, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await endpoint(formData);
 
       console.log('File upload response received:', response);
 

@@ -1,5 +1,6 @@
 import utils from "../Utils";
 import { api } from "../paths";
+import axios from "axios";
 
 export const uploadSingle = (formData) => {
   return utils.fetch.httpPost(api.files.uploadSingle, formData, {
@@ -56,6 +57,10 @@ export const getAllFilesByUser = (userId) => {
 
 export const getAllFilesByLabel = (label) => {
   return utils.fetch.httpGet(`${api.files.getAllByLabel}?label=${label}`);
+};
+
+export const deleteFile = async (fileId) => {
+  return utils.fetch.httpDelete(utils.url.replaceId(api.files.deleteSingle, fileId));
 };
 
 export const deleteFiles = (fileIds) => {

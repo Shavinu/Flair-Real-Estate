@@ -36,6 +36,10 @@ const fileSchema = new mongoose.Schema({
       type: String,
       default: null,
     },
+    displayOnTop: {
+      type: Boolean,
+      default: false,
+    },
     parentId: {
       type: String,
       default: null,
