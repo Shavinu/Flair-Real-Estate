@@ -426,7 +426,7 @@ function FileBrowser() {
               <Form.Group as={Row} controlId="formUserId">
                 <Col md={8}>
                   <Form.Label>User ID</Form.Label>
-                  <Form.Control type="text" placeholder="Enter User ID" defaultValue={userId} value={createdBy} onChange={(e) => setCreatedBy(e.target.value)} />
+                  <Form.Control type="text" placeholder="Enter User ID" value={createdBy} onChange={(e) => setCreatedBy(e.target.value)} />
                 </Col>
                 <Col md={4}>
                   <Button variant="primary" onClick={() => handleGetByUserId(createdBy)} className="mt-2">Get By User ID</Button>
