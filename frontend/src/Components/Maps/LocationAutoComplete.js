@@ -67,6 +67,7 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange,
       };
       setOptions([selectedOption]);
       handleSelectChange(selectedOption);
+      onCoordinatesChange({ latitude, longitude });
 
       setInitialDataSet(true);
     }
@@ -147,20 +148,21 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange,
   const handleReset = () => {
     const { locationName, longitude, latitude } = resetData[0];
 
-      setInputValue(locationName);
+    setInputValue(locationName);
 
-      setMarker({ latitude, longitude });
+    setMarker({ latitude, longitude });
 
-      const newViewport = { latitude, longitude, zoom: 8 };
-      setViewport(newViewport);
-      setViewState(newViewport);
+    const newViewport = { latitude, longitude, zoom: 8 };
+    setViewport(newViewport);
+    setViewState(newViewport);
 
-      const selectedOption = {
-        value: locationName,
-        label: locationName,
-      };
-      setOptions([selectedOption]);
-      handleSelectChange(selectedOption);
+    const selectedOption = {
+      value: locationName,
+      label: locationName,
+    };
+    setOptions([selectedOption]);
+    handleSelectChange(selectedOption);
+    onCoordinatesChange({ latitude, longitude });
   }
 
 
@@ -192,7 +194,7 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange,
   const handleSelectChange = (selectedOption) => {
     if (selectedOption) {
       onChange(selectedOption.value);
-  
+
       geocodingClient
         .forwardGeocode({
           query: selectedOption.value,
@@ -208,7 +210,7 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange,
               latitude: center[1],
               longitude: center[0]
             };
-  
+
             const distance = Math.sqrt(Math.pow((newViewport.latitude - viewport.latitude), 2) + Math.pow((newViewport.longitude - viewport.longitude), 2));
             // console.log(distance);
             setViewState(newViewport);
@@ -217,7 +219,7 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange,
           }
         });
     }
-  };  
+  };
 
   const handleRemoveMarker = () => {
     setMarker(null);

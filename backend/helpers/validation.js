@@ -80,25 +80,69 @@ const projectSchema = Joi.object({
     Joi.object({
       exists: Joi.boolean().required(),
       type: Joi.string().allow(null).allow('').optional(),
-      amount: Joi.number().optional(),
-      percent: Joi.number().optional(),
+      amount: Joi.number().allow(null).allow('').optional(),
+      percent: Joi.number().allow(null).allow('').optional(),
     })
   ).optional()
 });
 
-const updateProjectSchema = Joi.object({
-  projectName: Joi.string().optional(),
-  projectType: Joi.string().optional(),
-  projectPriceRange: Joi.string().optional(),
-  projectDescription: Joi.string().optional(),
-  projectLocation: Joi.string().optional(),
-  projectFiles: Joi.array().items(Joi.string()).optional(),
-  projectListings: Joi.array().items(Joi.string()).optional(),
-  projectOwner: Joi.string().optional(),
-  projectMembers: Joi.array().items(Joi.string()).optional(),
-  projectStatus: Joi.string().optional(),
-}).unknown();
-
+const updateProjectSchema =
+  Joi.object({
+    projectName: Joi.string().optional(),
+    projectType: Joi.string().optional(),
+    projectPriceRange: Joi.array().items(
+      Joi.object({
+        minPrice: Joi.number().required(),
+        maxPrice: Joi.number().required()
+      })
+    ).optional(),
+    projectDescription: Joi.string().optional(),
+    projectLocation: Joi.array().items(
+      Joi.object({
+        locationName: Joi.string().required(),
+        longitude: Joi.number().required(),
+        latitude: Joi.number().required()
+      })
+    ).optional(),
+    projectTitleImage: Joi.string().allow(null).allow('').optional(),
+    projectSlideImages: Joi.array().items(Joi.object().pattern(Joi.string(), Joi.string())).allow(null).allow('').optional(),
+    projectFiles: Joi.array().items(
+      Joi.object({
+        file_id: Joi.string().required(),
+        category: Joi.string().required(),
+        category_index: Joi.number().required(),
+        fileName: Joi.string().required(),
+        displayTop: Joi.boolean().required(),
+        visibleTo: Joi.array().items(Joi.string().required()).required()
+      })
+    ).optional(),
+    projectListings: Joi.array().items(Joi.string()).optional(),
+    projectOwner: Joi.string().optional(),
+    editableBy: Joi.array().items(
+      Joi.object({
+        group: Joi.string().required(),
+        includeAllGroupMembers: Joi.boolean().required(),
+        groupMembers: Joi.array().items(Joi.string()).optional(),
+        includeSubGroups: Joi.boolean().required(),
+        subgroups: Joi.array().items(
+          Joi.object({
+            subgroup: Joi.string().required(),
+            includeAllSubgroupMembers: Joi.boolean().required(),
+            subgroupMembers: Joi.array().items(Joi.string()).optional(),
+          })
+        ).optional()
+      })
+    ).optional(),
+    projectStatus: Joi.string().optional(),
+    projectCommission: Joi.array().items(
+      Joi.object({
+        exists: Joi.boolean().required(),
+        type: Joi.string().allow(null).allow('').optional(),
+        amount: Joi.number().allow(null).allow('').optional(),
+        percent: Joi.number().allow(null).allow('').optional(),
+      })
+    ).optional()
+  }).min(0);
 
 module.exports = {
   userSchema,

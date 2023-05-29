@@ -133,6 +133,22 @@ const projectController = {
         project.projectMembers.push(project.projectOwner);
       }
 
+      // If projectSlideImages is not an array, make it an empty one
+      if (!Array.isArray(project.projectSlideImages)) {
+        project.projectSlideImages = [];
+      }
+
+      // Convert received slideshowImage objects to array of Map with ObjectId values
+      if (req.body.projectSlideImages) {
+        project.projectSlideImages = req.body.projectSlideImages.map(slideImage => {
+          let mapSlideImage = new Map();
+          for (const [key, value] of Object.entries(slideImage)) {
+            mapSlideImage.set(key, new mongoose.Types.ObjectId(value));
+          }
+          return mapSlideImage;
+        });
+      }
+
       const updatedProject = await project.save();
 
       res.status(200).json(updatedProject);

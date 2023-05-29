@@ -14,9 +14,8 @@ export const getAllProjects = async () => {
 };
 
 export const updateProject = async (id, data) => {
-    return utils.fetch.httpPatch(utils.url.replaceId(api.projects.update, id), data, {
-        'Content-Type': 'multipart/form-data',
-    });
+    const url = utils.url.replaceId(api.projects.update, id);
+    return utils.fetch.httpPost(url, data);
 };
 
 export const getProjectByOwner = async (ownerId, page, limit) => {

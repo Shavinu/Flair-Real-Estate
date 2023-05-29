@@ -84,13 +84,13 @@ export const views = [
     element: <Project.Edit />,
     isRoute: true
   },
-  {
-    name: 'Test',
-    action: '/projects/test',
-    icon: 'feather icon-inbox',
-    element: <Project.Test />,
-    isRoute: true
-  },
+  // {
+  //   name: 'Test',
+  //   action: '/projects/test',
+  //   icon: 'feather icon-inbox',
+  //   element: <Project.Test />,
+  //   isRoute: true
+  // },
   {
     name: 'File Upload',
     action: '/files/upload',
@@ -229,7 +229,7 @@ export const api = {
     create: '/api/projects/',
     get: '/api/projects/{{id}}',
     getAll: '/api/projects/',
-    update: '/api/projects/',
+    update: '/api/projects/{{id}}',
     delete: '/api/projects/{{id}}',
     getProjectByOwner: '/api/projects/owner/{{Id}}',
     addMembers: '/api/projects/{{id}}/add-members/',

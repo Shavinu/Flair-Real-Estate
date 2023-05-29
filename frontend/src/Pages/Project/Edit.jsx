@@ -1,7 +1,6 @@
 import SelectProjectMembers from './Components/MembersSelector'
 import ProjectCommission from './Components/CommissionSelector';
-import { ImageBrowser, UploadTitle, UploadSlides } from './Components/ImageBrowser';
-import EditImageBrowser from './Components/EditImageBrowser';
+import { EditImageBrowser, UploadTitle, UploadSlides } from './Components/EditImageBrowser';
 import LocationAutocomplete from '../../Components/Maps/LocationAutoComplete';
 import { PriceRangeInput } from '../../Components/Form/PriceRange';
 import * as UserService from "../../Services/UserService";
@@ -10,29 +9,13 @@ import React, { useState, useEffect } from "react";
 import { Button, ButtonGroup, Container, Spinner } from 'react-bootstrap';
 import { ContentHeader } from "../../Components";
 import { Group, Input, Label } from "../../Components/Form";
+import Toast from "../../Components/Toast";
 import Select from 'react-select';
 import { useNavigate } from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { set } from 'mongoose';
 
-const Test = () => {
-
-  // Dummy data
-  // const initialData = { "_id": "64655a75b095b3b886057213", "projectName": "Redgum Rise Estate - Oakville", "projectType": "Land", 
-  // "projectPriceRange": [{ "minPrice": 150000, "maxPrice": 300000 }], "projectDescription": "<ul><li>Fixed price, single contract and no progress payments</li><li>4-5 bedroom house and land package with a double car garage coming soon</li><li>All inclusive, Turnkey Homes</li><li>Over 30 years of Building experience</li><li>15mins from Rouse Hill Town Centre</li><li>Easy access to the M2 and M7 motorways</li><li>Location and convenience at your doorstep</li><li>Minutes away from the Box Hill region</li></ul>", 
-  // "projectLocation": [{ "locationName": "9 Redgum Place, Byron Bay New South Wales 2481, Australia", "longitude": 153.6067790537178, "latitude": -28.676947955289727 }], 
-  // "projectTitleImage": "64655a75b095b3b886057201", 
-  // "projectSlideImages": [{ "slideshowImage_0": "64655a75b095b3b886057203" }, { "slideshowImage_1": "64655a75b095b3b886057204" }, { "slideshowImage_2": "64655a75b095b3b886057205" }, { "slideshowImage_3": "64655a75b095b3b88605720a" }], 
-  // "projectFiles": [{ "file_id": "64655a75b095b3b88605720e", "category": "Site Plan", "category_index": 1, "fileName": "dummy-2.pdf", "displayTop": true, "visibleTo": ["All"], "_id": "64655a75b095b3b886057214" }, { "file_id": "64655a75b095b3b88605720f", "category": "Brochure", "category_index": 1, "fileName": "33.jpg", "displayTop": true, "visibleTo": ["All"], "_id": "64655a75b095b3b886057215" }], 
-  // "projectListings": [], 
-  // "projectOwner": { "_id": "644c6415ad75b1d119eed7eb", "firstName": "test22", "lastName": "test2", "email": "asd@fma.org" }, 
-  // "editableBy": [{ "group": "645dde090d70f7a310a6df6d", "includeAllGroupMembers": false, "groupMembers": [], "includeSubGroups": true, "subgroups": [{ "subgroup": "645eea2c0d70f7a310a6e14d", "includeAllSubgroupMembers": false, "subgroupMembers": ["64363f5e8f2d5ce56ab7d769"], "_id": "64655a75b095b3b886057216" }] }], 
-  // "projectStatus": "Active", 
-  // "projectCommission": [{ "exists": true, "type": "fixed", "amount": 67667, "percent": 0 }], 
-  // "createdAt": "2023-05-17T22:51:33.962Z", 
-  // "updatedAt": "2023-05-17T22:51:33.962Z", 
-  // "__v": 0 };
+const EditProject = () => {
 
   const navigate = useNavigate();
   const [initialData, setInitialData] = useState();
@@ -43,6 +26,7 @@ const Test = () => {
   const [key, setKey] = useState(0);
   const [errors, setErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [projectName, setProjectName] = useState();
   const [projectType, setProjectType] = useState();
   const [projectStatus, setProjectStatus] = useState();
@@ -57,6 +41,98 @@ const Test = () => {
   const [deletedTitleImage, setDeletedTitleImage] = useState(null);
   const [slideshowImages, setSlideshowImages] = useState([]);
   const [deletedSlideshowImages, setDeletedSlideshowImages] = useState([]);
+
+  const validateInput = () => {
+    let newErrors = { ...errors };
+    if (!projectName) {
+      newErrors.projectName = "Project name is required";
+    } else {
+      delete newErrors.projectName;
+    }
+    if (!projectType) {
+      newErrors.projectType = "Project type is required";
+    } else {
+      delete newErrors.projectType;
+    }
+    if (projectDescription.trim() === '' || projectDescription === '<p><br></p>') {
+      newErrors.projectDescription = "Project description is required";
+    } else {
+      delete newErrors.projectDescription;
+    }
+    if (projectLocation === null || projectLocation.trim() === "") {
+      newErrors.projectLocation = "Project location is required";
+    } else {
+      delete newErrors.projectLocation;
+    }
+    if (projectStatus.value === "") {
+      newErrors.projectStatus = "Project status is required";
+    } else {
+      delete newErrors.projectStatus;
+    }
+
+    setErrors(newErrors);
+    return newErrors;
+  };
+
+  const handleEditProjectSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitted(true);
+
+    const newErrors = validateInput();
+    console.log(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
+    setLoading(true);
+
+    try {
+
+      // Upload title image and get its ID
+      let titleImageId = null;
+      titleImageId = await UploadTitle(titleImage, deletedTitleImage, user);
+
+      // Upload slideshow images and get their IDs
+      let slideshowImageIds = null;
+      slideshowImageIds = await UploadSlides(slideshowImages, deletedSlideshowImages, user);
+      slideshowImageIds = JSON.parse(slideshowImageIds);
+
+      // Upload other files and get their IDs and data
+      // let fileData = null;
+      // if (fileUploadFiles.length > 0) {
+      //   fileData = await UploadFiles(fileUploadFiles, user);
+      //   console.log(fileData);
+      //   fileData = JSON.parse(fileData);
+      // }
+
+      // Create project with image and file IDs
+      // setProjectOwner(user);
+      const projectData = {
+        projectName,
+        projectType: projectType,
+        projectPriceRange: [projectPriceRange],
+        projectDescription,
+        projectLocation: [{ locationName: projectLocation, longitude: coordinates.longitude, latitude: coordinates.latitude }],
+        projectListings: [],
+        editableBy,
+        projectStatus: projectStatus,
+        projectCommission: [commissionData]
+      };
+
+      projectData.projectTitleImage = titleImageId;
+      projectData.projectSlideImages = slideshowImageIds;
+      // if (fileData) projectData.projectFiles = fileData;
+      const response = await ProjectService.updateProject(initialData._id, projectData);
+      Toast('Project edited successfully!', 'success');
+      setErrors({});
+      setTimeout(() => {
+        navigate(`/projects/${response._id}`);
+      }, 500);
+    } catch (error) {
+      Toast('Failed to update project!', 'danger');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   useEffect(() => {
     // Fetch project details
@@ -88,13 +164,12 @@ const Test = () => {
       setProjectPriceRange({ minPrice: initialData.projectPriceRange[0].minPrice, maxPrice: initialData.projectPriceRange[0].maxPrice });
       setProjectDescription(initialData.projectDescription);
       setEditableBy(initialData.editableBy);
-      setCommissionData(initialData.projectCommission);
       setProjectLocation(initialData.projectLocation);
-      setCoordinates({ lat: initialData.projectLocation[0].latitude, lng: initialData.projectLocation[0].longitude });
+      setCoordinates({ longitude: initialData.projectLocation[0].longitude, latitude: initialData.projectLocation[0].latitude });
       setInitialDataSet(true);
     }
-    
-  }, [initialData]);
+
+  }, [initialData, initialDataSet]);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'));
@@ -143,37 +218,22 @@ const Test = () => {
   };
 
   const resetForm = () => {
+    setReset(true);
     setProjectName(initialData.projectName);
     setProjectType(initialData.projectType);
     setProjectStatus(initialData.projectStatus);
+    setProjectPriceRange({ minPrice: initialData.projectPriceRange[0].minPrice, maxPrice: initialData.projectPriceRange[0].maxPrice });
     setProjectDescription(initialData.projectDescription);
-    setTitleImage(null);
-    setSlideshowImages([]);
+    setEditableBy(initialData.editableBy);
+    setCommissionData(initialData.projectCommission);
     setProjectLocation(initialData.projectLocation);
-    // setKey(key + 1);
-    setErrors({});
-    setReset(true);
+    setCoordinates({ longitude: initialData.projectLocation[0].longitude, latitude: initialData.projectLocation[0].latitude });
+    setTitleImage(null);
+    setDeletedTitleImage(null);
+    setSlideshowImages([]);
+    setDeletedSlideshowImages([]);
   };
 
-  const logFormOutputs = () => {
-    // console.log(`Editable By: ${JSON.stringify(editableBy)}`);
-    // console.log(`Commission Data: ${JSON.stringify(commissionData)}`);
-    // console.log(`Project Name: ${projectName}`);
-    // console.log(`Project Type: ${projectType}`);
-    // console.log(`Project Status: ${projectStatus}`);
-    // console.log(`Project Price Range: ${projectPriceRange}`);
-    // console.log(`Project Description: ${projectDescription}`);
-    // console.log(`Editable By: ${editableBy}`);
-    // console.log(`Project Location: ${projectLocation}`);
-    // console.log(`Coordinates: ${coordinates}`);
-    // console.log(`Initial Project Location: ${projectLocation}`);
-    console.log(`Title Image: ${JSON.stringify(titleImage)}`);
-    console.log(`Deleted Title Image: ${JSON.stringify(deletedTitleImage)}`);
-    console.log(`Slideshow Images: ${JSON.stringify(slideshowImages)}`);
-    console.log(`Deleted Slideshow Images: ${JSON.stringify(deletedSlideshowImages)}`);
-  }
-
-  //if initialData is not null, then render the form, else render a loading page
   if (!initialData) {
     return (
       <Spinner animation="border" role="status" />
@@ -190,12 +250,11 @@ const Test = () => {
           <ButtonGroup>
             <Button variant="secondary" onClick={() => navigate(-1)}>Back</Button>
             <Button variant="primary" onClick={resetForm}>Reset</Button>
-            <Button variant="dark" onClick={() => setIsSubmitted(true)}>Save</Button>
+            <Button variant="dark" onClick={handleEditProjectSubmit} disabled={loading}>Save</Button>
           </ButtonGroup>
         ]}
       />
       <div>
-        {/* <Button variant="dark" onClick={logFormOutputs}>Log</Button> */}
         <Group>
           <Label>Project Name</Label>
           <Input
@@ -214,7 +273,7 @@ const Test = () => {
               isDisabled={false}
               defaultValue={{ value: "Active", label: "Active" }}
               value={{ value: projectStatus, label: projectStatus }}
-              onChange={(selectedOption) => setProjectStatus(selectedOption.value)}
+              onChange={(selectedOption) => setProjectStatus(selectedOption.value) && handleProjectStatusChange()}
               menuPlacement="auto"
               menuPortalTarget={document.body}
               overflowX="scroll"
@@ -230,7 +289,7 @@ const Test = () => {
               </div>
             )}
           </Group>
-        <hr className="mt-1 border border-mute rounded" />
+          <hr className="mt-1 border border-mute rounded" />
           <Group>
             <Label>Project Type</Label>
             <Select
@@ -238,7 +297,7 @@ const Test = () => {
               isDisabled={false}
               defaultValue={{ value: "Land", label: "Land" }}
               value={{ value: projectType, label: projectType }}
-              onChange={(selectedOption) => setProjectType(selectedOption.value)}
+              onChange={(selectedOption) => setProjectType(selectedOption.value) && handleProjectTypeChange()}
               options={[
                 { value: "Land", label: "Land" },
                 { value: "Multiple", label: "Multiple" }
@@ -251,8 +310,8 @@ const Test = () => {
               </div>
             )}
           </Group>
-          
-        <hr className="mt-1 border border-mute rounded" />
+
+          <hr className="mt-1 border border-mute rounded" />
           <Label>Project Price Range</Label>
           <PriceRangeInput
             min={0}
@@ -301,13 +360,6 @@ const Test = () => {
         </Group>
         <hr className="mt-1 border border-mute rounded" />
         <Group>
-          {/* <ImageBrowser
-          titleImage={titleImage}
-          slideshowImages={slideshowImages}
-          setTitleImage={setTitleImage}
-          setSlideshowImages={setSlideshowImages}
-          initialData={initialData}
-        /> */}
           <EditImageBrowser
             titleImage={titleImage}
             setTitleImage={setTitleImage}
@@ -324,7 +376,6 @@ const Test = () => {
         <Group>
           <Label>Project Location</Label>
           <LocationAutocomplete
-            // key={key}
             selectedLocation={projectLocation}
             onChange={handleProjectLocationChange}
             onCoordinatesChange={handleCoordinatesChange}
@@ -354,4 +405,4 @@ const Test = () => {
   }
 }
 
-export default Test
+export default EditProject

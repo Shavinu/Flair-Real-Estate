@@ -183,7 +183,7 @@ const ProjectDetails = () => {
             </Row>
           </Card>
 
-          {project.projectSlideImages.length > 1 && (
+          {project.projectSlideImages.length >= 1 && (
             <Card className="rounded mt-1 p-0">
               <Card.Subtitle className="text-white bg-dark p-1 mt-0 mb-1" style={{ background: 'linear-gradient(to right, rgba(102, 126, 234, 0.5), rgba(118, 75, 162, 0.5))' }}> Slides: </Card.Subtitle>
               <CardCarousel project={project} imageUrls={imageUrls} />

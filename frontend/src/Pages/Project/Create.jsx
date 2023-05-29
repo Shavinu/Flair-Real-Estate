@@ -142,7 +142,7 @@ const Create = () => {
     // console.log(coordinates);
     // console.log(projectLocation);
     // console.log(projectPriceRange)
-    console.log(commissionData);
+    // console.log(commissionData);
 
     const newErrors = validateInput();
     console.log(newErrors);

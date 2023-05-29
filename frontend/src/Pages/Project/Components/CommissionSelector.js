@@ -16,13 +16,13 @@ const ProjectCommission = ({ onCommissionChange, setErrors, error, initialData, 
   const [localError, setLocalError] = useState(null);
 
   useEffect(() => {
-    if(!initialDataSet && initialData && initialData.length > 0) {
+    if (!initialDataSet && initialData && initialData.length > 0) {
       const data = initialData[0];
       setExists(data.exists);
       setType(options.find(option => option.value === data.type));
-      if(data.type === 'fixed') {
+      if (data.type === 'fixed') {
         setAmount(data.amount.toString());
-      } else if(data.type === 'percentage') {
+      } else if (data.type === 'percentage') {
         setPercent(data.percent.toString());
       }
       setInitialDataSet(true);
@@ -31,12 +31,14 @@ const ProjectCommission = ({ onCommissionChange, setErrors, error, initialData, 
 
   useEffect(() => {
     if (reset) {
-      setExists(false);
-      setType(null);
-      setAmount('');
-      setPercent('');
-      setLocalError(null);
-      setInitialDataSet(false);
+      const data = initialData[0];
+      setExists(data.exists);
+      setType(options.find(option => option.value === data.type));
+      if (data.type === 'fixed') {
+        setAmount(data.amount.toString());
+      } else if (data.type === 'percentage') {
+        setPercent(data.percent.toString());
+      }
     }
   }, [reset]);
 
@@ -56,7 +58,7 @@ const ProjectCommission = ({ onCommissionChange, setErrors, error, initialData, 
     onCommissionChange({
       exists,
       type: type ? type.value : null,
-      amount: type && type.value === 'fixed' ? parseFloat(amount) : null,
+      amount: type && type.value === 'fixed' ? parseFloat(amount.replace(/,/g, '')) : null,
       percent: type && type.value === 'percentage' ? parseFloat(percent) : null,
     });
   }, [exists, type, amount, percent, onCommissionChange]);
@@ -107,9 +109,9 @@ const ProjectCommission = ({ onCommissionChange, setErrors, error, initialData, 
 
   const handlePercentChange = (e) => {
     let val = e.target.value;
-    if ((val === '' || !isNaN(val)) && val <= 100) {
+    if ((val === '' || !isNaN(val)) && val.match(/^\d{0,}(\.\d{0,2})?$/) && val <= 100) {
       setPercent(val);
-      checkErrors({ exists, type, amount: val, percent });
+      checkErrors({ exists, type, amount, percent: val });
     }
   };
 

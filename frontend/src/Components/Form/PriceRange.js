@@ -30,6 +30,7 @@ const PriceRangeInput = ({ onChange, min, max, step, error, setErrors, isSubmitt
 
   useEffect(() => {
     if (initialData && !initialDataSet) {
+      // console.log(initialData);
       const { minPrice, maxPrice } = initialData[0];
       setMinPrice(minPrice);
       setMaxPrice(maxPrice);
@@ -39,8 +40,9 @@ const PriceRangeInput = ({ onChange, min, max, step, error, setErrors, isSubmitt
 
   useEffect(() => {
     if (reset) {
-      setMinPrice(null);
-      setMaxPrice(null);
+      const { minPrice, maxPrice } = initialData[0];
+      setMinPrice(minPrice);
+      setMaxPrice(maxPrice);
       setLocalError(null);
       setInitialDataSet(false);
     }
