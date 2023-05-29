@@ -11,3 +11,10 @@ export const isValidEmail = (email) => {
 }
 
 export const capitalize = (s) => (s && s[0].toUpperCase() + s.slice(1)) || ""
+
+export const isValidMobile = (mobile) =>{
+  mobile = mobile.replace(/-|\s/g, "");
+  const regex = /^(?:\+?61|0)[2-478](?:[ -]?[0-9]){8}$/;
+
+  return regex.test(mobile);
+}

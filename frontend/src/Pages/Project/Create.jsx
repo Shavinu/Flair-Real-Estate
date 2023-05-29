@@ -165,7 +165,7 @@ const Create = () => {
 
       // Upload slideshow images and get their IDs
       let slideshowImageIds = null;
-      if (slideshowImages) {
+      if (slideshowImages.length > 0) {
         slideshowImageIds = await UploadSlides(slideshowImages, user);
         //convert to array
         slideshowImageIds = JSON.parse(slideshowImageIds);
@@ -174,7 +174,7 @@ const Create = () => {
 
       // Upload other files and get their IDs and data
       let fileData = null;
-      if (fileUploadFiles) {
+      if (fileUploadFiles.length > 0) {
         fileData = await UploadFiles(fileUploadFiles, user);
         console.log(fileData);
         fileData = JSON.parse(fileData);

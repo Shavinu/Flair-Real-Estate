@@ -1,17 +1,18 @@
-import Dashboard from "./Pages/Admin/Dashboard"
+import Home from "./Pages/Admin/Home"
 import * as Users from "./Pages/Admin/Users"
 import * as Groups from "./Pages/Admin/Groups"
 import * as Project from "./Pages/Project"
-
 import Login from "./Pages/Auth/Login"
 import Register from "./Pages/Auth/RegisterGen"
+import * as Dashboard from "./Pages/ProfileDashboard"
+import * as File from "./Pages/File"
 
 export const views = [
   {
-    name: 'Dashboard',
+    name: 'Home',
     action: '/',
     icon: 'feather icon-home',
-    element: <Dashboard />
+    element: <Home />
   },
   {
     name: 'Users',
@@ -32,6 +33,11 @@ export const views = [
     icon: 'feather icon-user',
     element: <Users.Edit />,
     isRoute: true,
+  },
+  {
+    name: 'View Profile',
+    action: '/profile/:id',
+    element: <Dashboard.ViewProfile />
   },
   {
     name: 'User Groups',
@@ -85,6 +91,21 @@ export const views = [
     element: <Project.Test />,
     isRoute: true
   },
+  {
+    name: 'File Upload',
+    action: '/files/upload',
+    icon: 'feather icon-inbox',
+    element: <File.Upload />,
+    isRoute: true
+  },
+  {
+    name: 'File Browser',
+    action: '/files/browser',
+    icon: 'feather icon-inbox',
+    element: <File.Browser />,
+    isRoute: true
+  },
+
   // {
   //   name: 'Menu',
   //   icon: 'feather icon-menu',
@@ -134,6 +155,19 @@ export const views = [
   // },
 ]
 
+// export const pages = [
+//   {
+//     name:'View Profile',
+//     action: '/profile/view',
+//     element: <Dashboard.ViewProfile />
+//   },
+//   {
+//     name: 'Edit Profile',
+//     action: '/:id/profile/edit',
+//     element: <Dashboard.EditProfile />
+//   }
+// ]
+
 export const AuthViews = [
   {
     name: 'Login',
@@ -152,6 +186,7 @@ export const api = {
     login: '/api/auth/login',
     register: '/api/auth/register',
     verifyLicence: '/api/auth/verify-licence/:accType/:licence',
+    verifyMobile: 'api/auth/verify-mobile/:code/:number'
   },
   users: {
     list: '/api/users',
@@ -177,10 +212,18 @@ export const api = {
     uploadSingle: '/api/files/uploadSingle',
     uploadMultiple: '/api/files/uploadMultiple',
     search: '/api/files/search',
-    updateSingle: '/api/files/update',
+    updateSingle: '/api/files/update/{{id}}',
     updateMultiple: '/api/files/update',
+    deleteSingle: '/api/files/delete/{{id}}',
+    deleteMany: '/api/files/delete',
     stream: '/api/files/stream/{{id}}',
     download: '/api/files/download/{{id}}',
+    getById: '/api/files/file/{{id}}',
+    getAllByUser: '/api/files/user/{{id}}',
+    getAllByFileName: '/api/files/filename/:filename',
+    getAllByLabel: '/api/files/label/:label',
+    getByParentId: '/api/files/parent/{{id}}',
+    getByType: '/api/files/type/:type',
   },
   projects: {
     create: '/api/projects/',
