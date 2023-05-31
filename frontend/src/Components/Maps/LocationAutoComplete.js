@@ -215,6 +215,7 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange,
             // console.log(distance);
             setViewState(newViewport);
             setMarker({ latitude: center[1], longitude: center[0] });
+            onCoordinatesChange({ latitude: center[1], longitude: center[0] });
             onViewportChange(newViewport);
           }
         });

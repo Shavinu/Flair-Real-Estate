@@ -84,13 +84,13 @@ export const views = [
     element: <Project.Edit />,
     isRoute: true
   },
-  // {
-  //   name: 'Test',
-  //   action: '/projects/test',
-  //   icon: 'feather icon-inbox',
-  //   element: <Project.Test />,
-  //   isRoute: true
-  // },
+  {
+    name: 'Test',
+    action: '/projects/test',
+    icon: 'feather icon-inbox',
+    element: <Project.Test />,
+    isRoute: true
+  },
   {
     name: 'File Upload',
     action: '/files/upload',
