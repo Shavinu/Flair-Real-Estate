@@ -12,7 +12,6 @@ import moment from "moment";
 const Edit = () => {
   const [user, setUser] = useState();
   const [groups, setGroups] = useState([]);
-
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -403,6 +402,7 @@ const Edit = () => {
                   setConfirmationPassword(e.target.value);
                 }}
                 error={errors?.confirmationPassword}
+                autoComplete={'new-password'}
               />
             </Group>
           </CardBody>

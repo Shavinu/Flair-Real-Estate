@@ -9,6 +9,10 @@ export const getUsersByGroupId = (groupId) => {
   return utils.fetch.httpPost(api.groups.users, { _id: groupId });
 }
 
+export const getSubGroupsByParentGroupId = (groupId) => {
+  return utils.fetch.httpPost(api.groups.subGroups, { groupParentId: groupId });
+}
+
 export const getAvailableUsers = () => {
   return utils.fetch.httpGet(api.groups.availableUsers);
 }
