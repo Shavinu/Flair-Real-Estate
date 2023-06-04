@@ -41,7 +41,7 @@ const userSchema = new Schema(
     },
     jobType: {
       type: String,
-      required: true,
+      required: false,
     },
     licence: {
       type: String,

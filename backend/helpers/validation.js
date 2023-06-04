@@ -2,7 +2,7 @@ const Joi = require('@hapi/joi');
 
 const userSchema = Joi.object({
   accType: Joi.string().required(),
-  jobType: Joi.string().required(),
+  jobType: Joi.string().optional(),
   licence: Joi.string().optional(),
   verifiedLicence: Joi.string().required(),
   email: Joi.string().email().required(),
