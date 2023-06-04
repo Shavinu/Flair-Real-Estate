@@ -144,10 +144,27 @@ const updateProjectSchema =
     ).optional()
   }).min(0);
 
+const listingSchema = Joi.object({
+  listingName: Joi.string().required(),
+  type: Joi.string().required(),
+  priceRange: Joi.string().required(),
+  description: Joi.string().required(),
+  streetAddress: Joi.string().required(),
+  postcode: Joi.number().required(),
+  region: Joi.string().optional(),
+  landSize: Joi.number().optional(),
+  bedrooms: Joi.number().optional(),
+  bathrooms: Joi.number().optional(),
+  carSpaces: Joi.number().optional(),
+  titleImage: Joi.number().optional(),
+  devloper: Joi.string().optional(),
+})
+
 module.exports = {
   userSchema,
   authSchema,
   validateSchema,
   projectSchema,
-  updateProjectSchema
+  updateProjectSchema,
+  listingSchema
 }
