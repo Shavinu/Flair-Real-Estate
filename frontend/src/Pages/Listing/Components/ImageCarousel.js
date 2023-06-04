@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { Container, Row, Col, Carousel, Card, Button, Modal } from "react-bootstrap";
 import "./ImageCarousel.css";
 
-const CardCarousel = ({ project, imageUrls }) => {
+const CardCarousel = ({ listing, imageUrls }) => {
   const carouselRef = useRef(null);
   const [showModal, setShowModal] = useState(false);
   const [zoomedImage, setZoomedImage] = useState(null);
@@ -29,35 +29,35 @@ const CardCarousel = ({ project, imageUrls }) => {
   };
 
   const handleModalPrevClick = () => {
-    const currentImageIndex = project.projectSlideImages.findIndex(slideImage => {
+    const currentImageIndex = listing.slideImages.findIndex(slideImage => {
       const fileId = slideImage[Object.keys(slideImage)[0]];
       return imageUrls[fileId] === zoomedImage;
     });
 
     if (currentImageIndex === 0) {
-      setZoomedImage(imageUrls[project.projectSlideImages[project.projectSlideImages.length - 1][Object.keys(project.projectSlideImages[project.projectSlideImages.length - 1])[0]]]);
+      setZoomedImage(imageUrls[listing.slideImages[listing.slideImages.length - 1][Object.keys(listing.slideImages[listing.slideImages.length - 1])[0]]]);
     } else {
-      setZoomedImage(imageUrls[project.projectSlideImages[currentImageIndex - 1][Object.keys(project.projectSlideImages[currentImageIndex - 1])[0]]]);
+      setZoomedImage(imageUrls[listing.slideImages[currentImageIndex - 1][Object.keys(listing.slideImages[currentImageIndex - 1])[0]]]);
     }
   };
 
   const handleModalNextClick = () => {
-    const currentImageIndex = project.projectSlideImages.findIndex(slideImage => {
+    const currentImageIndex = listing.slideImages.findIndex(slideImage => {
       const fileId = slideImage[Object.keys(slideImage)[0]];
       return imageUrls[fileId] === zoomedImage;
     });
 
-    if (currentImageIndex === project.projectSlideImages.length - 1) {
-      setZoomedImage(imageUrls[project.projectSlideImages[0][Object.keys(project.projectSlideImages[0])[0]]]);
+    if (currentImageIndex === listing.slideImages.length - 1) {
+      setZoomedImage(imageUrls[listing.slideImages[0][Object.keys(listing.slideImages[0])[0]]]);
     } else {
-      setZoomedImage(imageUrls[project.projectSlideImages[currentImageIndex + 1][Object.keys(project.projectSlideImages[currentImageIndex + 1])[0]]]);
+      setZoomedImage(imageUrls[listing.slideImages[currentImageIndex + 1][Object.keys(listing.slideImages[currentImageIndex + 1])[0]]]);
     }
   };
 
   return (
     <Container>
       <Row className="justify-content-center">
-        {project.projectSlideImages.map((slideImage, index) => {
+        {listing.slideImages.map((slideImage, index) => {
           const fileId = slideImage[Object.keys(slideImage)[0]];
           return (
             <Col md={2} sm={3} xs={4} key={index}>
@@ -79,7 +79,7 @@ const CardCarousel = ({ project, imageUrls }) => {
               <i className="feather icon-arrow-left"></i>
             </Button>
             <Carousel ref={carouselRef} controls={false} indicators={false}>
-              {project.projectSlideImages.map((slideImage, index) => {
+              {listing.slideImages.map((slideImage, index) => {
                 const fileId = slideImage[Object.keys(slideImage)[0]];
                 return (
                   <Carousel.Item key={index}>

@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const {
     getListings,
+    getListingsByDeveloper,
     getaListing,
     createListing,
     deleteListing,
@@ -11,6 +12,9 @@ const {
 //Get all Listings
 router.get('', getListings)
 
+//Get all Listings by developer
+router.get('/developer/:id', getListingsByDeveloper)
+
 //Get single Listing
 router.get('/:id', getaListing)
 
@@ -19,7 +23,6 @@ router.post('/create', createListing)
 
 //delete a Listing
 router.delete('/:id', deleteListing)
-
 
 //UPDATE a Listing
 router.patch('/:id', updateListing)

@@ -75,7 +75,7 @@ const ImageBrowser = ({ setTitleImage, setSlideshowImages, titleImage, slideshow
               <FormLabel>Title Image</FormLabel>
               <Row className='row justify-content-evenly'>
                 <Col lg={6}>
-                  <hr className='mb-1'/>
+                  <hr className='mb-1' />
                   <p className='small'>Please select a title image to display on your listing</p>
                   <input
                     type="file"
@@ -132,7 +132,7 @@ const ImageBrowser = ({ setTitleImage, setSlideshowImages, titleImage, slideshow
               <FormLabel>Slideshow Images</FormLabel>
               <Row className='row justify-content-evenly'>
                 <Col lg={6}>
-                  <hr/>
+                  <hr />
                   <p className='small'>Please select images to display in your listing slideshow</p>
                   <input
                     type="file"
@@ -168,7 +168,7 @@ const UploadTitle = async (titleImage, user) => {
 
 const UploadSlides = async (slideshowImages, user) => {
   try {
-    const projectSlideImages = await Promise.all(
+    const listingSlideImages = await Promise.all(
       slideshowImages.map(async (image, index) => {
         const formData = new FormData();
         formData.append('file', image);
@@ -181,11 +181,11 @@ const UploadSlides = async (slideshowImages, user) => {
       })
     );
 
-    console.log(projectSlideImages);
-    if (projectSlideImages.length === 0) {
+    console.log(listingSlideImages);
+    if (listingSlideImages.length === 0) {
       return;
     }
-    return JSON.stringify(projectSlideImages);
+    return JSON.stringify(listingSlideImages);
   } catch (e) {
     console.log(e);
   }

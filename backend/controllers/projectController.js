@@ -181,8 +181,12 @@ const projectController = {
       const page = parseInt(req.query.page);
       const limit = parseInt(req.query.limit);
       const skip = page && limit ? (page - 1) * limit : 0;
+      const search = req.query.search || '';
 
-      const projectsQuery = Project.find({ projectOwner: ownerId })
+      const projectsQuery = Project.find({
+        projectOwner: ownerId,
+        projectName: { $regex: search, $options: 'i' },
+      })
         .populate('projectOwner', '_id firstName lastName email')
         .sort({ createdAt: -1 });
 
@@ -195,7 +199,11 @@ const projectController = {
       }
 
       const projects = await projectsQuery.exec();
-      const totalProjects = await Project.countDocuments({ projectOwner: ownerId });
+      
+      const totalProjects = await Project.countDocuments({
+        projectOwner: ownerId,
+        projectName: { $regex: search, $options: 'i' },
+      });
 
       res.status(200).json({
         projects,
@@ -205,7 +213,7 @@ const projectController = {
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
-  },
+  },  
 
 
   // Add members to a project

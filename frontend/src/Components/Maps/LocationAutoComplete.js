@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
+import Toast from "../../Components/Toast";
 import mbxClient from '@mapbox/mapbox-sdk';
 import mbxGeocoding from '@mapbox/mapbox-sdk/services/geocoding';
 import { Container, Row, Button } from 'react-bootstrap';
 import ReactMapGL, { Marker, NavigationControl } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { set } from 'mongoose';
 
 const mapboxApiKey = process.env.REACT_APP_MAP_BOX_API_KEY;
 
@@ -15,7 +17,7 @@ if (mapboxApiKey) {
   geocodingClient = mbxGeocoding(mapboxClient);
 }
 
-const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange, initialData, reset }) => {
+const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange, set_postcode_region, initialData, reset }) => {
   const [inputValue, setInputValue] = useState('');
   const [options, setOptions] = useState([]);
   const [resetData, setResetData] = useState([]);
@@ -69,6 +71,11 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange,
       handleSelectChange(selectedOption);
       onCoordinatesChange({ latitude, longitude });
 
+      if (initialData[0].postcode && initialData[0].region) {
+        const { postcode, region } = initialData[0];
+        set_postcode_region({ postcode, region });
+      }
+
       setInitialDataSet(true);
     }
   }, [initialData]);
@@ -111,7 +118,6 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange,
 
   const onClickMap = (event) => {
     const { lng: longitude, lat: latitude } = event.lngLat;
-    setMarker({ latitude, longitude });
 
     geocodingClient
       .reverseGeocode({
@@ -124,6 +130,9 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange,
       .then((response) => {
         const features = response.body.features;
         if (features.length > 0) {
+          setMarker({ latitude, longitude });
+          const { place_name, context } = features[0];
+          const { postcode, region } = getPostcodeAndRegion(context);
           const selectedOption = {
             value: features[0].place_name,
             label: features[0].place_name,
@@ -131,7 +140,12 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange,
           onChange(selectedOption.value);
           setInputValue(selectedOption.label);
           onCoordinatesChange({ latitude, longitude });
+          if (set_postcode_region) {
+            set_postcode_region({ postcode, region });
+          }
           setOptions([selectedOption]);
+        } else {
+          Toast('No address found, Please try another location', 'warning');
         }
       });
   };
@@ -205,7 +219,8 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange,
         .then((response) => {
           const features = response.body.features;
           if (features.length > 0) {
-            const { center } = features[0];
+            const { center, context } = features[0];
+            const { postcode, region } = getPostcodeAndRegion(context);
             const newViewport = {
               latitude: center[1],
               longitude: center[0]
@@ -216,6 +231,9 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange,
             setViewState(newViewport);
             setMarker({ latitude: center[1], longitude: center[0] });
             onCoordinatesChange({ latitude: center[1], longitude: center[0] });
+            if (set_postcode_region) {
+              set_postcode_region({ postcode, region });
+            }
             onViewportChange(newViewport);
           }
         });
@@ -227,6 +245,9 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange,
     setInputValue('');
     onChange(null);
     onCoordinatesChange(null);
+    if (set_postcode_region) {
+      set_postcode_region({ postcode: '', region: '' });
+    }
   };
 
   if (!mapboxApiKey) {
@@ -237,6 +258,21 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange,
         placeholder="No Mapbox API key found"
       />
     );
+  }
+
+  const getPostcodeAndRegion = (context) => {
+    let postcode = '';
+    let region = '';
+
+    context.forEach((obj) => {
+      if (obj.id.startsWith('postcode')) {
+        postcode = obj.text;
+      } else if (obj.id.startsWith('region')) {
+        region = obj.text;
+      }
+    });
+
+    return { postcode, region };
   }
 
   return (

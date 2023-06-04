@@ -107,13 +107,13 @@ export const views = [
     element: <Listing.Create />,
     isRoute: true
   },
-  // {
-  //   name: 'View Listing',
-  //   action: '/listings/:id',
-  //   icon: 'feather icon-inbox',
-  //   element: <Listing.View />,
-  //   isRoute: true
-  // },
+  {
+    name: 'View Listing',
+    action: '/listings/:id',
+    icon: 'feather icon-inbox',
+    element: <Listing.View />,
+    isRoute: true
+  },
   // {
   //   name: 'Edit Listing',
   //   action: '/listings/:id/edit',
@@ -271,5 +271,13 @@ export const api = {
     getProjectByOwner: '/api/projects/owner/{{Id}}',
     addMembers: '/api/projects/{{id}}/add-members/',
     removeMembers: '/api/projects/{{id}}/remove-members/'
+  },
+  listings: {
+    create: '/api/listings/create',
+    get: '/api/listings/{{id}}',
+    getAll: '/api/listings',
+    update: '/api/listings/{{id}}',
+    delete: '/api/listings/{{id}}',
+    getByDeveloper: '/api/listings/developer/{{id}}',
   }
 }

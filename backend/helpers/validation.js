@@ -147,16 +147,40 @@ const updateProjectSchema =
 const listingSchema = Joi.object({
   listingName: Joi.string().required(),
   type: Joi.string().required(),
-  priceRange: Joi.string().required(),
+  status: Joi.string().required(),
+  priceRange: Joi.array().items(
+    Joi.object({
+      minPrice: Joi.number().required(),
+      maxPrice: Joi.number().required()
+    })
+  ).optional(),
   description: Joi.string().required(),
   streetAddress: Joi.string().required(),
   postcode: Joi.number().required(),
   region: Joi.string().optional(),
+  coordinates: Joi.array().items(
+    Joi.object({
+      longitude: Joi.number().required(),
+      latitude: Joi.number().required()
+    })
+  ).optional(),
   landSize: Joi.number().optional(),
   bedrooms: Joi.number().optional(),
   bathrooms: Joi.number().optional(),
   carSpaces: Joi.number().optional(),
-  titleImage: Joi.number().optional(),
+  titleImage: Joi.string().optional(),
+  slideImages: Joi.array().items(Joi.object().pattern(Joi.string(), Joi.string())).optional(),
+  files: Joi.array().items(
+    Joi.object({
+      file_id: Joi.string().required(),
+      category: Joi.string().required(),
+      category_index: Joi.number().required(),
+      fileName: Joi.string().required(),
+      displayTop: Joi.boolean().required(),
+      visibleTo: Joi.array().items(Joi.string().required()).required()
+    })
+  ).optional(),
+  project: Joi.string().optional(),
   devloper: Joi.string().optional(),
 })
 

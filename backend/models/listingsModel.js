@@ -13,10 +13,21 @@ const listingSchema = new Schema({
         type: String,
         required: true
     },
-    priceRange: {
+    status: {
         type: String,
         required: true
     },
+    priceRange: [{
+        _id: false,
+        minPrice: {
+            type: Number,
+            required: true
+        },
+        maxPrice: {
+            type: Number,
+            required: true
+        }
+    }],
     description: {
         type: String,
         required: true
@@ -33,6 +44,17 @@ const listingSchema = new Schema({
         type: String,
         required: true
     },
+    coordinates: [{
+        _id: false,
+        longitude: {
+            type: Number,
+            required: true
+        },
+        latitude: {
+            type: Number,
+            required: true
+        }
+    }],
     landSize: {
         type: Number,
         required: false
@@ -53,6 +75,51 @@ const listingSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'File',
         required: false
+    },
+    slideImages: [
+        {
+            type: Map,
+            of: mongoose.Schema.Types.ObjectId,
+            ref: 'File',
+            required: false,
+            default: []
+        }
+    ],
+    files: [
+        {
+            file_id: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'File',
+                required: true
+            },
+            category: {
+                type: String,
+                required: true
+            },
+            category_index: {
+                type: Number,
+                required: true
+            },
+            fileName: {
+                type: String,
+                required: true
+            },
+            displayTop: {
+                type: Boolean,
+                required: true,
+                default: false
+            },
+            visibleTo: [{
+                type: String,
+                required: true
+            }]
+        }
+    ],
+    project: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Project',
+        required: false,
+        default: null
     },
     devloper: {
         type: mongoose.Schema.Types.ObjectId,

@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card, ButtonGroup, Button, Pagination } from "react-bootstrap";
 import { ContentHeader } from "../../Components";
 import { Link } from "react-router-dom";
-import * as ProjectService from "../../Services/ProjectService";
+import * as ListingService from "../../Services/ListingService";
 import * as FileService from "../../Services/FileService";
 import "./List.css";
 
 const Listings = () => {
   const user = JSON.parse(localStorage.getItem('user'));
-  const ownerId = user.payload._id;
-  const [projects, setProjects] = useState([]);
+  const developer = user.payload._id;
+  const [listings, setListings] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [imageUrls, setImageUrls] = useState({});
@@ -24,21 +24,22 @@ const Listings = () => {
 
     const fetchListings = async () => {
       try {
-        const response = await ProjectService.getProjectByOwner(ownerId, currentPage, 6);
-        setProjects(response.projects);
+        const response = await ListingService.getListingsByDeveloper(developer, currentPage, 6);
+        setListings(response.listings);
         setCurrentPage(response.currentPage);
         setTotalPages(response.totalPages);
 
-        response.projects.forEach((project) => {
-          getImageUrl(project.projectTitleImage);
+        console.log(response);
+        response.listings.forEach((listing) => {
+          getImageUrl(listing.titleImage);
         });
 
       } catch (error) {
-        console.error("Error fetching projects:", error);
+        console.error("Error fetching listings:", error);
       }
     };
-    // fetchListings();
-  }, [ownerId, currentPage, imageUrls]);
+    fetchListings();
+  }, [developer, currentPage, imageUrls]);
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
@@ -70,24 +71,23 @@ const Listings = () => {
         options={<Link className="btn btn-primary waves-effect waves-light" to="/listings/create">Create Listing</Link>}
       />
       <Row>
-        {projects.map((project) => (
-          <Col key={project._id} lg={4} md={6} className="mb-4">
-            {/* make card height all the same size */}
-            <Card className="project-card h-100">
-              <Card.Img variant="top" src={imageUrls[project.projectTitleImage]} style={{ width: "100%", height: "200px", objectFit: "cover" }} />
+        {listings.map((listing) => (
+          <Col key={listing._id} lg={4} md={6} className="mb-4">
+            <Card className="listing-card h-100">
+              <Card.Img variant="top" src={imageUrls[listing.titleImage]} style={{ width: "100%", height: "200px", objectFit: "cover" }} />
               <Card.Body className="p-0">
-                <Card.Title className="text-white bg-dark p-1 mb-0" style={{ background: 'linear-gradient(to right, rgba(102, 126, 234, 0.5), rgba(118, 75, 162, 0.5))' }}>{project.projectName}</Card.Title>
+                <Card.Title className="text-white bg-dark p-1 mb-0" style={{ background: 'linear-gradient(to right, rgba(19, 198, 137, 1) , rgba(19, 198, 150, 1))' }}>{listing.listingName}</Card.Title>
                 <Card.Text className="text-right text-white bg-info pl-1 pr-1" style={{ background: 'linear-gradient(to right, rgba(102, 126, 234, 0.5), rgba(118, 75, 162, 0.5))' }}>
-                  {project.projectLocation['locationName']}
+                  {listing.streetAddress}
                 </Card.Text>
-                <Card.Text className="pl-1 pr-1"><div className="truncate-text" dangerouslySetInnerHTML={{ __html: project.projectDescription }} /></Card.Text>
+                <Card.Text className="pl-1 pr-1"><div className="truncate-text" dangerouslySetInnerHTML={{ __html: listing.description }} /></Card.Text>
               </Card.Body>
               <Card.Footer>
                 <ButtonGroup>
-                  <Link to={`/projects/${project._id}`} className="btn btn-primary">
+                  <Link to={`/listings/${listing._id}`} className="btn btn-primary">
                     View
                   </Link>
-                  <Link to={`/projects/${project._id}/edit`} className="btn btn-secondary">
+                  <Link to={`/listings/${listing._id}/edit`} className="btn btn-secondary">
                     Edit
                   </Link>
                 </ButtonGroup>

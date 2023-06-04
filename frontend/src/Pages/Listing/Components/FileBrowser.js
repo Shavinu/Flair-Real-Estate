@@ -16,13 +16,13 @@ const FileBrowser = ({ options, onFilesChange, error, setErrors }) => {
 
   useEffect(() => {
     const hasInvalidFile = files.some(fileObj => fileObj.isOther && !fileObj.category);
-    if(hasInvalidFile) {
+    if (hasInvalidFile) {
       setIsInvalid(true);
-      setErrors({ projectFiles: 'Please provide a category for each file' });
+      setErrors({ listingFiles: 'Please provide a category for each file' });
     } else {
       setIsInvalid(false);
       const errorsCopy = { ...error };
-      delete errorsCopy.projectFiles;
+      delete errorsCopy.listingFiles;
       setErrors(errorsCopy);
     }
   }, [error, files, setErrors]);
@@ -136,81 +136,81 @@ const FileBrowser = ({ options, onFilesChange, error, setErrors }) => {
       />
 
       <div className='table-responsive'>
-      <Table striped bordered hover width={'auto'}>
-        <thead>
-          <tr>
-            <th>Display on top</th>
-            <th>Category</th>
-            <th>Visible to</th>
-            <th>File name</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {files.map((fileObj, index) => (
-            <tr key={index}>
-              <td>
-                <style>
-                  {`
+        <Table striped bordered hover width={'auto'}>
+          <thead>
+            <tr>
+              <th>Display on top</th>
+              <th>Category</th>
+              <th>Visible to</th>
+              <th>File name</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {files.map((fileObj, index) => (
+              <tr key={index}>
+                <td>
+                  <style>
+                    {`
                   .form-check-input {
                     position: relative;
                 `}
-                </style>
-                <Form.Check
-                  id="displayTop"
-                  checked={fileObj.displayTop}
-                  onChange={(e) => handleDisplayTopChange(e, index)}
-                />
-              </td>
-              <td>
-                <Select
-                  value={{ value: fileObj.category, label: fileObj.category || 'Other' }}
-                  onChange={(selectedOption) => handleCategoryChangePerFile(selectedOption, index)}
-                  options={options}
-                  placeholder="Please select a category"
-                  menuPortalTarget={document.body}
-                />
-                {fileObj.isOther && (
-                  <Form.Control
-                    type="text"
-                    value={fileObj.category}
-                    onChange={(e) => handleCustomLabelChange(e, index)}
-                    placeholder='Please type file category'
-                    className={isInvalid && !fileObj.category ? 'is-invalid mt-1' : ''}
+                  </style>
+                  <Form.Check
+                    id="displayTop"
+                    checked={fileObj.displayTop}
+                    onChange={(e) => handleDisplayTopChange(e, index)}
                   />
-                )}
-              </td>
-              <td>
-                <Form.Control className='p-0 w-100 h-100 border-0 shadow-none bg-transparent text-left text-secondary'
-                  as={Select}
-                  key={fileObj.visibleTo}
-                  menuPlacement="auto"
-                  menuPortalTarget={document.body}
-                  overflowX="scroll"
-                  isMulti
-                  options={userTypes.map(userType => ({ value: userType, label: userType }))}
-                  value={fileObj.visibleTo ? fileObj.visibleTo.map(userType => ({ value: userType, label: userType })) : [{ value: 'All', label: 'All' }]}
-                  onChange={(e) => handleVisibleToChange(e, index)}
-                  placeholder="Visible to"
-                />
-              </td>
-              <td>
-                {fileObj.file.name}
-              </td>
-              <td>
-                <ButtonGroup>
-                  <Button variant="primary" onClick={() => replaceFile(index)}>
-                    Replace
-                  </Button>
-                  <Button variant="danger" onClick={() => removeFile(index)}>
-                    Remove
-                  </Button>
-                </ButtonGroup>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+                </td>
+                <td>
+                  <Select
+                    value={{ value: fileObj.category, label: fileObj.category || 'Other' }}
+                    onChange={(selectedOption) => handleCategoryChangePerFile(selectedOption, index)}
+                    options={options}
+                    placeholder="Please select a category"
+                    menuPortalTarget={document.body}
+                  />
+                  {fileObj.isOther && (
+                    <Form.Control
+                      type="text"
+                      value={fileObj.category}
+                      onChange={(e) => handleCustomLabelChange(e, index)}
+                      placeholder='Please type file category'
+                      className={isInvalid && !fileObj.category ? 'is-invalid mt-1' : ''}
+                    />
+                  )}
+                </td>
+                <td>
+                  <Form.Control className='p-0 w-100 h-100 border-0 shadow-none bg-transparent text-left text-secondary'
+                    as={Select}
+                    key={fileObj.visibleTo}
+                    menuPlacement="auto"
+                    menuPortalTarget={document.body}
+                    overflowX="scroll"
+                    isMulti
+                    options={userTypes.map(userType => ({ value: userType, label: userType }))}
+                    value={fileObj.visibleTo ? fileObj.visibleTo.map(userType => ({ value: userType, label: userType })) : [{ value: 'All', label: 'All' }]}
+                    onChange={(e) => handleVisibleToChange(e, index)}
+                    placeholder="Visible to"
+                  />
+                </td>
+                <td>
+                  {fileObj.file.name}
+                </td>
+                <td>
+                  <ButtonGroup>
+                    <Button variant="primary" onClick={() => replaceFile(index)}>
+                      Replace
+                    </Button>
+                    <Button variant="danger" onClick={() => removeFile(index)}>
+                      Remove
+                    </Button>
+                  </ButtonGroup>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
       </div>
 
       <input
@@ -258,7 +258,7 @@ const UploadFiles = async (fileUploadFiles, user) => {
       categoryCounts[fileObj.category] = (categoryCounts[fileObj.category] || 0) + 1;
     });
 
-    const projectFiles = await Promise.all(
+    const listingFiles = await Promise.all(
       fileUploadFiles.map(async (fileObj) => {
         const category_index = getCategoryIndex(fileObj, categoryCounts, currentCategoryIndex);
         const formData = createFileUploadFormData(fileObj, categoryCounts, currentCategoryIndex, user);
@@ -267,11 +267,11 @@ const UploadFiles = async (fileUploadFiles, user) => {
       })
     );
 
-    console.log(projectFiles);
-    if (projectFiles.length === 0) {
+    console.log(listingFiles);
+    if (listingFiles.length === 0) {
       return;
     }
-    return JSON.stringify(projectFiles);
+    return JSON.stringify(listingFiles);
   } catch (e) {
     console.log(e);
   }

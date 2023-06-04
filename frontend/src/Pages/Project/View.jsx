@@ -232,7 +232,7 @@ const ProjectDetails = () => {
         </Col>
       </Row>
       {project.projectFiles.length > 0 && (
-        <Row className="mt-5">
+        <Row>
           <Col>
             <Card className="rounded mt-1 p-0">
               <Card.Subtitle className="text-white bg-dark p-1 mt-0 mb-0" style={{ background: 'linear-gradient(to right, rgba(102, 126, 234, 0.5), rgba(118, 75, 162, 0.5))' }}> Project Files: </Card.Subtitle>
@@ -257,7 +257,7 @@ const ProjectDetails = () => {
       )}
       {coordinates && (
         <Row>
-          <Col className="mt-5"><Card className="rounded mt-1 p-0">
+          <Col><Card className="rounded mt-1 p-0">
             <Card.Subtitle className="text-white bg-dark p-1 mt-0 mb-0" style={{ background: 'linear-gradient(to right, rgba(102, 126, 234, 0.5), rgba(118, 75, 162, 0.5))' }}>Points of Interest Nearby: {locationName}: </Card.Subtitle>
             <NearbyPOIs coordinates={coordinates} />
           </Card>

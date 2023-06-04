@@ -6,7 +6,7 @@ import * as FileService from '../../../Services/FileService';
 import '../List.css';
 import './ChooseProject.css';
 
-const ChooseProject = () => {
+const ChooseProject = ({ onProjectChange }) => {
   const user = JSON.parse(localStorage.getItem('user'));
   const ownerId = user.payload._id;
   const [selectedProject, setSelectedProject] = useState(null);
@@ -27,7 +27,7 @@ const ChooseProject = () => {
 
     const fetchListings = async () => {
       try {
-        const response = await ProjectService.getProjectByOwner(ownerId, currentPage, 6);
+        const response = await ProjectService.getProjectByOwner(ownerId, currentPage, 6, search);
         setProjects(response.projects);
         setCurrentPage(response.currentPage);
         setTotalPages(response.totalPages);
@@ -41,7 +41,7 @@ const ChooseProject = () => {
     };
     fetchListings();
   }
-    , [ownerId, currentPage, imageUrls]);
+    , [ownerId, currentPage, imageUrls, search]);
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
@@ -65,22 +65,18 @@ const ChooseProject = () => {
 
   const handleSearch = (e) => {
     setSearch(e.target.value);
+    setCurrentPage(1);
+    setSelectedProject(null);
+    setSelectedProjectId(null);
+    onProjectChange(null);
   }
 
   const handleSelectProject = (projectId) => {
     if (selectedProjectId === projectId) {
-      setSelectedProject(null);
-      setSelectedProjectId(null);
-      const selectedProjectCard = document.querySelector('.choose-project-body-content-body-card.selected-project');
-      if (selectedProjectCard) {
-        selectedProjectCard.classList.remove('selected-project');
-        const unselectButton = document.querySelector('.unselect-button');
-        if (unselectButton) {
-          unselectButton.remove();
-        }
-      }
+      handleUnselectProject();
     } else {
       setSelectedProjectId(projectId);
+      onProjectChange(projectId);
       const selectedProject = projects.find(project => project._id === projectId);
       setSelectedProject(selectedProject);
     }
@@ -89,45 +85,37 @@ const ChooseProject = () => {
   const handleUnselectProject = () => {
     setSelectedProject(null);
     setSelectedProjectId(null);
-    const selectedProjectCard = document.querySelector('.choose-project-body-content-body-card.selected-project');
-    if (selectedProjectCard) {
-      selectedProjectCard.classList.remove('selected-project');
-      const unselectButton = document.querySelector('.unselect-button');
-      if (unselectButton) {
-        unselectButton.remove();
-      }
-    }
+    onProjectChange(null);
   }
 
   const renderSelectedProject = () => {
-      return (
-        <div className="choose-project-body-content-body">
-          {projects.filter((project) => {
-            if (search === '') {
-              return project;
-            } else if (project.projectName.toLowerCase().includes(search.toLowerCase())) {
-              return project;
-            }
-          }).map((project) => {
-            return (
-              <div key={project._id}
-                className={`choose-project-body-content-body-card ${selectedProjectId === project._id ? 'selected-project' : ''}`}
-                onClick={() => handleSelectProject(project._id)}
-              >
-                <img src={imageUrls[project.projectTitleImage]} alt="project" />
-                <p>{project.projectName}</p>
+    return (
+      <div className="choose-project-body-content-body">
+        {projects.filter((project) => {
+          if (search === '') {
+            return project;
+          } else if (project.projectName.toLowerCase().includes(search.toLowerCase())) {
+            return project;
+          }
+        }).map((project) => {
+          return (
+            <div key={project._id}
+              className={`choose-project-body-content-body-card ${selectedProjectId === project._id ? 'selected-project' : ''}`}
+              onClick={() => handleSelectProject(project._id)}
+            >
+              <img src={imageUrls[project.projectTitleImage]} alt="project" />
+              <p>{project.projectName}</p>
               {selectedProjectId === project._id &&
-                  <div>
-                  <Button variant="primary" className="unselect-button btn-sm mb-1" onClick={() => handleUnselectProject()}>Unselect</Button>
+                <div>
+                  <Button variant="primary" className="unselect-button btn-sm mb-1" onClick={(e) => { e.stopPropagation(); handleUnselectProject(); }}>Unselect</Button>
                 </div>
               }
-              </div>
-            )
-          })}
-        </div>
-      )
+            </div>
+          )
+        })}
+      </div>
+    )
   }
-
 
   const renderContent = () => {
     return renderSelectedProject();
@@ -153,13 +141,7 @@ const ChooseProject = () => {
               </div>
               <Row>
                 <Col>
-                  <Pagination className="pagination pb-1">
-                    {[...Array(totalPages)].map((_, index) => (
-                      <Pagination.Item key={index + 1} active={index + 1 === currentPage} onClick={() => setCurrentPage(index + 1)}>
-                        {index + 1}
-                      </Pagination.Item>
-                    ))}
-                  </Pagination>
+                  {renderPagination()}
                 </Col>
               </Row>
             </Card.Body>
