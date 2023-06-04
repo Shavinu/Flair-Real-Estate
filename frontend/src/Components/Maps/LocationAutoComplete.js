@@ -273,7 +273,7 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange,
             <Button className='btn btn-info border-dark' style={{ position: 'absolute', top: 60, left: 10 }}
               onClick={goToMarker} disabled={!marker}>Go to Marker
             </Button>
-            {resetData && (
+            {resetData && initialData && (
               <Button className='btn btn-warning border-dark' style={{ position: 'absolute', top: 110, left: 10 }}
                 onClick={handleReset} hidden={!resetData}>Reset
               </Button>

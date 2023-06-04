@@ -6,6 +6,8 @@ import Login from "./Pages/Auth/Login"
 import Register from "./Pages/Auth/RegisterGen"
 import * as Dashboard from "./Pages/ProfileDashboard"
 import * as File from "./Pages/File"
+// import Listing from "./Pages/Project/Test"
+import * as Listing from "./Pages/Listing"
 
 export const views = [
   {
@@ -37,6 +39,7 @@ export const views = [
   {
     name: 'View Profile',
     action: '/profile/:id',
+    icon: 'feather icon-user-check',
     element: <Dashboard.ViewProfile />
   },
   {
@@ -89,6 +92,40 @@ export const views = [
     action: '/projects/test',
     icon: 'feather icon-inbox',
     element: <Project.Test />,
+    isRoute: true
+  },
+  {
+    name: 'Listings',
+    action: '/listings',
+    icon: 'feather icon-list',
+    element: <Listing.List />
+  },
+  {
+    name: 'Create Project',
+    action: '/listings/create',
+    icon: 'feather icon-inbox',
+    element: <Listing.Create />,
+    isRoute: true
+  },
+  // {
+  //   name: 'View Listing',
+  //   action: '/listings/:id',
+  //   icon: 'feather icon-inbox',
+  //   element: <Listing.View />,
+  //   isRoute: true
+  // },
+  // {
+  //   name: 'Edit Listing',
+  //   action: '/listings/:id/edit',
+  //   icon: 'feather icon-inbox',
+  //   element: <Listing.Edit />,
+  //   isRoute: true
+  // },
+  {
+    name: 'Test',
+    action: '/listings/test',
+    icon: 'feather icon-inbox',
+    element: <Listing.Test />,
     isRoute: true
   },
   {

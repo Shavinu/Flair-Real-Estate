@@ -159,7 +159,7 @@ const ProjectDetails = () => {
                     <Card.Body className="m-0 p-0 mb-0 text-right">
                       <ListGroup className="border-0 text-right">
                         <ListGroup.Item key={index} className="ml-auto mt-auto mb-0 mr-0 pl-1 p-0 border-secondary">
-                          {projectFile.category}:
+                          {`${projectFile.category}${projectFile.category_index > 1 ? ` ${projectFile.category_index}` : ''}:`}
                           <ButtonGroup>
                             <Link to={FileService.getImageUrl(projectFile.file_id)} className="ml-1 btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer" >
                               View
@@ -239,7 +239,7 @@ const ProjectDetails = () => {
               <ListGroup>
                 {project.projectFiles.map((projectFile, index) => (
                   <ListGroup.Item key={index}>
-                    {projectFile.category}:
+                    {`${projectFile.category}${projectFile.category_index > 1 ? ` ${projectFile.category_index}` : ''}:`}
                     <ButtonGroup>
                       <Link to={FileService.getImageUrl(projectFile.file_id)} className="ml-1 btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer" >
                         View
