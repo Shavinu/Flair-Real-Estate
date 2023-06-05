@@ -9,6 +9,7 @@ import NearbyPOIs from "../../Components/Maps/getNearbyPOIs";
 import * as ListingService from "../../Services/ListingService";
 import * as ProjectService from "../../Services/ProjectService";
 import * as FileService from "../../Services/FileService";
+import * as UserService from "../../Services/UserService";
 import { PriceRangeOutput } from "../../Components/Form/PriceRange";
 import CardCarousel from "./Components/ImageCarousel";
 import { useState, useEffect } from "react";
@@ -16,6 +17,7 @@ import { useState, useEffect } from "react";
 const ListingDetails = () => {
   const [listing, setListing] = useState(null);
   const [project, setProject] = useState(null);
+  const [developer, setDeveloper] = useState(null);
   const [imageUrls, setImageUrls] = useState({});
   const [locationName, setLocationName] = useState(null);
   const [longitude, setLongitude] = useState(null);
@@ -41,6 +43,8 @@ const ListingDetails = () => {
           console.log(fetchedProject);
           setProject(fetchedProject);
         }
+        const fetchedUser = await UserService.getUserDetailById(fetchedListing.devloper);
+        setDeveloper(fetchedUser);
       } catch (error) {
         console.error(error);
       }
@@ -140,7 +144,9 @@ const ListingDetails = () => {
             </Row>
             <Row className="justify-content-between">
               <Col lg={6}>
-                <div className="d-inline-flex mt-1 mb-1 px-1 font-weight-bold text-secondary border border-secondary border-opacity-10 rounded">Posted By: {listing.devloper.firstName} {listing.devloper.lastName}</div>
+                {developer &&(
+                <div className="d-inline-flex mt-1 mb-1 px-1 font-weight-bold text-secondary border border-secondary border-opacity-10 rounded">Posted By: {developer.firstName} {developer.lastName}</div>
+                )}
               </Col>
               <Col lg={6} className="align-self-end text-right pb-1">
                 {listing.files.filter(file => file.displayTop).map((listingFile, index) => (
