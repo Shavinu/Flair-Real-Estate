@@ -6,7 +6,6 @@ import mbxGeocoding from '@mapbox/mapbox-sdk/services/geocoding';
 import { Container, Row, Button } from 'react-bootstrap';
 import ReactMapGL, { Marker, NavigationControl } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { set } from 'mongoose';
 
 const mapboxApiKey = process.env.REACT_APP_MAP_BOX_API_KEY;
 

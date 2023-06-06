@@ -16,7 +16,6 @@ import { PriceRangeInput } from "../../Components/Form/PriceRange";
 import { FileBrowser, UploadFiles } from "./Components/FileBrowser";
 import { ImageBrowser, UploadTitle, UploadSlides } from './Components/ImageBrowser';
 import ChooseProject from './Components/ChooseProject';
-import { set } from "mongoose";
 
 const Create = () => {
 
@@ -313,7 +312,7 @@ const Create = () => {
                     overflow-y: scroll;
                     border: none !important;
                     }
-                    
+
                     .ql-container {
                       resize: vertical;
                       overflow-y: scroll;
