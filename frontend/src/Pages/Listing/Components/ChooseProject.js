@@ -7,8 +7,8 @@ import '../List.css';
 import './ChooseProject.css';
 
 const ChooseProject = ({ onProjectChange }) => {
-  const user = JSON.parse(localStorage.getItem('user'));
-  const ownerId = user.payload._id;
+  const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+  const ownerId = user ? user.payload._id : null;
   const [selectedProject, setSelectedProject] = useState(null);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [search, setSearch] = useState('');

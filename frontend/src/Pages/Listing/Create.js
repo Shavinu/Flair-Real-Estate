@@ -20,18 +20,8 @@ import ChooseProject from './Components/ChooseProject';
 const Create = () => {
 
   const navigate = useNavigate();
-  const [user, setUser] = useState();
-
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user) {
-      setUser(user.payload._id);
-      setDeveloper(user.payload._id);
-    }
-  }, []);
-
-
-  const [developer, setDeveloper] = useState("");
+  const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+  const developer = user ? user.payload._id : null;
   const [listingName, setListingName] = useState("");
   const [listingType, setListingType] = useState("");
   const [listingStatus, setListingStatus] = useState("");
@@ -176,7 +166,6 @@ const Create = () => {
           fileData = JSON.parse(fileData);
         }
 
-        setDeveloper(user);
         const listingData = {
           listingName: listingName,
           type: listingType.value,
@@ -228,7 +217,7 @@ const Create = () => {
         options={[
           <ButtonGroup>
             <Button variant="secondary" onClick={() => navigate(-1)}>Back</Button>
-            <Button variant="primary" onClick={handleSubmit}>Save</Button>
+            <Button variant="primary" onClick={handleSubmit} disabled={!user || loading}>Save</Button>
           </ButtonGroup>
         ]}
       />

@@ -7,8 +7,8 @@ import * as FileService from "../../Services/FileService";
 import "./List.css";
 
 const Listings = () => {
-  const user = JSON.parse(localStorage.getItem('user'));
-  const developer = user.payload._id;
+  const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+  const developer = user ? user.payload._id : null;
   const [listings, setListings] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);

@@ -226,6 +226,7 @@ const Create = () => {
         options={<Button className="btn btn-primary waves-effect waves-light"
           onClick={handleProjectSubmit}
           isLoading={loading}
+          disabled={!user || loading}
         >
           Submit
         </Button>}
