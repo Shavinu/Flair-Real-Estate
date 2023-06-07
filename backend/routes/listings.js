@@ -2,7 +2,9 @@ const express = require('express')
 const router = express.Router()
 const {
     getListings,
+    searchListings,
     getListingsByDeveloper,
+    getDevelopersWithListings,
     getaListing,
     createListing,
     deleteListing,
@@ -14,6 +16,12 @@ router.get('', getListings)
 
 //Get all Listings by developer
 router.get('/developer/:id', getListingsByDeveloper)
+
+//Get all developers with listings
+router.get('/developers', getDevelopersWithListings)
+
+//Search Listings
+router.get('/search', searchListings);
 
 //Get single Listing
 router.get('/:id', getaListing)

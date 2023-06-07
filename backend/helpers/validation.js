@@ -180,7 +180,7 @@ const listingSchema = Joi.object({
       visibleTo: Joi.array().items(Joi.string().required()).required()
     })
   ).optional(),
-  project: Joi.string().optional(),
+  project: Joi.string().allow(null).allow('').optional(),
   devloper: Joi.string().optional(),
 })
 

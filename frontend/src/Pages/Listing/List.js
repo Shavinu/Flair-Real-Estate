@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import * as ListingService from "../../Services/ListingService";
 import * as FileService from "../../Services/FileService";
 import "./List.css";
+import { SearchComponent, PriceRangeInput } from "./Search";
 
 const Listings = () => {
   const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
@@ -22,7 +23,7 @@ const Listings = () => {
       }
     };
 
-    const fetchListings = async () => {
+    const fetchListings = async (searchParams = null) => {
       try {
         const response = await ListingService.getListingsByDeveloper(developer, currentPage, 6);
         setListings(response.listings);
@@ -40,6 +41,29 @@ const Listings = () => {
     };
     fetchListings();
   }, [developer, currentPage, imageUrls]);
+
+  const fetchListings = async (searchParams = null) => {
+    try {
+      console.log(searchParams);
+      const response = await ListingService.searchListings(currentPage, 6, searchParams);
+      setListings(response.listings);
+      setCurrentPage(response.currentPage);
+      setTotalPages(response.totalPages);
+
+      console.log(response);
+      response.listings.forEach((listing) => {
+        getImageUrl(listing.titleImage);
+      });
+
+    } catch (error) {
+      console.error("Error fetching listings:", error);
+    }
+  };
+
+  const handleSearch = (searchParams) => {
+    setCurrentPage(1);
+    fetchListings(searchParams);
+  };
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
@@ -63,13 +87,16 @@ const Listings = () => {
 
   return (
     <Container className="mt-0">
-      <ContentHeader headerTitle="Listings"
+      <ContentHeader headerTitle="Your Listings"
         breadcrumb={[
           { name: "Home", link: "/" },
-          { name: "Listings", active: true },
+          { name: "Your Listings", active: true },
         ]}
         options={<Link className="btn btn-primary waves-effect waves-light" to="/listings/create">Create Listing</Link>}
       />
+      <Row>
+        <SearchComponent onSearch={handleSearch} all={false} />
+      </Row>
       <Row>
         {listings.map((listing) => (
           <Col key={listing._id} lg={4} md={6} className="mb-4">

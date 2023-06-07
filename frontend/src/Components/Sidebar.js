@@ -8,10 +8,15 @@ const ChildrenMenu = ({ route, currentPath }) => {
     return route.action === currentPath
   }
 
+  const handleParentClick = (e) => {
+    e.preventDefault();
+    e.target.parentElement.classList.toggle('open');
+  }
+
   return <>
     <li key={utils.newGuid()} className={`nav-item has-sub ${isActive(route) ? 'sidebar-group-active open' : ''}`} >
-      <Link to="#">
-        <i className={route.icon}></i><span className="menu-title">{route.name}</span>
+      <Link to="#" onClick={handleParentClick}>
+        {route.icon && <i className={route.icon}></i>}<span className="menu-title">{route.name}</span>
       </Link>
       <ul className="menu-content" key={utils.newGuid()}>
         {
@@ -22,7 +27,8 @@ const ChildrenMenu = ({ route, currentPath }) => {
 
             return <li key={utils.newGuid()} className={isActive(r) ? 'active' : ''}>
               <Link to={r.action}>
-                <span className="menu-item">
+              {r.icon && <i className={r.icon}></i>}
+              <span className="menu-item">
                   {r.name}
                 </span>
               </Link>
@@ -76,7 +82,7 @@ const Sidebar = (props) => {
 
             return <li className={`nav-item ${isActive(route) ? 'active' : ''}`} key={utils.newGuid()} >
               <Link to={route.action}>
-                <i className={route.icon}></i><span className="menu-title">{route.name}</span>
+              {route.icon && <i className={route.icon}></i>}<span className="menu-title">{route.name}</span>
               </Link>
             </li>
           })}

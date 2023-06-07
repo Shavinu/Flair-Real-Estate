@@ -96,9 +96,30 @@ export const views = [
   },
   {
     name: 'Listings',
-    action: '/listings',
     icon: 'feather icon-list',
-    element: <Listing.List />
+    children: [
+      {
+        name: 'Create Listing',
+        action: '/listings/create',
+        icon: 'feather icon-plus-circle',
+        element: <Listing.Create />,
+        isRoute: false,
+      },
+      {
+        name: 'All Listings',
+        action: '/listings',
+        icon: 'feather icon-search',
+        element: <Listing.Search />,
+        isRoute: false
+      },
+      {
+        name: 'Your Listings',
+        action: '/listings/your',
+        icon: 'feather icon-layers',
+        element: <Listing.List />,
+        isRoute: false
+      }
+    ]
   },
   {
     name: 'Create Project',
@@ -274,8 +295,10 @@ export const api = {
   },
   listings: {
     create: '/api/listings/create',
+    search: '/api/listings/search',
     get: '/api/listings/{{id}}',
     getAll: '/api/listings',
+    getDevelopers: '/api/listings/developers',
     update: '/api/listings/{{id}}',
     delete: '/api/listings/{{id}}',
     getByDeveloper: '/api/listings/developer/{{id}}',
