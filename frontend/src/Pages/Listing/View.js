@@ -114,9 +114,11 @@ const ListingDetails = () => {
               <Link to={`/listings/`} className="btn btn-secondary">
                 Back
               </Link>
-              <Link to={`/listings/${listing._id}/edit`} className="btn btn-primary">
-                Edit
-              </Link>
+              {developer && localStorage.getItem('user') && JSON.parse(localStorage.getItem('user')).payload._id === developer._id &&
+                <Link to={`/listings/${listing._id}/edit`} className="btn btn-primary">
+                  Edit
+                </Link>
+              }
             </ButtonGroup>
           </div>}
       />
@@ -144,8 +146,8 @@ const ListingDetails = () => {
             </Row>
             <Row className="justify-content-between">
               <Col lg={6}>
-                {developer &&(
-                <div className="d-inline-flex mt-1 mb-1 px-1 font-weight-bold text-secondary border border-secondary border-opacity-10 rounded">Posted By: {developer.firstName} {developer.lastName}</div>
+                {developer && (
+                  <div className="d-inline-flex mt-1 mb-1 px-1 font-weight-bold text-secondary border border-secondary border-opacity-10 rounded">Posted By: {developer.firstName} {developer.lastName}</div>
                 )}
               </Col>
               <Col lg={6} className="align-self-end text-right pb-1">
