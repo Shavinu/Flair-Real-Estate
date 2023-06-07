@@ -8,6 +8,7 @@ import { Alert, Button, Card } from '../../Components';
 import RegisterGen from './RegisterGen';
 import CardBody from '../../Components/Card/CardBody';
 
+
 const Register = ({ type, page }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -93,11 +94,25 @@ const Register = ({ type, page }) => {
     page(1);
   };
 
+  const errorShake = () => {
+    window.jQuery('button[type=submit]').addClass('animated headShake bg-red');
+
+    window
+      .jQuery('button[type=submit]')
+      .on(
+        'webkitAnimationEnd oanimationend msAnimationEnd animationend',
+        function (e) {
+          window.jQuery('button[type=submit]').delay(200).removeClass('animated headShake bg-red');
+        }
+      );
+  };
+
   const onSubmit = (e) => {
     setIsLoading(true);
     e.preventDefault();
     if (!isValid()) {
       setIsLoading(false);
+      errorShake();
       return;
     }
 
@@ -105,14 +120,15 @@ const Register = ({ type, page }) => {
       .then((response) => {
         if (response?.error) {
           setAlertMessage(response.error.message);
-          Toast('Licence verification failed!', 'warning');
+          // Toast('Licence verification failed!', 'warning');
           setIsLoading(false);
+          errorShake();
           return;
         }
 
         if (response?.message === 'Licence is valid') {
           setAlertMessage();
-          Toast('Licence verified!', 'success');
+          // Toast('Licence verified!', 'success');
           setVerifiedLicence(true);
 
           AuthServices.register({
@@ -130,7 +146,7 @@ const Register = ({ type, page }) => {
           })
             .then((response) => {
               setAlertMessage();
-              Toast('Register successfully!', 'success');
+              Toast('Registered successfully!', 'success');
               navigate('/');
             })
             .catch((response) => {
@@ -140,7 +156,7 @@ const Register = ({ type, page }) => {
               ) {
                 setAlertMessage(response.response.data.error.message);
               }
-              Toast('Register failed!', 'warning');
+              // Toast('Registeration failed!', 'warning');
             })
             .finally(() => setIsLoading(false));
         } else {
@@ -252,13 +268,18 @@ const Register = ({ type, page }) => {
                           <Label for='company'>Company</Label>
                         </Group>
                         <Group className='form-label-group'>
-                          <p>If you do not have a licence, use your corporate licence</p>
+                          <p>
+                            If you do not have a licence, use your corporate
+                            licence
+                          </p>
                           <Input
                             name='license'
                             value={licence}
-                            placeholder={type !== 'assistant agent'
-                            ? 'License Number'
-                            : 'Certificate Number'}
+                            placeholder={
+                              type !== 'assistant agent'
+                                ? 'License Number'
+                                : 'Certificate Number'
+                            }
                             onChange={(e) => setLicence(e.target.value)}
                             error={errors?.licence}
                           />
@@ -268,19 +289,31 @@ const Register = ({ type, page }) => {
                               : 'Certificate Number'}
                           </Label>
                         </Group>
-                        <Group className='form-label-group'>
-                        <Select
-                          options={[
-                            { value: 'incharge', label: 'Licence Incharge (Class 1 only)' },
-                            { value: 'agent', label: 'Licence Real Estate Agent (Class 1 or Class 2)' },
-                            { value: 'assistant', label: 'Assistant Agent' },
-                          ]}
-                          value={jobType}
-                          onChange={(value) => setJobType(value)}
-                          error={errors?.jobType}
-                        />
-                          <Label for='job'>Job Title</Label>
-                        </Group>
+                        {type !== 'builder' && type !== 'developer' && (
+                          <Group className='form-label-group'>
+                            <Select
+                              options={[
+                                {
+                                  value: 'incharge',
+                                  label: 'Licence Incharge (Class 1 only)',
+                                },
+                                {
+                                  value: 'agent',
+                                  label:
+                                    'Licence Real Estate Agent (Class 1 or Class 2)',
+                                },
+                                {
+                                  value: 'assistant',
+                                  label: 'Assistant Agent',
+                                },
+                              ]}
+                              value={jobType}
+                              onChange={(value) => setJobType(value)}
+                              error={errors?.jobType}
+                            />
+                            <Label for='job'>Job Title</Label>
+                          </Group>
+                        )}
                         <Group className='form-label-group'>
                           <Input
                             type='password'
@@ -323,11 +356,11 @@ const Register = ({ type, page }) => {
                             </fieldset>
                           </div>
                         </div>
-                        <Link
+                        {/* <Link
                           to='/auth/login'
                           className='btn btn-outline-primary float-left btn-inline mb-50'>
                           Login
-                        </Link>
+                        </Link> */}
                         <Button
                           type='submit'
                           className='btn btn-primary float-right btn-inline mb-50'
@@ -343,6 +376,16 @@ const Register = ({ type, page }) => {
                         </Button>
                       </form>
                     </CardBody>
+                    <p>
+                      Already a member?{' '}
+                      <span>
+                        <Link
+                          to='/auth/login'
+                          className=''>
+                          Sign In
+                        </Link>
+                      </span>
+                    </p>
                   </Card>
                 </div>
               </div>

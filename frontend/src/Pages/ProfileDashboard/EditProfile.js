@@ -8,45 +8,47 @@ import * as AuthServices from '../../Services/AuthService';
 import utils from '../../Utils';
 import Toast from '../../Components/Toast';
 import moment from 'moment';
+import * as GroupService from '../../Services/GroupService';
 
 const EditProfile = ({ page }) => {
   const [user, setUser] = useState();
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [mobileNo, setMobileNo] = useState("");
-  const [phoneNo, setPhoneNo] = useState("");
-  const [accType, setAccType] = useState("");
-  const [jobType, setJobType] = useState("");
-  const [licence, setLicence] = useState("");
-  const [verificationStatus, setVerificationStatus] = useState("");
-  const [company, setCompany] = useState("");
-  const [addressLine1, setAddressLine1] = useState("");
-  const [addressLine2, setAddressLine2] = useState("");
-  const [city, setCity] = useState("");
-  const [country, setCountry] = useState("");
-  const [postcode, setPostcode] = useState("");
-  // const [password, setPassword] = useState();
-  // const [confirmationPassword, setConfirmationPassword] = useState();
-
-  const [errors, setErrors] = useState("");
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [mobileNo, setMobileNo] = useState('');
+  const [phoneNo, setPhoneNo] = useState('');
+  const [accType, setAccType] = useState('');
+  const [jobType, setJobType] = useState('');
+  const [licence, setLicence] = useState('');
+  const [verificationStatus, setVerificationStatus] = useState('');
+  const [company, setCompany] = useState('');
+  const [addressLine1, setAddressLine1] = useState('');
+  const [addressLine2, setAddressLine2] = useState('');
+  const [city, setCity] = useState('');
+  const [country, setCountry] = useState('');
+  const [postcode, setPostcode] = useState('');
+  const [group, setGroup] = useState('');
+  const [errors, setErrors] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { id } = useParams();
 
-  const [showPasswordChangeModal, setShowPasswordChangeModal] = useState(false);
+  // const [showPasswordChangeModal, setShowPasswordChangeModal] = useState(false);
   const [modalStep, setModalStep] = useState(1);
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmNewPassword, setConfirmNewPassword] = useState("");
-  const [showEmailChangeModal, setShowEmailChangeModal] = useState(false);
-  const [newEmail, setNewEmail] = useState("");
-  const [showMobileChangeModal, setShowMobileChangeModal] = useState(false);
-  const [newMobile, setNewMobile] = useState("");
-  const [mobileVerificationCode, setMobileVerificationCode] = useState("");
-  const [showCompanyChangeModal, setShowCompanyChangeModal] = useState("");
-  const [newCompany, setNewCompany] = useState("");
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  // const [showEmailChangeModal, setShowEmailChangeModal] = useState(false);
+  const [newEmail, setNewEmail] = useState('');
+  // const [showCompanyChangeModal, setShowCompanyChangeModal] = useState("");
+  const [newCompany, setNewCompany] = useState('');
 
-  const [alertMessage, setAlertMessage] = useState('');
+  // const [alertMessage, setAlertMessage] = useState('');
+
+  const getGroupDetailById = (id) => {
+    GroupService.getGroupDetailById(id).then((response) => {
+      setGroup(response.groupName);
+    });
+  };
 
   const getUserDetailById = () => {
     UserService.getUserDetailById(id).then((response) => {
@@ -68,7 +70,29 @@ const EditProfile = ({ page }) => {
       setCity(response.city);
       setCountry(response.country);
       setPostcode(response.postcode);
+      getGroupDetailById(response.group);
     });
+  };
+
+  const errorShake = () => {
+    window.jQuery('button[type=submit]').addClass('animated headShake bg-red');
+
+    window
+      .jQuery('button[type=submit]')
+      .on(
+        'webkitAnimationEnd oanimationend msAnimationEnd animationend',
+        function (e) {
+          window
+            .jQuery('button[type=submit]')
+            .delay(200)
+            .removeClass('animated headShake bg-red');
+        }
+      );
+  };
+
+  var hideModal = (modalName) => {
+    console.log('here1');
+    window.jQuery('#' + modalName).modal('hide');
   };
 
   const onCancel = (e) => {
@@ -139,7 +163,7 @@ const EditProfile = ({ page }) => {
       isValid = false;
     }
 
-    if(newPassword != confirmNewPassword){
+    if (newPassword != confirmNewPassword) {
       errors = { ...errors, confirmNewPassword: 'Password does not match' };
       isValid = false;
     }
@@ -178,18 +202,21 @@ const EditProfile = ({ page }) => {
       password: currentPassword,
     })
       .then((response) => {
-        setAlertMessage();
-        setCurrentPassword("");
+        // setAlertMessage();
+        setCurrentPassword('');
         setModalStep(2);
-        Toast('Login successfully!', 'success');
+        // Toast('Login successfully!', 'success');
       })
       .catch((response) => {
-        if (response.response?.data?.error && response.response?.data?.error.message) {
-          setAlertMessage(response.response.data.error.message);
+        if (
+          response.response?.data?.error &&
+          response.response?.data?.error.message
+        ) {
+          // setAlertMessage(response.response.data.error.message);
         }
         Toast('Password is incorrect', 'warning');
-      })
-      .finally(() => setIsLoading(false));
+      });
+    // .finally(() => setIsLoading(false));
   };
 
   const changePassword = (e) => {
@@ -197,6 +224,7 @@ const EditProfile = ({ page }) => {
     e.preventDefault();
     if (!isNewPasswordValid()) {
       setIsLoading(false);
+      errorShake();
       return;
     }
 
@@ -209,13 +237,14 @@ const EditProfile = ({ page }) => {
         Toast('Password has been updated successfully!', 'success');
         getUserDetailById(id);
         setErrors();
-        // setShowPasswordChangeModal(false);
+        hideModal('password_change_modal');
         setModalStep(1);
-        setNewPassword("");
-        setConfirmNewPassword("");
+        setNewPassword('');
+        setConfirmNewPassword('');
       })
       .catch(() => {
-        Toast('Failed to update password!', 'danger');
+        // Toast('Failed to update password!', 'danger');
+        errorShake();
       })
       .finally(() => setIsLoading(false));
   };
@@ -225,6 +254,7 @@ const EditProfile = ({ page }) => {
     e.preventDefault();
     if (!isNewEmailValid()) {
       setIsLoading(false);
+      errorShake();
       return;
     }
 
@@ -234,29 +264,29 @@ const EditProfile = ({ page }) => {
 
     UserService.updateUser(id, body)
       .then((response) => {
-        Toast('Email has been updated successfully!', 'success');
         getUserDetailById(id);
         setErrors();
         setModalStep(1);
-        // setShowEmailChangeModal(false);
+        hideModal('email_change_modal');
         setEmail(newEmail);
-        setNewEmail("");
+        setNewEmail('');
+        Toast('Email has been updated successfully!', 'success');
       })
       .catch(() => {
-        Toast('Failed to update email', 'danger');
+        // Toast('Failed to update email', 'danger');
+        errorShake();
       })
       .finally(() => setIsLoading(false));
   };
 
-  const verifyCompany = (e) => {
-
-  }
+  const verifyCompany = (e) => {};
 
   const onSubmit = (e) => {
     setIsLoading(true);
     e.preventDefault();
     if (!isValid()) {
       setIsLoading(false);
+      errorShake();
       return;
     }
 
@@ -288,6 +318,7 @@ const EditProfile = ({ page }) => {
       })
       .catch(() => {
         Toast('Failed to update user!', 'danger');
+        errorShake();
       })
       .finally(() => setIsLoading(false));
   };
@@ -301,7 +332,7 @@ const EditProfile = ({ page }) => {
       <ContentHeader
         headerTitle='Edit Profile'
         breadcrumb={[
-          { name: 'Home', link: '/' },
+          { name: 'User' },
           { name: 'Profile', link: `/profile/edit/${id}`, active: true },
         ]}
         options={
@@ -313,6 +344,7 @@ const EditProfile = ({ page }) => {
               Cancel
             </Button>
             <Button
+              type='submit'
               className='btn btn-primary waves-effect waves-light mr-75'
               onClick={onSubmit}
               isLoading={isLoading}>
@@ -352,9 +384,7 @@ const EditProfile = ({ page }) => {
                   sm={12}
                   md={6}>
                   <Group>
-                    <Label htmlFor='firstname'>
-                      <h6>First Name</h6>
-                    </Label>
+                    <Label htmlFor='firstname'>First Name</Label>
                     <Input
                       name='firstName'
                       value={firstName}
@@ -370,9 +400,7 @@ const EditProfile = ({ page }) => {
                   sm={12}
                   md={6}>
                   <Group>
-                    <Label htmlFor='lastName'>
-                      <h6>Last Name</h6>
-                    </Label>
+                    <Label htmlFor='lastName'>Last Name</Label>
                     <Input
                       name='lastName'
                       value={lastName}
@@ -388,15 +416,13 @@ const EditProfile = ({ page }) => {
                   sm={12}
                   md={6}>
                   <Group>
-                    <label htmlFor='email'>
-                      <h6>Email</h6>
-                    </label>
+                    <label htmlFor='email'>Email</label>
                     <span
                       className='float-right'
-                      name="email"
-                      data-backdrop="true"
-                      data-target="#email_change_modal"
-                      data-toggle="modal"
+                      name='email'
+                      data-backdrop='true'
+                      data-target='#email_change_modal'
+                      data-toggle='modal'
                       onClick={() => setModalStep(1)}
                       style={{ cursor: 'pointer' }}>
                       <i>
@@ -410,15 +436,13 @@ const EditProfile = ({ page }) => {
                   sm={12}
                   md={6}>
                   <Group>
-                    <label htmlFor='password'>
-                      <h6>Password</h6>
-                    </label>
+                    <label htmlFor='password'>Password</label>
                     <span
                       className='float-right'
                       name='password'
-                      data-backdrop="true"
-                      data-target="#password_change_modal"
-                      data-toggle="modal"
+                      data-backdrop='true'
+                      data-target='#password_change_modal'
+                      data-toggle='modal'
                       onClick={() => setModalStep(1)}
                       style={{ cursor: 'pointer' }}>
                       <i>
@@ -431,27 +455,23 @@ const EditProfile = ({ page }) => {
                   sm={12}
                   md={6}>
                   <Group>
-                    <Label htmlFor='mobile'>
-                      <h6>Mobile</h6>
-                    </Label>
-                        <Input
-                          name='mobile'
-                          value={mobileNo}
-                          placeholder='Mobile Number'
-                          onChange={(e) => {
-                            setMobileNo(e.target.value);
-                          }}
-                          error={errors?.mobileNo}
-                        />
+                    <Label htmlFor='mobile'>Mobile</Label>
+                    <Input
+                      name='mobile'
+                      value={mobileNo}
+                      placeholder='Mobile Number'
+                      onChange={(e) => {
+                        setMobileNo(e.target.value);
+                      }}
+                      error={errors?.mobileNo}
+                    />
                   </Group>
                 </Col>
                 <Col
                   sm={12}
                   md={6}>
                   <Group>
-                    <Label htmlFor='phone'>
-                      <h6>Phone</h6>
-                    </Label>
+                    <Label htmlFor='phone'>Phone</Label>
                     <Input
                       name='phone'
                       value={phoneNo}
@@ -463,56 +483,6 @@ const EditProfile = ({ page }) => {
                     />
                   </Group>
                 </Col>
-                <Col
-                  sm={12}
-                  md={6}>
-                  <Group>
-                    <h6>Role</h6>
-                    <span>{accType}</span>
-                  </Group>
-                  <Group>
-                    <h6>Job Title</h6>
-                    <Select
-                      options={[
-                        { value: 'incharge', label: 'Licence Incharge (Class 1 only)' },
-                        { value: 'agent', label: 'Licence Real Estate Agent (Class 1 or Class 2)' },
-                        { value: 'assistant', label: 'Assistant Agent' },
-                      ]}
-                      value={jobType}
-                      onChange={(value) => setJobType(value)}
-                      error={errors?.jobType}
-                    />
-                  </Group>
-                  <Group>
-                    <Label htmlFor='company'>
-                      <h6>Company</h6>
-                    </Label>
-                    <span
-                      className='float-right'
-                      data-backdrop="true"
-                      data-target="#company_change_modal"
-                      data-toggle="modal"
-                      onClick={() => setModalStep(1)}
-                      style={{ cursor: 'pointer' }}>
-                      <i>
-                        <u>Request change</u>
-                      </i>
-                    </span>
-                    <div name='company'>{company}</div>
-                  </Group>
-                </Col>
-                <Col
-                  sm={12}
-                  md={6}>
-                  <Group>
-                    <h6>Licence</h6>
-                    <span>{licence}</span>
-                  </Group>
-                  <Group>
-                    <h6>Licence Verification Status</h6>
-                    <span>{verificationStatus}</span>
-                  </Group>
-                </Col>
               </Row>
             </CardBody>
           </Card>
@@ -520,7 +490,7 @@ const EditProfile = ({ page }) => {
           <Card header='Office Address'>
             <CardBody>
               <Row>
-              <Col
+                <Col
                   sm={12}
                   md={6}>
                   <Group>
@@ -592,12 +562,85 @@ const EditProfile = ({ page }) => {
             </CardBody>
           </Card>
         </Col>
+        <Col
+          sm={12}
+          md={4}>
+          <Card header='Occupation'>
+            <CardBody>
+              <Row>
+                <Col>
+                  <Group>
+                    <Label htmlFor='role'>Role</Label>
+                    <span name='role'>{accType}</span>
+                  </Group>
+                  <Group>
+                    <Label htmlFor='job'>Job Title</Label>
+                    <Select
+                      options={[
+                        {
+                          value: 'incharge',
+                          label: 'Licence Incharge (Class 1 only)',
+                        },
+                        {
+                          value: 'agent',
+                          label:
+                            'Licence Real Estate Agent (Class 1 or Class 2)',
+                        },
+                        { value: 'assistant', label: 'Assistant Agent' },
+                      ]}
+                      name='job'
+                      value={jobType}
+                      onChange={(value) => setJobType(value)}
+                      error={errors?.jobType}
+                    />
+                  </Group>
+                  <Group>
+                    <Label htmlFor='company'>
+                      <Label htmlFor='company'>Company</Label>
+                    </Label>
+                    <span
+                      name='company'
+                      className='float-right'
+                      data-backdrop='true'
+                      data-target='#company_change_modal'
+                      data-toggle='modal'
+                      onClick={() => setModalStep(1)}
+                      style={{ cursor: 'pointer' }}>
+                      <i>
+                        <u>Request change</u>
+                      </i>
+                    </span>
+                    <div name='company'>{company}</div>
+                  </Group>
+                  <Group>
+                    <Label htmlFor='licence'>Licence Number</Label>
+                    <span name='licence'>{licence}</span>
+                  </Group>
+                  <Group>
+                    <Label htmlFor='licenceVerify'>
+                      Licence Verification Status
+                    </Label>
+                    <span name='licenceVerify'>{verificationStatus}</span>
+                  </Group>
+                  <Group>
+                    <Label htmlFor='group'>Group</Label>
+                    <div name='group'>
+                      {group ? (
+                        <div>{group}</div>
+                      ) : (
+                        <div>You are not in any group</div>
+                      )}
+                    </div>
+                  </Group>
+                </Col>
+              </Row>
+            </CardBody>
+          </Card>
+        </Col>
       </Row>
 
       <Modal
         id='password_change_modal'
-        show={showPasswordChangeModal}
-        setShow={setShowPasswordChangeModal}
         title='Change Password'
         size='lg'
         isStatic>
@@ -621,8 +664,7 @@ const EditProfile = ({ page }) => {
                 <Button
                   className='btn btn-outline-primary btn-inline mr-75'
                   type='submit'
-                  onClick={validatePassword}
-                  >
+                  onClick={validatePassword}>
                   Next
                 </Button>
               </Group>
@@ -656,8 +698,7 @@ const EditProfile = ({ page }) => {
                 <Button
                   className='btn btn-outline-primary btn-inline'
                   type='submit'
-                  onClick={changePassword}
-                  >
+                  onClick={changePassword}>
                   Change Password
                 </Button>
               </Group>
@@ -668,8 +709,6 @@ const EditProfile = ({ page }) => {
 
       <Modal
         id='email_change_modal'
-        show={showEmailChangeModal}
-        setShow={setShowEmailChangeModal}
         title='Change Email'
         size='lg'
         isStatic>
@@ -692,8 +731,7 @@ const EditProfile = ({ page }) => {
                 <Button
                   className='btn btn-outline-primary btn-inline'
                   type='submit'
-                  onClick={validatePassword}
-                  >
+                  onClick={validatePassword}>
                   Next
                 </Button>
               </Group>
@@ -717,8 +755,7 @@ const EditProfile = ({ page }) => {
                 <Button
                   className='btn btn-outline-primary btn-inline'
                   type='submit'
-                  onClick={changeEmail}
-                  >
+                  onClick={changeEmail}>
                   Change Email
                 </Button>
               </Group>
@@ -729,36 +766,33 @@ const EditProfile = ({ page }) => {
 
       <Modal
         id='company_change_modal'
-        show={showCompanyChangeModal}
-        setShow={setShowCompanyChangeModal}
         title='Change Your Company'
         size='lg'
         isStatic>
-          <Row>
-            <Col
-              sm={12}
-              md={8}>
-              <Group>
-                <p>Please enter your company</p>
-                <Label>
-                  Company Name:
-                  <Input
-                    className='mr-75'
-                    value={newCompany}
-                    onChange={(e) => setNewCompany(e.target.value)}
-                    error={errors?.newCompany}
-                  />
-                </Label>
-                <Button
-                  className='btn btn-outline-primary btn-inline mr-75'
-                  type='submit'
-                  onClick={verifyCompany}
-                  >
-                  Request change
-                </Button>
-              </Group>
-            </Col>
-          </Row>
+        <Row>
+          <Col
+            sm={12}
+            md={8}>
+            <Group>
+              <p>Please enter your company</p>
+              <Label>
+                Company Name:
+                <Input
+                  className='mr-75'
+                  value={newCompany}
+                  onChange={(e) => setNewCompany(e.target.value)}
+                  error={errors?.newCompany}
+                />
+              </Label>
+              <Button
+                className='btn btn-outline-primary btn-inline mr-75'
+                type='submit'
+                onClick={verifyCompany}>
+                Request change
+              </Button>
+            </Group>
+          </Col>
+        </Row>
       </Modal>
     </>
   );

@@ -32,7 +32,7 @@ const userSchema = new Schema(
       type: String,
       lowercase: true,
       unique: true,
-      required: [true, 'Please enter an email'],
+      required: [true,],
       validate: [],
     },
     password: {

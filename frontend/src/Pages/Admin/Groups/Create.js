@@ -19,6 +19,20 @@ const Create = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+  const errorShake = () => {
+    window.jQuery('button[type=submit]').addClass('animated headShake bg-red');
+
+    window
+      .jQuery('button[type=submit]')
+      .on(
+        'webkitAnimationEnd oanimationend msAnimationEnd animationend',
+        function (e) {
+          window.jQuery('button[type=submit]').delay(200).removeClass('animated headShake bg-red');
+        }
+      );
+  };
+
+
   const isValid = () => {
     let isValid = true;
     let errors = {};
@@ -62,6 +76,7 @@ const Create = () => {
 
     if (!isValid()) {
       setIsLoading(false);
+      errorShake();
       return
     }
 
@@ -84,7 +99,8 @@ const Create = () => {
         }, 500);
       })
       .catch(({response}) => {
-        Toast('Failed to create group!', 'danger');
+        // Toast('Failed to create group!', 'danger');
+        errorShake();
         setAlert(response?.data?.error);
       })
       .finally(() =>

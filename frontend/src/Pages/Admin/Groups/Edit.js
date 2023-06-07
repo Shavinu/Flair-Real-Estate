@@ -25,6 +25,20 @@ const Edit = () => {
       })
   }
 
+  const errorShake = () => {
+    window.jQuery('button[type=submit]').addClass('animated headShake bg-red');
+
+    window
+      .jQuery('button[type=submit]')
+      .on(
+        'webkitAnimationEnd oanimationend msAnimationEnd animationend',
+        function (e) {
+          window.jQuery('button[type=submit]').delay(200).removeClass('animated headShake bg-red');
+        }
+      );
+  };
+
+
   const isValid = () => {
     let isValid = true;
     let errors = {};
@@ -68,6 +82,7 @@ const Edit = () => {
 
     if (!isValid()) {
       setIsLoading(false);
+      errorShake();
       return
     }
 
@@ -91,7 +106,8 @@ const Edit = () => {
       })
       .catch((response) => {
         console.log(response);
-        Toast('Failed to update group!', 'danger');
+        // Toast('Failed to update group!', 'danger');
+        errorShake();
         setAlert(response?.response?.data?.error);
       })
       .finally(() =>

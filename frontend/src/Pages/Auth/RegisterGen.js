@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button, Card } from '../../Components';
 import CardBody from '../../Components/Card/CardBody';
 import Register from './Register';
+// import './Login.css';
 
 const RegisterGen = () => {
   const [type, setType] = useState('agent');
@@ -60,11 +61,16 @@ const RegisterGen = () => {
                         }}>Developer</Button>
 
                       </CardBody>
-                      <Link
-                        to='/auth/login'
-                        className=''>
-                        Login instead
-                      </Link>
+                      <p>
+                        Already a member?{' '}
+                        <span>
+                          <Link
+                            to='/auth/login'
+                            className=''>
+                            Sign In
+                          </Link>
+                        </span>
+                      </p>
                     </Card>
                   </div>
                 </div>
