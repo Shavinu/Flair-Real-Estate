@@ -14,12 +14,11 @@ export const getAllProjects = async () => {
 };
 
 export const updateProject = async (id, data) => {
-    return utils.fetch.httpPatch(utils.url.replaceId(api.projects.update, id), data, {
-        'Content-Type': 'multipart/form-data',
-    });
+    const url = utils.url.replaceId(api.projects.update, id);
+    return utils.fetch.httpPost(url, data);
 };
 
-export const getProjectByOwner = async (ownerId, page, limit) => {
+export const getProjectByOwner = async (ownerId, page, limit, search = '') => {
     let url = utils.url.replaceId(api.projects.getProjectByOwner, ownerId);
     if (page) {
         url += `?page=${page}`;
@@ -27,8 +26,11 @@ export const getProjectByOwner = async (ownerId, page, limit) => {
     if (limit) {
         url += page ? `&limit=${limit}` : `?limit=${limit}`;
     }
+    if (search) {
+        url += url.includes('?') ? `&search=${search}` : `?search=${search}`;
+    }
     return utils.fetch.httpGet(url);
-};
+};  
 
 export const deleteProject = async (id) => {
     return utils.fetch.httpDelete(utils.url.replaceId(api.projects.delete, id));

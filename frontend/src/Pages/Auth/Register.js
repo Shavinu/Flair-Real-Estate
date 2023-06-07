@@ -314,7 +314,6 @@ const Register = ({ type, page }) => {
                             <Label for='job'>Job Title</Label>
                           </Group>
                         )}
-
                         <Group className='form-label-group'>
                           <Input
                             type='password'

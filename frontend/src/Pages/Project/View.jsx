@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Container, Row, Col, Card, ListGroup, Carousel, Badge, Button, ButtonGroup } from "react-bootstrap";
-import { ContentHeader } from "../../Components";
+import { CardBody, ContentHeader } from "../../Components";
 import utils from "../../Utils";
 import Toast from "../../Components/Toast";
 import { getCoordinates, renderMapboxMap } from "../../Components/Maps/getCordinates";
@@ -11,6 +11,7 @@ import * as FileService from "../../Services/FileService";
 import { PriceRangeOutput } from "../../Components/Form/PriceRange";
 import CardCarousel from "./Components/ImageCarousel";
 import { useState, useEffect } from "react";
+import FileManager from "../../Components/Files/FileManager";
 
 const ProjectDetails = () => {
   const [project, setProject] = useState(null);
@@ -159,7 +160,7 @@ const ProjectDetails = () => {
                     <Card.Body className="m-0 p-0 mb-0 text-right">
                       <ListGroup className="border-0 text-right">
                         <ListGroup.Item key={index} className="ml-auto mt-auto mb-0 mr-0 pl-1 p-0 border-secondary">
-                          {projectFile.category}:
+                          {`${projectFile.category}${projectFile.category_index > 1 ? ` ${projectFile.category_index}` : ''}:`}
                           <ButtonGroup>
                             <Link to={FileService.getImageUrl(projectFile.file_id)} className="ml-1 btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer" >
                               View
@@ -183,7 +184,7 @@ const ProjectDetails = () => {
             </Row>
           </Card>
 
-          {project.projectSlideImages.length > 1 && (
+          {project.projectSlideImages.length >= 1 && (
             <Card className="rounded mt-1 p-0">
               <Card.Subtitle className="text-white bg-dark p-1 mt-0 mb-1" style={{ background: 'linear-gradient(to right, rgba(102, 126, 234, 0.5), rgba(118, 75, 162, 0.5))' }}> Slides: </Card.Subtitle>
               <CardCarousel project={project} imageUrls={imageUrls} />
@@ -232,14 +233,14 @@ const ProjectDetails = () => {
         </Col>
       </Row>
       {project.projectFiles.length > 0 && (
-        <Row className="mt-5">
+        <Row>
           <Col>
             <Card className="rounded mt-1 p-0">
               <Card.Subtitle className="text-white bg-dark p-1 mt-0 mb-0" style={{ background: 'linear-gradient(to right, rgba(102, 126, 234, 0.5), rgba(118, 75, 162, 0.5))' }}> Project Files: </Card.Subtitle>
               <ListGroup>
                 {project.projectFiles.map((projectFile, index) => (
                   <ListGroup.Item key={index}>
-                    {projectFile.category}:
+                    {`${projectFile.category}${projectFile.category_index > 1 ? ` ${projectFile.category_index}` : ''}:`}
                     <ButtonGroup>
                       <Link to={FileService.getImageUrl(projectFile.file_id)} className="ml-1 btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer" >
                         View
@@ -255,9 +256,22 @@ const ProjectDetails = () => {
           </Col>
         </Row>
       )}
+      {project.projectFiles.length > 0 && (
+        <Row className="mt-5">
+          <Col>
+            <Card className="rounded mt-1 p-0">
+              <Card.Subtitle className="text-white bg-dark p-1 mt-0 mb-0" style={{ background: 'linear-gradient(to right, rgba(102, 126, 234, 0.5), rgba(118, 75, 162, 0.5))' }}> Project Files: </Card.Subtitle>
+
+              <CardBody>
+                <FileManager files={project.projectFiles} />
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+      )}
       {coordinates && (
         <Row>
-          <Col className="mt-5"><Card className="rounded mt-1 p-0">
+          <Col><Card className="rounded mt-1 p-0">
             <Card.Subtitle className="text-white bg-dark p-1 mt-0 mb-0" style={{ background: 'linear-gradient(to right, rgba(102, 126, 234, 0.5), rgba(118, 75, 162, 0.5))' }}>Points of Interest Nearby: {locationName}: </Card.Subtitle>
             <NearbyPOIs coordinates={coordinates} />
           </Card>

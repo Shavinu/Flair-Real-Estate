@@ -20,7 +20,7 @@ const icons = {
 const colors = ['green', 'red', 'blue', '#orange', '#yellow', '#purple', '#pink', '#brown', '#gray', '#black', '#white', '#cyan', '#magenta'];
 
 const getNearbyPOIs = async (coordinates, category) => {
-  console.log('coordinates', coordinates);
+  // console.log('coordinates', coordinates);
   const coordinatesSwapped = [coordinates[1], coordinates[0]];
   const mapboxAccessToken = process.env.REACT_APP_MAP_BOX_API_KEY;
   const mapboxUrl = `https://api.mapbox.com/search/searchbox/v1/category/${category}?access_token=${mapboxAccessToken}&language=en&limit=10&proximity=${coordinates[1]}%2C${coordinates[0]}`;
@@ -60,12 +60,16 @@ const getDistance = (coord1, coord2) => {
 
 const CategoryTable = ({ category, pois, handleRowClick }) => {
   const columns = [
-    { name: 'Name', selector: 'properties.name', sortable: true },
+    { name: 'Name', selector: row => row.properties.name, sortable: true },
     {
-      name: 'Distance', selector: 'properties.distance', sortable: true, format: row => `${row.properties.distance} km`, right: true,
+      name: 'Distance',
+      selector: row => row.properties.distance,
+      sortable: true,
+      format: row => `${row.properties.distance} km`,
+      right: true,
       cell: row => <div style={{ color: colors[categories.indexOf(row.properties.category)] }}>{row.properties.distance} km</div>,
     },
-    { name: 'Address', selector: 'properties.address', sortable: true, right: true },
+    { name: 'Address', selector: row => row.properties.address, sortable: true, right: true },
   ];
 
   return (

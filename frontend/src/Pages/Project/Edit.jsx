@@ -1,14 +1,245 @@
-// Edit Project given the project id
-
+import SelectProjectMembers from './Components/MembersSelector'
+import ProjectCommission from './Components/CommissionSelector';
+import { EditImageBrowser, UploadTitle, UploadSlides } from './Components/EditImageBrowser';
+import LocationAutocomplete from '../../Components/Maps/LocationAutoComplete';
+import { PriceRangeInput } from '../../Components/Form/PriceRange';
+import * as UserService from "../../Services/UserService";
+import * as ProjectService from "../../Services/ProjectService";
 import React, { useState, useEffect } from "react";
-import { Container, ButtonGroup, Button } from "react-bootstrap";
+import { Button, ButtonGroup, Container, Spinner } from 'react-bootstrap';
 import { ContentHeader } from "../../Components";
-import { useNavigate } from "react-router-dom";
+import { Group, Input, Label } from "../../Components/Form";
+import Toast from "../../Components/Toast";
+import Select from 'react-select';
+import { useNavigate } from 'react-router-dom';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const EditProject = () => {
+
   const navigate = useNavigate();
-  return (
-    <Container>
+  const [initialData, setInitialData] = useState();
+  const [initialDataSet, setInitialDataSet] = useState(false);
+  const [user, setUser] = useState();
+  const [editor, setEditor] = useState("");
+  const [reset, setReset] = useState(false);
+  const [key, setKey] = useState(0);
+  const [errors, setErrors] = useState({});
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [projectName, setProjectName] = useState();
+  const [projectType, setProjectType] = useState();
+  const [projectStatus, setProjectStatus] = useState();
+  const [projectPriceRange, setProjectPriceRange] = useState();
+  const [projectDescription, setProjectDescription] = useState();
+  const [userGroup, setUserGroup] = useState();
+  const [editableBy, setEditableBy] = useState();
+  const [commissionData, setCommissionData] = useState();
+  const [projectLocation, setProjectLocation] = useState();
+  const [coordinates, setCoordinates] = useState();
+  const [titleImage, setTitleImage] = useState(null);
+  const [deletedTitleImage, setDeletedTitleImage] = useState(null);
+  const [slideshowImages, setSlideshowImages] = useState([]);
+  const [deletedSlideshowImages, setDeletedSlideshowImages] = useState([]);
+
+  const validateInput = () => {
+    let newErrors = { ...errors };
+    if (!projectName) {
+      newErrors.projectName = "Project name is required";
+    } else {
+      delete newErrors.projectName;
+    }
+    if (!projectType) {
+      newErrors.projectType = "Project type is required";
+    } else {
+      delete newErrors.projectType;
+    }
+    if (projectDescription.trim() === '' || projectDescription === '<p><br></p>') {
+      newErrors.projectDescription = "Project description is required";
+    } else {
+      delete newErrors.projectDescription;
+    }
+    if (projectLocation === null || projectLocation.trim() === "") {
+      newErrors.projectLocation = "Project location is required";
+    } else {
+      delete newErrors.projectLocation;
+    }
+    if (projectStatus.value === "") {
+      newErrors.projectStatus = "Project status is required";
+    } else {
+      delete newErrors.projectStatus;
+    }
+
+    setErrors(newErrors);
+    return newErrors;
+  };
+
+  const handleEditProjectSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitted(true);
+
+    const newErrors = validateInput();
+    console.log(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
+    setLoading(true);
+
+    try {
+
+      // Upload title image and get its ID
+      let titleImageId = null;
+      titleImageId = await UploadTitle(titleImage, deletedTitleImage, user);
+
+      // Upload slideshow images and get their IDs
+      let slideshowImageIds = null;
+      slideshowImageIds = await UploadSlides(slideshowImages, deletedSlideshowImages, user);
+      slideshowImageIds = JSON.parse(slideshowImageIds);
+
+      // Upload other files and get their IDs and data
+      // let fileData = null;
+      // if (fileUploadFiles.length > 0) {
+      //   fileData = await UploadFiles(fileUploadFiles, user);
+      //   console.log(fileData);
+      //   fileData = JSON.parse(fileData);
+      // }
+
+      // Create project with image and file IDs
+      // setProjectOwner(user);
+      const projectData = {
+        projectName,
+        projectType: projectType,
+        projectPriceRange: [projectPriceRange],
+        projectDescription,
+        projectLocation: [{ locationName: projectLocation, longitude: coordinates.longitude, latitude: coordinates.latitude }],
+        projectListings: [],
+        editableBy,
+        projectStatus: projectStatus,
+        projectCommission: [commissionData]
+      };
+
+      projectData.projectTitleImage = titleImageId;
+      projectData.projectSlideImages = slideshowImageIds;
+      // if (fileData) projectData.projectFiles = fileData;
+      const response = await ProjectService.updateProject(initialData._id, projectData);
+      Toast('Project edited successfully!', 'success');
+      setErrors({});
+      setTimeout(() => {
+        navigate(`/projects/${response._id}`);
+      }, 500);
+    } catch (error) {
+      Toast('Failed to update project!', 'danger');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  useEffect(() => {
+    // Fetch project details
+    const getIdSegment = () => {
+      const url = window.location.href;
+      const urlSegments = url.split("/");
+      const projectId = urlSegments[urlSegments.length - 2];
+      return projectId;
+    };
+
+    const fetchProject = async () => {
+      const projectId = getIdSegment();
+      try {
+        const fetchedProject = await ProjectService.getProject(projectId);
+        setInitialData(fetchedProject);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchProject();
+  }, []);
+
+  useEffect(() => {
+    if (initialData && !initialDataSet) {
+      setProjectName(initialData.projectName);
+      setProjectType(initialData.projectType);
+      setProjectStatus(initialData.projectStatus);
+      setProjectPriceRange({ minPrice: initialData.projectPriceRange[0].minPrice, maxPrice: initialData.projectPriceRange[0].maxPrice });
+      setProjectDescription(initialData.projectDescription);
+      setEditableBy(initialData.editableBy);
+      setProjectLocation(initialData.projectLocation);
+      setCoordinates({ longitude: initialData.projectLocation[0].longitude, latitude: initialData.projectLocation[0].latitude });
+      setInitialDataSet(true);
+    }
+
+  }, [initialData, initialDataSet]);
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user) {
+      setUser(user.payload._id);
+      setEditor(user.payload.email)
+    }
+
+    const fetchUserGroup = async () => {
+      const userDetails = await UserService.getUserDetailById(user.payload._id);
+      if (!userDetails.group) return;
+      setUserGroup(userDetails.group);
+    }
+
+    fetchUserGroup();
+  }, []);
+
+  useEffect(() => {
+    if (reset) {
+      setReset(false);
+    }
+  }, [reset]);
+
+  const handleProjectNameChange = (newName) => {
+    setProjectName(newName.target.value);
+  };
+
+  const handleProjectTypeChange = (newType) => {
+    setProjectType(newType.target.value);
+  };
+
+  const handleProjectStatusChange = (newStatus) => {
+    setProjectStatus(newStatus.target.value);
+  };
+
+  const handleProjectDescriptionChange = (newDescription) => {
+    setProjectDescription(newDescription);
+  };
+
+  const handleProjectLocationChange = (newLocation) => {
+    setProjectLocation(newLocation);
+  };
+
+  const handleCoordinatesChange = (newCoordinates) => {
+    setCoordinates(newCoordinates);
+  };
+
+  const resetForm = () => {
+    setReset(true);
+    setProjectName(initialData.projectName);
+    setProjectType(initialData.projectType);
+    setProjectStatus(initialData.projectStatus);
+    setProjectPriceRange({ minPrice: initialData.projectPriceRange[0].minPrice, maxPrice: initialData.projectPriceRange[0].maxPrice });
+    setProjectDescription(initialData.projectDescription);
+    setEditableBy(initialData.editableBy);
+    setCommissionData(initialData.projectCommission);
+    setProjectLocation(initialData.projectLocation);
+    setCoordinates({ longitude: initialData.projectLocation[0].longitude, latitude: initialData.projectLocation[0].latitude });
+    setTitleImage(null);
+    setDeletedTitleImage(null);
+    setSlideshowImages([]);
+    setDeletedSlideshowImages([]);
+  };
+
+  if (!initialData) {
+    return (
+      <Spinner animation="border" role="status" />
+    );
+  } else {
+    return (<Container>
       <ContentHeader headerTitle="Edit Project"
         breadcrumb={[
           { name: "Home", link: "/" },
@@ -17,16 +248,161 @@ const EditProject = () => {
         ]}
         options={[
           <ButtonGroup>
-            <Button variant="primary" onClick={() => navigate(-1)}>Back</Button>
+            <Button variant="secondary" onClick={() => navigate(-1)}>Back</Button>
+            <Button variant="primary" onClick={resetForm}>Reset</Button>
+            <Button variant="dark" onClick={handleEditProjectSubmit} disabled={loading}>Save</Button>
           </ButtonGroup>
         ]}
       />
-      <div className="text-center">
-        <h1>Under Construction</h1>
-        <img src="https://media2.giphy.com/media/hvN3SkNMRSB7mZa8JL/giphy.gif" alt="Under Construction" />
+      <div>
+        <Group>
+          <Label>Project Name</Label>
+          <Input
+            type="text"
+            value={projectName}
+            onChange={handleProjectNameChange}
+            placeholder="Please Input a project name"
+            error={errors.projectName} />
+        </Group>
+        <hr className="mt-1 border border-mute rounded" />
+        <Group>
+          <Group>
+            <Label>Project Status</Label>
+            <Select
+              name="projectStatus"
+              isDisabled={false}
+              defaultValue={{ value: "Active", label: "Active" }}
+              value={{ value: projectStatus, label: projectStatus }}
+              onChange={(selectedOption) => setProjectStatus(selectedOption.value) && handleProjectStatusChange()}
+              menuPlacement="auto"
+              menuPortalTarget={document.body}
+              overflowX="scroll"
+              options={[
+                { value: "Active", label: "Active" },
+                { value: "Inactive", label: "Inactive" }
+              ]}
+              error={errors.projectStatus}
+            />
+            {errors.projectStatus && (
+              <div className="invalid-feedback d-block">
+                {errors.projectStatus}
+              </div>
+            )}
+          </Group>
+          <hr className="mt-1 border border-mute rounded" />
+          <Group>
+            <Label>Project Type</Label>
+            <Select
+              name="projectType"
+              isDisabled={false}
+              defaultValue={{ value: "Land", label: "Land" }}
+              value={{ value: projectType, label: projectType }}
+              onChange={(selectedOption) => setProjectType(selectedOption.value) && handleProjectTypeChange()}
+              options={[
+                { value: "Land", label: "Land" },
+                { value: "Multiple", label: "Multiple" }
+              ]}
+              error={errors.projectType}
+            />
+            {errors.projectType && (
+              <div className="invalid-feedback d-block">
+                {errors.projectType}
+              </div>
+            )}
+          </Group>
+
+          <hr className="mt-1 border border-mute rounded" />
+          <Label>Project Price Range</Label>
+          <PriceRangeInput
+            min={0}
+            max={2000000}
+            step={[
+              { till: 500000, step: 25000 },
+              { till: 1000000, step: 50000 },
+              { till: 2000000, step: 100000 },
+              { till: 10000000, step: 500000 }
+            ]}
+            onChange={setProjectPriceRange}
+            value={projectPriceRange}
+            isSubmitted={isSubmitted}
+            initialData={initialData.projectPriceRange}
+            setErrors={setErrors}
+            reset={reset}
+            error={errors.projectPriceRange}
+          />
+        </Group>
+        <hr className="mt-1 border border-mute rounded" />
+        <Group>
+          <Label>Project Description</Label>
+          {errors.projectDescription && (
+            <div className="invalid-feedback d-block">
+              {errors.projectDescription}
+            </div>
+          )}
+          <style>
+            {`
+                  .ql-editor {
+                    min-height: 100px;
+                    resize: vertical;
+                    overflow-y: scroll;
+                    }
+                    
+                    .ql-container {
+                      resize: vertical;
+                      overflow-y: scroll;
+                    }
+                `}
+          </style>
+          <ReactQuill
+            value={projectDescription}
+            onChange={handleProjectDescriptionChange}
+          />
+        </Group>
+        <hr className="mt-1 border border-mute rounded" />
+        <Group>
+          <EditImageBrowser
+            titleImage={titleImage}
+            setTitleImage={setTitleImage}
+            deletedTitleImage={deletedTitleImage}
+            setDeletedTitleImage={setDeletedTitleImage}
+            slideshowImages={slideshowImages}
+            setSlideshowImages={setSlideshowImages}
+            deletedSlideshowImages={deletedSlideshowImages}
+            setDeletedSlideshowImages={setDeletedSlideshowImages}
+            initialData={initialData}
+            reset={reset}
+          />
+        </Group>
+        <Group>
+          <Label>Project Location</Label>
+          <LocationAutocomplete
+            selectedLocation={projectLocation}
+            onChange={handleProjectLocationChange}
+            onCoordinatesChange={handleCoordinatesChange}
+            initialData={initialData.projectLocation}
+            error={errors.projectLocation}
+            reset={reset}
+          />
+        </Group>
+        <SelectProjectMembers
+          user={user}
+          onSubmitEditableBy={setEditableBy}
+          setErrors={setErrors}
+          error={errors.editableBy}
+          initialData={initialData.editableBy}
+          reset={reset}
+        />
+        <ProjectCommission
+          onCommissionChange={setCommissionData}
+          setErrors={setErrors}
+          error={errors.projectCommission}
+          initialData={initialData.projectCommission}
+          reset={reset}
+        />
       </div>
     </Container>
-  );
-};
+    )
+  }
+}
 
-export default EditProject;
+export default EditProject

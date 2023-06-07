@@ -2,9 +2,10 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Container, Row, Col, ProgressBar } from 'react-bootstrap';
 import Select from 'react-select';
 
-const PriceRangeInput = ({ onChange, min, max, step, error, setErrors, isSubmitted }) => {
+const PriceRangeInput = ({ onChange, min, max, step, error, setErrors, isSubmitted, initialData, reset }) => {
   const [minPrice, setMinPrice] = useState(null);
   const [maxPrice, setMaxPrice] = useState(null);
+  const [initialDataSet, setInitialDataSet] = useState(false);
   const [localError, setLocalError] = useState(null);
 
   const priceOptions = useMemo(() => {
@@ -26,6 +27,26 @@ const PriceRangeInput = ({ onChange, min, max, step, error, setErrors, isSubmitt
 
     return prices;
   }, [max, min, step]);
+
+  useEffect(() => {
+    if (initialData && !initialDataSet) {
+      // console.log(initialData);
+      const { minPrice, maxPrice } = initialData[0];
+      setMinPrice(minPrice);
+      setMaxPrice(maxPrice);
+      setInitialDataSet(true);
+    }
+  }, [initialData]);
+
+  useEffect(() => {
+    if (reset) {
+      const { minPrice, maxPrice } = initialData[0];
+      setMinPrice(minPrice);
+      setMaxPrice(maxPrice);
+      setLocalError(null);
+      setInitialDataSet(false);
+    }
+  }, [reset]);
 
   const handleMinPriceChange = (option) => {
     setMinPrice(option.value);

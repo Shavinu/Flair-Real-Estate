@@ -22,6 +22,7 @@ import ProjectCommission from './Components/CommissionSelector';
 import './Create.css';
 import 'react-quill/dist/quill.snow.css';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import FileManager from "../../Components/Files/FileManager";
 
 const Create = () => {
   const navigate = useNavigate();
@@ -85,6 +86,7 @@ const Create = () => {
   };
 
   const handleCoordinatesChange = (newCoordinates) => {
+    console.log(newCoordinates);
     setCoordinates(newCoordinates);
   };
 
@@ -139,10 +141,10 @@ const Create = () => {
     setIsSubmitted(true);
 
     // console.log(editableBy);
-    // console.log(coordinates);
+    console.log(coordinates);
     // console.log(projectLocation);
     // console.log(projectPriceRange)
-    console.log(commissionData);
+    // console.log(commissionData);
 
     const newErrors = validateInput();
     console.log(newErrors);
@@ -165,7 +167,7 @@ const Create = () => {
 
       // Upload slideshow images and get their IDs
       let slideshowImageIds = null;
-      if (slideshowImages) {
+      if (slideshowImages.length > 0) {
         slideshowImageIds = await UploadSlides(slideshowImages, user);
         //convert to array
         slideshowImageIds = JSON.parse(slideshowImageIds);
@@ -174,7 +176,7 @@ const Create = () => {
 
       // Upload other files and get their IDs and data
       let fileData = null;
-      if (fileUploadFiles) {
+      if (fileUploadFiles.length > 0) {
         fileData = await UploadFiles(fileUploadFiles, user);
         console.log(fileData);
         fileData = JSON.parse(fileData);
@@ -226,6 +228,7 @@ const Create = () => {
         options={<Button className="btn btn-primary waves-effect waves-light"
           onClick={handleProjectSubmit}
           isLoading={loading}
+          disabled={!user || loading}
         >
           Submit
         </Button>}
@@ -294,7 +297,7 @@ const Create = () => {
                     resize: vertical;
                     overflow-y: scroll;
                     }
-                    
+
                     .ql-container {
                       resize: vertical;
                       overflow-y: scroll;
@@ -405,6 +408,12 @@ const Create = () => {
                   error={errors.projectFiles}
                 />
               </Group>
+            </CardBody>
+          </Card>
+          <Card className="border-2 border-primary rounded">
+            <CardBody>
+              <p className="small text-left">Project Files</p>
+              <FileManager files={[]} />
             </CardBody>
           </Card>
         </Col>

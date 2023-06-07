@@ -99,6 +99,11 @@ async function verifyLicence(req, res) {
       return res.status(200).json({ message: 'Licence is valid' });
     }
 
+    else {
+      console.log("Licence is not valid")
+      return res.status(404).json({ message: 'Licence is not valid' });
+    }
+
   } catch (error) {
     if (error.response) {
       console.log(error.response.data);

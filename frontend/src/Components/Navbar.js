@@ -22,9 +22,13 @@ const Navbar = () => {
       user = JSON.parse(user);
       setUser(user.payload);
     }
-    getUserDetailById(user.payload?._id).then((response) => {
-      setName(response.firstName + ' ' + response.lastName);
-    });
+    try {
+      getUserDetailById(user.payload?._id).then((response) => {
+        setName(response.firstName + ' ' + response.lastName);
+      });
+    } catch (error) {
+      console.error(error);
+    }
   }, []);
 
   return <>

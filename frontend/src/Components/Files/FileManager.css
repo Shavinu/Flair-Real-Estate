@@ -1,0 +1,31 @@
+.file-manager {
+  display: grid;
+  grid-template-columns: auto 4fr;
+}
+
+.file-manager .card-body {
+  padding: 1rem;
+}
+
+.file-manager .file-manager-sidebar {
+  border-right: 1px solid #DAE1E7
+}
+
+.file-manager .file-manager-sidebar .list-group .list-group-item {
+  border: 0;
+}
+
+.file-manager .file-manager-sidebar .list-group .list-group-item:hover {
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.file-manager .file-manager-item {
+  user-select: none;
+}
+
+.file-manager .file-manager-item:hover {
+  background-color: #eee;
+  border: #eee;
+  cursor: pointer;
+}

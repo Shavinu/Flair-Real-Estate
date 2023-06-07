@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
+import Toast from "../../Components/Toast";
 import mbxClient from '@mapbox/mapbox-sdk';
 import mbxGeocoding from '@mapbox/mapbox-sdk/services/geocoding';
 import { Container, Row, Button } from 'react-bootstrap';
@@ -15,9 +16,11 @@ if (mapboxApiKey) {
   geocodingClient = mbxGeocoding(mapboxClient);
 }
 
-const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange }) => {
+const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange, set_postcode_region, initialData, reset }) => {
   const [inputValue, setInputValue] = useState('');
   const [options, setOptions] = useState([]);
+  const [resetData, setResetData] = useState([]);
+  const [initialDataSet, setInitialDataSet] = useState(false);
 
   const [viewport, setViewport] = useState({
     latitude: -33.8688,
@@ -30,9 +33,76 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange 
     zoom: 8,
   });
 
+  // useEffect(() => {
+  //   if (initialData) {
+  //     const { locationName, longitude, latitude } = initialData[0];
+
+  //     setInputValue(locationName);
+
+  //     setMarker({ latitude, longitude });
+
+  //     const newViewport = { latitude, longitude, zoom: 8 };
+  //     setViewport(newViewport);
+  //     setViewState(newViewport);
+  //   }
+  // }, [initialData]);
+
   const [marker, setMarker] = useState(null);
 
+  useEffect(() => {
+    if (initialData && !initialDataSet) {
+      const { locationName, longitude, latitude } = initialData[0];
+      setResetData(initialData);
+
+      setInputValue(locationName);
+
+      setMarker({ latitude, longitude });
+
+      const newViewport = { latitude, longitude, zoom: 8 };
+      setViewport(newViewport);
+      setViewState(newViewport);
+
+      const selectedOption = {
+        value: locationName,
+        label: locationName,
+      };
+      setOptions([selectedOption]);
+      handleSelectChange(selectedOption);
+      onCoordinatesChange({ latitude, longitude });
+
+      if (initialData[0].postcode && initialData[0].region) {
+        const { postcode, region } = initialData[0];
+        set_postcode_region({ postcode, region });
+      }
+
+      setInitialDataSet(true);
+    }
+  }, [initialData]);
+
+  useEffect(() => {
+    if (reset) {
+      const { locationName, longitude, latitude } = resetData[0];
+
+      setInputValue(locationName);
+
+      setMarker({ latitude, longitude });
+
+      const newViewport = { latitude, longitude, zoom: 8 };
+      setViewport(newViewport);
+      setViewState(newViewport);
+
+      const selectedOption = {
+        value: locationName,
+        label: locationName,
+      };
+      setOptions([selectedOption]);
+      handleSelectChange(selectedOption);
+    }
+  }, [reset]);
+
+
   const onViewportChange = (newViewport) => {
+    console.log(newViewport);
     setViewport((prevState) => ({
       ...prevState,
       latitude: newViewport.latitude,
@@ -48,7 +118,6 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange 
 
   const onClickMap = (event) => {
     const { lng: longitude, lat: latitude } = event.lngLat;
-    setMarker({ latitude, longitude });
 
     geocodingClient
       .reverseGeocode({
@@ -61,6 +130,9 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange 
       .then((response) => {
         const features = response.body.features;
         if (features.length > 0) {
+          setMarker({ latitude, longitude });
+          const { place_name, context } = features[0];
+          const { postcode, region } = getPostcodeAndRegion(context);
           const selectedOption = {
             value: features[0].place_name,
             label: features[0].place_name,
@@ -68,7 +140,12 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange 
           onChange(selectedOption.value);
           setInputValue(selectedOption.label);
           onCoordinatesChange({ latitude, longitude });
+          if (set_postcode_region) {
+            set_postcode_region({ postcode, region });
+          }
           setOptions([selectedOption]);
+        } else {
+          Toast('No address found, Please try another location', 'warning');
         }
       });
   };
@@ -81,6 +158,27 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange 
       });
     }
   };
+
+  const handleReset = () => {
+    const { locationName, longitude, latitude } = resetData[0];
+
+    setInputValue(locationName);
+
+    setMarker({ latitude, longitude });
+
+    const newViewport = { latitude, longitude, zoom: 8 };
+    setViewport(newViewport);
+    setViewState(newViewport);
+
+    const selectedOption = {
+      value: locationName,
+      label: locationName,
+    };
+    setOptions([selectedOption]);
+    handleSelectChange(selectedOption);
+    onCoordinatesChange({ latitude, longitude });
+  }
+
 
   const handleInputChange = (value) => {
 
@@ -108,31 +206,38 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange 
   };
 
   const handleSelectChange = (selectedOption) => {
-    onChange(selectedOption.value);
+    if (selectedOption) {
+      onChange(selectedOption.value);
 
-    geocodingClient
-      .forwardGeocode({
-        query: selectedOption.value,
-        countries: ['au'],
-        limit: 1,
-      })
-      .send()
-      .then((response) => {
-        const features = response.body.features;
-        if (features.length > 0) {
-          const { center } = features[0];
-          const newViewport = {
-            latitude: center[1],
-            longitude: center[0]
-          };
+      geocodingClient
+        .forwardGeocode({
+          query: selectedOption.value,
+          countries: ['au'],
+          limit: 1,
+        })
+        .send()
+        .then((response) => {
+          const features = response.body.features;
+          if (features.length > 0) {
+            const { center, context } = features[0];
+            const { postcode, region } = getPostcodeAndRegion(context);
+            const newViewport = {
+              latitude: center[1],
+              longitude: center[0]
+            };
 
-          const distance = Math.sqrt(Math.pow((newViewport.latitude - viewport.latitude), 2) + Math.pow((newViewport.longitude - viewport.longitude), 2));
-          console.log(distance);
-          setViewState(newViewport);
-          setMarker({ latitude: center[1], longitude: center[0] });
-          onViewportChange(newViewport);
-        }
-      });
+            const distance = Math.sqrt(Math.pow((newViewport.latitude - viewport.latitude), 2) + Math.pow((newViewport.longitude - viewport.longitude), 2));
+            // console.log(distance);
+            setViewState(newViewport);
+            setMarker({ latitude: center[1], longitude: center[0] });
+            onCoordinatesChange({ latitude: center[1], longitude: center[0] });
+            if (set_postcode_region) {
+              set_postcode_region({ postcode, region });
+            }
+            onViewportChange(newViewport);
+          }
+        });
+    }
   };
 
   const handleRemoveMarker = () => {
@@ -140,6 +245,9 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange 
     setInputValue('');
     onChange(null);
     onCoordinatesChange(null);
+    if (set_postcode_region) {
+      set_postcode_region({ postcode: '', region: '' });
+    }
   };
 
   if (!mapboxApiKey) {
@@ -150,6 +258,21 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange 
         placeholder="No Mapbox API key found"
       />
     );
+  }
+
+  const getPostcodeAndRegion = (context) => {
+    let postcode = '';
+    let region = '';
+
+    context.forEach((obj) => {
+      if (obj.id.startsWith('postcode')) {
+        postcode = obj.text;
+      } else if (obj.id.startsWith('region')) {
+        region = obj.text;
+      }
+    });
+
+    return { postcode, region };
   }
 
   return (
@@ -163,6 +286,7 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange 
             inputValue={inputValue}
             onInputChange={handleInputChange}
             onChange={handleSelectChange}
+            onBlur={e => e.preventDefault()}
             options={options}
             placeholder="Search for a location"
           />
@@ -178,12 +302,18 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange 
             mapStyle="mapbox://styles/mapbox/streets-v11"
             onClick={onClickMap}
           >
+            {/* if initialData is set add a new button called Reset that resets the map to initialData location */}
             <Button className='btn btn-danger border-dark' style={{ position: 'absolute', top: 10, left: 10 }}
               onClick={handleRemoveMarker} disabled={!marker}>Remove Marker
             </Button>
             <Button className='btn btn-info border-dark' style={{ position: 'absolute', top: 60, left: 10 }}
               onClick={goToMarker} disabled={!marker}>Go to Marker
             </Button>
+            {resetData && initialData && (
+              <Button className='btn btn-warning border-dark' style={{ position: 'absolute', top: 110, left: 10 }}
+                onClick={handleReset} hidden={!resetData}>Reset
+              </Button>
+            )}
             {marker && (
               <Marker
                 color='red'

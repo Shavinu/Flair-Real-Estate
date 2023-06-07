@@ -21,6 +21,7 @@ const Button: React.FunctionComponent<ButtonProps> = (props) => {
       onClick={props.onClick}
       style={props.style}
       data-toggle={props.dataToggle}
+      data-target={props.dataTarget}
       aria-haspopup={!!props.dataToggle}
       aria-expanded={!props.dataToggle}
       data-backdrop={props.dataBackdrop}

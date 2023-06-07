@@ -20,7 +20,7 @@ router.get('/:projectId', projectController.getProjectById);
 // PUT /api/projects/:projectId
 // Request body: { projectName (optional), projectType (optional), projectPriceRange (optional), 
 //      projectDescription (optional), projectLocation (optional), projectFiles (optional), projectListings (optional), projectOwner (optional), projectMembers (optional), projectStatus (optional) }
-router.put('/:projectId', projectController.updateProjectById);
+router.post('/:projectId', projectController.updateProjectById);
 
 // Delete a project by ID
 // DELETE /api/projects/:projectId

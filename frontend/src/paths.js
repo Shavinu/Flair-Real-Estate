@@ -5,6 +5,9 @@ import * as Project from "./Pages/Project"
 import Login from "./Pages/Auth/Login"
 import Register from "./Pages/Auth/RegisterGen"
 import * as Dashboard from "./Pages/ProfileDashboard"
+import * as File from "./Pages/File"
+// import Listing from "./Pages/Project/Test"
+import * as Listing from "./Pages/Listing"
 
 export const views = [
   {
@@ -34,9 +37,11 @@ export const views = [
     isRoute: true,
   },
   {
-    name:'View Profile',
+    name: 'View Profile',
     action: '/profile/:id',
+    icon: 'feather icon-user-check',
     element: <Dashboard.ViewProfile />,
+    isRoute: true,
   },
   {
     name: 'User Groups',
@@ -90,6 +95,76 @@ export const views = [
     element: <Project.Test />,
     isRoute: true
   },
+  {
+    name: 'Listings',
+    icon: 'feather icon-list',
+    children: [
+      {
+        name: 'Create Listing',
+        action: '/listings/create',
+        icon: 'feather icon-plus-circle',
+        element: <Listing.Create />,
+        isRoute: false,
+      },
+      {
+        name: 'All Listings',
+        action: '/listings',
+        icon: 'feather icon-search',
+        element: <Listing.Search />,
+        isRoute: false
+      },
+      {
+        name: 'Your Listings',
+        action: '/listings/your',
+        icon: 'feather icon-layers',
+        element: <Listing.List />,
+        isRoute: false
+      }
+    ]
+  },
+  {
+    name: 'Create Project',
+    action: '/listings/create',
+    icon: 'feather icon-inbox',
+    element: <Listing.Create />,
+    isRoute: true
+  },
+  {
+    name: 'View Listing',
+    action: '/listings/:id',
+    icon: 'feather icon-inbox',
+    element: <Listing.View />,
+    isRoute: true
+  },
+  // {
+  //   name: 'Edit Listing',
+  //   action: '/listings/:id/edit',
+  //   icon: 'feather icon-inbox',
+  //   element: <Listing.Edit />,
+  //   isRoute: true
+  // },
+  {
+    name: 'Test',
+    action: '/listings/test',
+    icon: 'feather icon-inbox',
+    element: <Listing.Test />,
+    isRoute: true
+  },
+  {
+    name: 'File Upload',
+    action: '/files/upload',
+    icon: 'feather icon-inbox',
+    element: <File.Upload />,
+    isRoute: true
+  },
+  {
+    name: 'File Browser',
+    action: '/files/browser',
+    icon: 'feather icon-inbox',
+    element: <File.Browser />,
+    isRoute: true
+  },
+
   // {
   //   name: 'Menu',
   //   icon: 'feather icon-menu',
@@ -196,19 +271,37 @@ export const api = {
     uploadSingle: '/api/files/uploadSingle',
     uploadMultiple: '/api/files/uploadMultiple',
     search: '/api/files/search',
-    updateSingle: '/api/files/update',
+    updateSingle: '/api/files/update/{{id}}',
     updateMultiple: '/api/files/update',
+    deleteSingle: '/api/files/delete/{{id}}',
+    deleteMany: '/api/files/delete',
     stream: '/api/files/stream/{{id}}',
     download: '/api/files/download/{{id}}',
+    getById: '/api/files/file/{{id}}',
+    getAllByUser: '/api/files/user/{{id}}',
+    getAllByFileName: '/api/files/filename/:filename',
+    getAllByLabel: '/api/files/label/:label',
+    getByParentId: '/api/files/parent/{{id}}',
+    getByType: '/api/files/type/:type',
   },
   projects: {
     create: '/api/projects/',
     get: '/api/projects/{{id}}',
     getAll: '/api/projects/',
-    update: '/api/projects/',
+    update: '/api/projects/{{id}}',
     delete: '/api/projects/{{id}}',
     getProjectByOwner: '/api/projects/owner/{{Id}}',
     addMembers: '/api/projects/{{id}}/add-members/',
     removeMembers: '/api/projects/{{id}}/remove-members/'
+  },
+  listings: {
+    create: '/api/listings/create',
+    search: '/api/listings/search',
+    get: '/api/listings/{{id}}',
+    getAll: '/api/listings',
+    getDevelopers: '/api/listings/developers',
+    update: '/api/listings/{{id}}',
+    delete: '/api/listings/{{id}}',
+    getByDeveloper: '/api/listings/developer/{{id}}',
   }
 }
