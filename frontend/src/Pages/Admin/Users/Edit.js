@@ -17,7 +17,7 @@ const Edit = () => {
   const [email, setEmail] = useState('');
   const [phoneNo, setPhoneNo] = useState('');
   const [accType, setAccType] = useState('');
-  const [birthday, setBirthday] = useState('');
+  // const [birthday, setBirthday] = useState('');
   const [company, setCompany] = useState('');
   const [addressLine1, setAddressLine1] = useState('');
   const [addressLine2, setAddressLine2] = useState('');
@@ -41,7 +41,7 @@ const Edit = () => {
         setEmail(response.email);
         setPhoneNo(response.phoneNo);
         setAccType(response.accType);
-        setBirthday(response.birthday);
+        // setBirthday(response.birthday);
         setCompany(response.company);
         setAddressLine1(response.addressLine1);
         setAddressLine2(response.addressLine2);
@@ -59,9 +59,23 @@ const Edit = () => {
       })
   }
 
-  const onChangeBirthday = (value: any) => {
-    setBirthday(moment(value).toISOString());
-  }
+  const errorShake = () => {
+    window.jQuery('button[type=submit]').addClass('animated headShake bg-red');
+
+    window
+      .jQuery('button[type=submit]')
+      .on(
+        'webkitAnimationEnd oanimationend msAnimationEnd animationend',
+        function (e) {
+          window.jQuery('button[type=submit]').delay(200).removeClass('animated headShake bg-red');
+        }
+      );
+  };
+
+
+  // const onChangeBirthday = (value: any) => {
+  //   setBirthday(moment(value).toISOString());
+  // }
 
   const isValid = () => {
     let isValid = true;
@@ -116,6 +130,7 @@ const Edit = () => {
     e.preventDefault();
     if (!isValid()) {
       setIsLoading(false);
+      errorShake();
       return
     }
 
@@ -133,9 +148,9 @@ const Edit = () => {
       postcode: postcode,
     }
 
-    if (birthday) {
-      body.birthday = birthday
-    }
+    // if (birthday) {
+    //   body.birthday = birthday
+    // }
 
     if (group) {
       body.group = group
@@ -152,7 +167,8 @@ const Edit = () => {
         setErrors();
       })
       .catch(() => {
-        Toast('Failed to update user!', 'danger');
+        // Toast('Failed to update user!', 'danger');
+        errorShake();
       })
       .finally(() =>
         setIsLoading(false)
@@ -276,7 +292,7 @@ const Edit = () => {
                   />
                 </Group>
 
-                <Group>
+                {/* <Group>
                   <Label for="birthday">Birthday</Label>
                   <DatePicker onChange={onChangeBirthday}
                     value={birthday}
@@ -284,7 +300,7 @@ const Edit = () => {
                       dateFormat: "d-m-Y",
                     }}
                   />
-                </Group>
+                </Group> */}
               </Col>
               <Col sm={12} md={6}>
                 <h5>Address</h5>
