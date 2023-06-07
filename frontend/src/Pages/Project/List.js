@@ -61,7 +61,7 @@ const ProjectsListing = () => {
   };
 
   return (
-    <Container className="mt-0">
+    <Container className="mt-0" fluid="lg">
       <ContentHeader headerTitle="Project List"
         breadcrumb={[
           { name: "Home", link: "/" },
@@ -71,7 +71,7 @@ const ProjectsListing = () => {
       />
       <Row>
         {projects.map((project) => (
-          <Col key={project._id} lg={4} md={6} className="mb-4">
+          <Col key={project._id} xl={3} lg={4} md={6} className="mb-4">
             {/* make card height all the same size */}
             <Card className="project-card h-100">
               <Card.Img variant="top" src={imageUrls[project.projectTitleImage]} style={{ width: "100%", height: "200px", objectFit: "cover" }} />
@@ -104,4 +104,3 @@ const ProjectsListing = () => {
 };
 
 export default ProjectsListing;
-

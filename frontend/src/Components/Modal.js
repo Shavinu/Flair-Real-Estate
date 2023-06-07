@@ -45,7 +45,7 @@ const Modal: React.FunctionComponent<ModalProps> = (props) => {
   }, [id, show]);
 
   return <React.Fragment>
-    <div className={classNames('modal fade')} id={id} tabIndex={-1} role="dialog" aria-labelledby="modal-fadein" aria-hidden="true" onClick={onCloseModal}>
+    <div className={classNames('modal fade')} id={id} tabIndex={-1} role="dialog" aria-labelledby="modal-fadein" aria-hidden="true">
       <div className={classNames('modal-dialog modal-dialog-scrollable', size ? `modal-${size}` : '')} role="document">
         <div className="modal-content">
           <div className="modal-header">
@@ -60,7 +60,7 @@ const Modal: React.FunctionComponent<ModalProps> = (props) => {
           </div>
 
           <div className="modal-footer">
-            <button type="button" className="btn btn-flat-secondary" data-dismiss="modal" onClick={onCloseModal}>Close</button>
+            <button type="button" className="btn btn-flat-secondary" data-dismiss="modal" onClick={onCloseModal}><i className="fa fa-times"></i> Close</button>
 
             {onSubmit && <button type="button" className="btn btn-flat-success" onClick={onSubmit}>
               <i className="fa fa-check"></i> {submitText ?? 'Submit'}

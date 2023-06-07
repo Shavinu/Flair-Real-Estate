@@ -40,7 +40,8 @@ export const views = [
     name: 'View Profile',
     action: '/profile/:id',
     icon: 'feather icon-user-check',
-    element: <Dashboard.ViewProfile />
+    element: <Dashboard.ViewProfile />,
+    isRoute: true,
   },
   {
     name: 'User Groups',

@@ -1,10 +1,6 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Group, Input, Label } from '../../Components/Form';
-import utils from '../../Utils';
-import * as AuthServices from '../../Services/AuthService';
-import Toast from '../../Components/Toast';
-import { Alert, Button, Card, Col, Row } from '../../Components';
+import { Link } from 'react-router-dom';
+import { Button, Card } from '../../Components';
 import CardBody from '../../Components/Card/CardBody';
 import Register from './Register';
 
@@ -12,14 +8,10 @@ const RegisterGen = () => {
   const [type, setType] = useState('agent');
   const [page, setPage] = useState(1);
 
-  return (
-    <>
-      {page === 2 ? (
-        <Register
-          type={type}
-          page={setPage}
-        />
-      ) : (
+  return <>
+    {
+      page === 2 ? (<Register type={type} page={setPage} />) : (
+
         <section className='row flexbox-container'>
           <div className='col-xl-8 col-10 d-flex justify-content-center'>
             <div className='card bg-authentication rounded-0 mb-0'>
@@ -42,50 +34,31 @@ const RegisterGen = () => {
                     </p>
                     <Card>
                       <CardBody>
-                        <Button
-                          className='btn btn-primary btn-block mt-0'
-                          onClick={() => {
-                            setType('agency');
-                            setPage(2);
-                          }}>
-                          Real Estate Agency
-                        </Button>
+                        <Button className="btn btn-primary btn-block mt-0" onClick={() => {
+                          setType('agency')
+                          setPage(2)
+                        }}>Real Estate Agency</Button>
 
-                        <Button
-                          className='btn btn-primary btn-block'
-                          onClick={() => {
-                            setType('agent');
-                            setPage(2);
-                          }}>
-                          Real Estate Agent
-                        </Button>
+                        <Button className="btn btn-primary btn-block" onClick={() => {
+                          setType('agent')
+                          setPage(2)
+                        }}>Real Estate Agent</Button>
 
-                        <Button
-                          className='btn btn-primary btn-block mb-2'
-                          onClick={() => {
-                            setType('assistant agent');
-                            setPage(2);
-                          }}>
-                          Assistant Real Estate Agent
-                        </Button>
+                        <Button className="btn btn-primary btn-block mb-2" onClick={() => {
+                          setType('assistant agent')
+                          setPage(2)
+                        }}>Assistant Real Estate Agent</Button>
 
-                        <Button
-                          className='btn btn-primary btn-block'
-                          onClick={() => {
-                            setType('builder');
-                            setPage(2);
-                          }}>
-                          Builder
-                        </Button>
+                        <Button className="btn btn-primary btn-block" onClick={() => {
+                          setType('builder')
+                          setPage(2)
+                        }}>Builder</Button>
 
-                        <Button
-                          className='btn btn-primary btn-block'
-                          onClick={() => {
-                            setType('developer');
-                            setPage(2);
-                          }}>
-                          Developer
-                        </Button>
+                        <Button className="btn btn-primary btn-block" onClick={() => {
+                          setType('developer')
+                          setPage(2)
+                        }}>Developer</Button>
+
                       </CardBody>
                       <Link
                         to='/auth/login'
@@ -100,9 +73,7 @@ const RegisterGen = () => {
           </div>
         </section>
       )}
-      ;
-    </>
-  );
-};
+  </>
+}
 
 export default RegisterGen;

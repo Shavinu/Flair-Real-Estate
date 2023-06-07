@@ -8,10 +8,11 @@ interface ColProps extends ComponentProps {
   md?: number;
   lg?: number;
   xl?: number;
+  auto?: Boolean;
 }
 
 const Col: React.FunctionComponent<ColProps> = (props) => {
-  const xs = `col-${props.xs ?? 12}`;
+  const xs = props.auto ? 'col-auto' : `col-${props.xs ?? 12}`;
   const sm = props.sm ? `col-sm-${props.sm}` : '';
   const md = props.md ? `col-md-${props.md}` : '';
   const lg = props.lg ? `col-lg-${props.lg}` : '';

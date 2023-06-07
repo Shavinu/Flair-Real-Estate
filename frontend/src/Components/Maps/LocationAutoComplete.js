@@ -102,6 +102,7 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange,
 
 
   const onViewportChange = (newViewport) => {
+    console.log(newViewport);
     setViewport((prevState) => ({
       ...prevState,
       latitude: newViewport.latitude,

@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Container, Row, Col, Card, ListGroup, Carousel, Badge, Button, ButtonGroup } from "react-bootstrap";
-import { ContentHeader } from "../../Components";
+import { CardBody, ContentHeader } from "../../Components";
 import utils from "../../Utils";
 import Toast from "../../Components/Toast";
 import { getCoordinates, renderMapboxMap } from "../../Components/Maps/getCordinates";
@@ -11,6 +11,7 @@ import * as FileService from "../../Services/FileService";
 import { PriceRangeOutput } from "../../Components/Form/PriceRange";
 import CardCarousel from "./Components/ImageCarousel";
 import { useState, useEffect } from "react";
+import FileManager from "../../Components/Files/FileManager";
 
 const ProjectDetails = () => {
   const [project, setProject] = useState(null);
@@ -251,6 +252,19 @@ const ProjectDetails = () => {
                   </ListGroup.Item>
                 ))}
               </ListGroup>
+            </Card>
+          </Col>
+        </Row>
+      )}
+      {project.projectFiles.length > 0 && (
+        <Row className="mt-5">
+          <Col>
+            <Card className="rounded mt-1 p-0">
+              <Card.Subtitle className="text-white bg-dark p-1 mt-0 mb-0" style={{ background: 'linear-gradient(to right, rgba(102, 126, 234, 0.5), rgba(118, 75, 162, 0.5))' }}> Project Files: </Card.Subtitle>
+
+              <CardBody>
+                <FileManager files={project.projectFiles} />
+              </CardBody>
             </Card>
           </Col>
         </Row>
