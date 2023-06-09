@@ -116,7 +116,7 @@ const SearchComponent = ({ onSearch, all = true }) => {
                       <Select
                         options={developerOptions}
                         isClearable
-                        name="developer"
+                        name="devloper"
                         onChange={handleSelectChange}
                         placeholder="Developer"
                         styles={{

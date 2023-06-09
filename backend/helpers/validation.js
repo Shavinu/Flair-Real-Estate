@@ -43,7 +43,10 @@ const projectSchema = Joi.object({
     Joi.object({
       locationName: Joi.string().required(),
       longitude: Joi.number().required(),
-      latitude: Joi.number().required()
+      latitude: Joi.number().required(),
+      postcode: Joi.number().required(),
+      region: Joi.string().required(),
+      suburb: Joi.string().allow(null).allow('').optional()
     })
   ).required(),
   projectTitleImage: Joi.string().optional(),
@@ -101,7 +104,10 @@ const updateProjectSchema =
       Joi.object({
         locationName: Joi.string().required(),
         longitude: Joi.number().required(),
-        latitude: Joi.number().required()
+        latitude: Joi.number().required(),
+        postcode: Joi.number().required(),
+        region: Joi.string().required(),
+        suburb: Joi.string().allow(null).allow('').optional()
       })
     ).optional(),
     projectTitleImage: Joi.string().allow(null).allow('').optional(),
@@ -158,16 +164,17 @@ const listingSchema = Joi.object({
   streetAddress: Joi.string().required(),
   postcode: Joi.number().required(),
   region: Joi.string().optional(),
+  suburb: Joi.string().allow(null).allow('').optional(),
   coordinates: Joi.array().items(
     Joi.object({
       longitude: Joi.number().required(),
       latitude: Joi.number().required()
     })
   ).optional(),
-  landSize: Joi.number().optional(),
-  bedrooms: Joi.number().optional(),
-  bathrooms: Joi.number().optional(),
-  carSpaces: Joi.number().optional(),
+  landSize: Joi.number().allow(null).allow('').optional(),
+  bedrooms: Joi.number().allow(null).allow('').optional(),
+  bathrooms: Joi.number().allow(null).allow('').optional(),
+  carSpaces: Joi.number().allow(null).allow('').optional(),
   titleImage: Joi.string().optional(),
   slideImages: Joi.array().items(Joi.object().pattern(Joi.string(), Joi.string())).optional(),
   files: Joi.array().items(
@@ -182,6 +189,29 @@ const listingSchema = Joi.object({
   ).optional(),
   project: Joi.string().allow(null).allow('').optional(),
   devloper: Joi.string().optional(),
+  editableBy: Joi.array().items(
+    Joi.object({
+      group: Joi.string().required(),
+      includeAllGroupMembers: Joi.boolean().required(),
+      groupMembers: Joi.array().items(Joi.string()).optional(),
+      includeSubGroups: Joi.boolean().required(),
+      subgroups: Joi.array().items(
+        Joi.object({
+          subgroup: Joi.string().required(),
+          includeAllSubgroupMembers: Joi.boolean().required(),
+          subgroupMembers: Joi.array().items(Joi.string()).optional(),
+        })
+      ).optional()
+    })
+  ).optional(),
+  listingCommission: Joi.array().items(
+    Joi.object({
+      exists: Joi.boolean().required(),
+      type: Joi.string().allow(null).allow('').optional(),
+      amount: Joi.number().allow(null).allow('').optional(),
+      percent: Joi.number().allow(null).allow('').optional(),
+    })
+  ).optional()
 })
 
 module.exports = {

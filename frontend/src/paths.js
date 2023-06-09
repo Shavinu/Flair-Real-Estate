@@ -40,7 +40,8 @@ export const views = [
     name: 'View Profile',
     action: '/profile/:id',
     icon: 'feather icon-user-check',
-    element: <Dashboard.ViewProfile />
+    element: <Dashboard.ViewProfile />,
+    isRoute: true,
   },
   {
     name: 'User Groups',
@@ -62,16 +63,30 @@ export const views = [
   },
   {
     name: 'Projects',
-    action: '/projects',
     icon: 'feather icon-inbox',
-    element: <Project.List />
-  },
-  {
-    name: 'Create Project',
-    action: '/projects/create',
-    icon: 'feather icon-inbox',
-    element: <Project.Create />,
-    isRoute: true
+    children: [
+      {
+        name: 'Create Project',
+        action: '/projects/create',
+        icon: 'feather icon-plus-circle',
+        element: <Project.Create />,
+        isRoute: false,
+      },
+      {
+        name: 'All Projects',
+        action: '/projects',
+        icon: 'feather icon-search',
+        // element: <Project.Search />,
+        isRoute: false
+      },
+      {
+        name: 'Your Projects',
+        action: '/projects/your',
+        icon: 'feather icon-layers',
+        element: <Project.List />,
+        isRoute: false
+      }
+    ]
   },
   {
     name: 'View Project',
@@ -122,17 +137,17 @@ export const views = [
     ]
   },
   {
-    name: 'Create Project',
-    action: '/listings/create',
-    icon: 'feather icon-inbox',
-    element: <Listing.Create />,
-    isRoute: true
-  },
-  {
     name: 'View Listing',
     action: '/listings/:id',
     icon: 'feather icon-inbox',
     element: <Listing.View />,
+    isRoute: true
+  },
+  {
+    name: 'Edit Listing',
+    action: '/listings/:id/edit',
+    icon: 'feather icon-inbox',
+    element: <Listing.Edit />,
     isRoute: true
   },
   // {

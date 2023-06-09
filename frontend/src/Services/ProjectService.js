@@ -18,7 +18,7 @@ export const updateProject = async (id, data) => {
     return utils.fetch.httpPost(url, data);
 };
 
-export const getProjectByOwner = async (ownerId, page, limit, search = '') => {
+export const getProjectByOwner = async (ownerId, page, limit, search = '', initialData) => {
     let url = utils.url.replaceId(api.projects.getProjectByOwner, ownerId);
     if (page) {
         url += `?page=${page}`;
@@ -28,6 +28,9 @@ export const getProjectByOwner = async (ownerId, page, limit, search = '') => {
     }
     if (search) {
         url += url.includes('?') ? `&search=${search}` : `?search=${search}`;
+    }
+    if (initialData) {
+        url += url.includes('?') ? `&initialData=${initialData}` : `?initialData=${initialData}`;
     }
     return utils.fetch.httpGet(url);
 };  

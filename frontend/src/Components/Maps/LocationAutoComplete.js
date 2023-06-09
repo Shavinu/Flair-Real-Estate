@@ -70,9 +70,9 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange,
       handleSelectChange(selectedOption);
       onCoordinatesChange({ latitude, longitude });
 
-      if (initialData[0].postcode && initialData[0].region) {
-        const { postcode, region } = initialData[0];
-        set_postcode_region({ postcode, region });
+      if (initialData[0].postcode && initialData[0].region && initialData[0].suburb) {
+        const { postcode, region, suburb } = initialData[0];
+        set_postcode_region({ postcode, region, suburb });
       }
 
       setInitialDataSet(true);
@@ -102,6 +102,7 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange,
 
 
   const onViewportChange = (newViewport) => {
+    // console.log(newViewport);
     setViewport((prevState) => ({
       ...prevState,
       latitude: newViewport.latitude,
@@ -131,7 +132,7 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange,
         if (features.length > 0) {
           setMarker({ latitude, longitude });
           const { place_name, context } = features[0];
-          const { postcode, region } = getPostcodeAndRegion(context);
+          const { postcode, region, suburb } = getPostcodeAndRegion(context);
           const selectedOption = {
             value: features[0].place_name,
             label: features[0].place_name,
@@ -140,7 +141,7 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange,
           setInputValue(selectedOption.label);
           onCoordinatesChange({ latitude, longitude });
           if (set_postcode_region) {
-            set_postcode_region({ postcode, region });
+            set_postcode_region({ postcode, region, suburb });
           }
           setOptions([selectedOption]);
         } else {
@@ -219,7 +220,7 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange,
           const features = response.body.features;
           if (features.length > 0) {
             const { center, context } = features[0];
-            const { postcode, region } = getPostcodeAndRegion(context);
+            const { postcode, region, suburb } = getPostcodeAndRegion(context);
             const newViewport = {
               latitude: center[1],
               longitude: center[0]
@@ -231,7 +232,7 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange,
             setMarker({ latitude: center[1], longitude: center[0] });
             onCoordinatesChange({ latitude: center[1], longitude: center[0] });
             if (set_postcode_region) {
-              set_postcode_region({ postcode, region });
+              set_postcode_region({ postcode, region, suburb });
             }
             onViewportChange(newViewport);
           }
@@ -245,7 +246,7 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange,
     onChange(null);
     onCoordinatesChange(null);
     if (set_postcode_region) {
-      set_postcode_region({ postcode: '', region: '' });
+      set_postcode_region({ postcode: '', region: '', suburb: '' });
     }
   };
 
@@ -262,16 +263,21 @@ const LocationAutocomplete = ({ selectedLocation, onChange, onCoordinatesChange,
   const getPostcodeAndRegion = (context) => {
     let postcode = '';
     let region = '';
+    let suburb = '';
 
     context.forEach((obj) => {
       if (obj.id.startsWith('postcode')) {
         postcode = obj.text;
       } else if (obj.id.startsWith('region')) {
         region = obj.text;
+      } else if (obj.id.startsWith('locality')) {
+        suburb = obj.text;
+      } else if (suburb === '' && obj.id.startsWith('place')) {
+        suburb = obj.text;
       }
     });
 
-    return { postcode, region };
+    return { postcode, region, suburb };
   }
 
   return (

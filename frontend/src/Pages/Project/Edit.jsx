@@ -1,4 +1,4 @@
-import SelectProjectMembers from './Components/MembersSelector'
+import SelectListingMembers from './Components/MembersSelector'
 import ProjectCommission from './Components/CommissionSelector';
 import { EditImageBrowser, UploadTitle, UploadSlides } from './Components/EditImageBrowser';
 import LocationAutocomplete from '../../Components/Maps/LocationAutoComplete';
@@ -37,6 +37,9 @@ const EditProject = () => {
   const [commissionData, setCommissionData] = useState();
   const [projectLocation, setProjectLocation] = useState();
   const [coordinates, setCoordinates] = useState();
+  const [postcode, setPostcode] = useState();
+  const [region, setRegion] = useState();
+  const [suburb, setSuburb] = useState();
   const [titleImage, setTitleImage] = useState(null);
   const [deletedTitleImage, setDeletedTitleImage] = useState(null);
   const [slideshowImages, setSlideshowImages] = useState([]);
@@ -109,7 +112,7 @@ const EditProject = () => {
         projectType: projectType,
         projectPriceRange: [projectPriceRange],
         projectDescription,
-        projectLocation: [{ locationName: projectLocation, longitude: coordinates.longitude, latitude: coordinates.latitude }],
+        projectLocation: [{ locationName: projectLocation, longitude: coordinates.longitude, latitude: coordinates.latitude, postcode: postcode, region: region, suburb: suburb }],
         projectListings: [],
         editableBy,
         projectStatus: projectStatus,
@@ -166,6 +169,9 @@ const EditProject = () => {
       setEditableBy(initialData.editableBy);
       setProjectLocation(initialData.projectLocation);
       setCoordinates({ longitude: initialData.projectLocation[0].longitude, latitude: initialData.projectLocation[0].latitude });
+      setPostcode(initialData.projectLocation[0].postcode);
+      setRegion(initialData.projectLocation[0].region);
+      setSuburb(initialData.projectLocation[0].suburb);
       setInitialDataSet(true);
     }
 
@@ -217,6 +223,12 @@ const EditProject = () => {
     setCoordinates(newCoordinates);
   };
 
+  const handlePostcodeRegionChange = (newPostcodeRegion) => {
+    setPostcode(newPostcodeRegion.postcode);
+    setRegion(newPostcodeRegion.region);
+    setSuburb(newPostcodeRegion.suburb);
+  };
+
   const resetForm = () => {
     setReset(true);
     setProjectName(initialData.projectName);
@@ -228,6 +240,9 @@ const EditProject = () => {
     setCommissionData(initialData.projectCommission);
     setProjectLocation(initialData.projectLocation);
     setCoordinates({ longitude: initialData.projectLocation[0].longitude, latitude: initialData.projectLocation[0].latitude });
+    setPostcode(initialData.projectLocation[0].postcode);
+    setRegion(initialData.projectLocation[0].region);
+    setSuburb(initialData.projectLocation[0].suburb);
     setTitleImage(null);
     setDeletedTitleImage(null);
     setSlideshowImages([]);
@@ -379,12 +394,13 @@ const EditProject = () => {
             selectedLocation={projectLocation}
             onChange={handleProjectLocationChange}
             onCoordinatesChange={handleCoordinatesChange}
+            set_postcode_region={handlePostcodeRegionChange}
             initialData={initialData.projectLocation}
             error={errors.projectLocation}
             reset={reset}
           />
         </Group>
-        <SelectProjectMembers
+        <SelectListingMembers
           user={user}
           onSubmitEditableBy={setEditableBy}
           setErrors={setErrors}

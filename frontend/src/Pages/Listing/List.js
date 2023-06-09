@@ -27,7 +27,7 @@ const Listings = () => {
       try {
         const response = await ListingService.getListingsByDeveloper(developer, currentPage, 6);
         setListings(response.listings);
-        setCurrentPage(response.currentPage);
+        // setCurrentPage(response.currentPage);
         setTotalPages(response.totalPages);
 
         console.log(response);
@@ -47,7 +47,7 @@ const Listings = () => {
       console.log(searchParams);
       const response = await ListingService.searchListings(currentPage, 6, searchParams);
       setListings(response.listings);
-      setCurrentPage(response.currentPage);
+      // setCurrentPage(response.currentPage);
       setTotalPages(response.totalPages);
 
       console.log(response);

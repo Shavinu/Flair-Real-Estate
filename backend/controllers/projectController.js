@@ -174,46 +174,57 @@ const projectController = {
     }
   },
 
-  // Get projects by owner
-  getProjectsByOwner: async (req, res) => {
-    try {
-      const { ownerId } = req.params;
-      const page = parseInt(req.query.page);
-      const limit = parseInt(req.query.limit);
-      const skip = page && limit ? (page - 1) * limit : 0;
-      const search = req.query.search || '';
+// Get projects by owner
+getProjectsByOwner: async (req, res) => {
+  try {
+    const { ownerId } = req.params;
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit);
+    const skip = page && limit ? (page - 1) * limit : 0;
+    const search = req.query.search || '';
+    const initialId = req.query.initialData;
 
-      const projectsQuery = Project.find({
-        projectOwner: ownerId,
-        projectName: { $regex: search, $options: 'i' },
-      })
-        .populate('projectOwner', '_id firstName lastName email')
-        .sort({ createdAt: -1 });
+    const queryObject = {
+      projectOwner: ownerId,
+      projectName: { $regex: search, $options: 'i' },
+    };
 
-      if (skip) {
-        projectsQuery.skip(skip);
+    if (initialId) {
+      const initialProject = await Project.findById(initialId);
+      if (initialProject) {
+        const initialProjectIndex = await Project.find(queryObject)
+          .sort({ createdAt: -1 })
+          .then(projects => projects.findIndex(project => project._id.toString() === initialId));
+        res.locals.initialProjectPage = Math.ceil((initialProjectIndex + 1) / limit);
       }
-
-      if (limit) {
-        projectsQuery.limit(limit);
-      }
-
-      const projects = await projectsQuery.exec();
-      
-      const totalProjects = await Project.countDocuments({
-        projectOwner: ownerId,
-        projectName: { $regex: search, $options: 'i' },
-      });
-
-      res.status(200).json({
-        projects,
-        currentPage: page || 1,
-        totalPages: limit ? Math.ceil(totalProjects / limit) : 1,
-      });
-    } catch (error) {
-      res.status(500).json({ message: error.message });
     }
-  },  
+
+    const projectsQuery = Project.find(queryObject)
+      .populate('projectOwner', '_id firstName lastName email')
+      .sort({ createdAt: -1 });
+
+    if (skip) {
+      projectsQuery.skip(skip);
+    }
+
+    if (limit) {
+      projectsQuery.limit(limit);
+    }
+
+    const projects = await projectsQuery.exec();
+
+    const totalProjects = await Project.countDocuments(queryObject);
+
+    res.status(200).json({
+      projects,
+      currentPage: page || 1,
+      totalPages: limit ? Math.ceil(totalProjects / limit) : 1,
+      initialProjectPage: res.locals.initialProjectPage,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+},
 
 
   // Add members to a project

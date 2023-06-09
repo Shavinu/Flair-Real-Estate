@@ -37,10 +37,10 @@ const ListingDetails = () => {
       try {
         const fetchedListing = await ListingService.getListing(listingId);
         setListing(fetchedListing);
-        console.log(fetchedListing);
+        // console.log(fetchedListing);
         if (fetchedListing.project) {
           const fetchedProject = await ProjectService.getProject(fetchedListing.project);
-          console.log(fetchedProject);
+          // console.log(fetchedProject);
           setProject(fetchedProject);
         }
         const fetchedUser = await UserService.getUserDetailById(fetchedListing.devloper);
@@ -55,7 +55,7 @@ const ListingDetails = () => {
 
   useEffect(() => {
     if (listing) {
-      console.log(listing);
+      // console.log(listing);
       setLocationName(listing.streetAddress);
       setLongitude(listing.coordinates[0].longitude.toString());
       setLatitude(listing.coordinates[0].latitude.toString());
@@ -201,23 +201,54 @@ const ListingDetails = () => {
                 {/* {renderMapboxMap(listing.coordinates)} */}
               </Col>
             </Row>
-            <hr />
             <Row>
-              <Col>
-                <p><i className="fa fa-bed"></i> {listing.bedrooms} Bedrooms</p>
-              </Col>
-              <Col>
-                <p><i className="fa fa-bath"></i> {listing.bathrooms} Bathrooms</p>
-              </Col>
-              <Col>
-                <p><i className="fa fa-car"></i> {listing.carSpaces} Car Spaces</p>
-              </Col>
-              <Col>
-                <p><i className="fa fa-arrows-alt"></i> {listing.landSize} sqm Land Size</p>
-              </Col>
+              <hr />
+              {listing.bedrooms >= 0 && listing.bedrooms !== null && (
+                <Col>
+                  <p><i className="fa fa-bed"></i> {listing.bedrooms} Bedrooms</p>
+                </Col>
+              )}
+              {listing.bathrooms >= 0 && listing.bathrooms !== null && (
+                <Col>
+                  <p><i className="fa fa-bath"></i> {listing.bathrooms} Bathrooms</p>
+                </Col>
+              )}
+              {listing.carSpaces >= 0 && listing.carSpaces !== null && (
+                <Col>
+                  <p><i className="fa fa-car"></i> {listing.carSpaces} Car Spaces</p>
+                </Col>
+              )}
+              {listing.landSize >= 0 && listing.landSize !== null && (
+                <Col>
+                  <p><i className="fa fa-arrows-alt"></i> {listing.landSize} sqm Land Size</p>
+                </Col>
+              )}
             </Row>
           </Card>
-
+          {listing.listingCommission && listing.listingCommission.length > 0 && listing.listingCommission[0].exists && (
+            <Row className="mt-0">
+              <Col>
+                <Card className="rounded mt-1 p-0">
+                  <Card.Subtitle className="text-white bg-dark p-1 mt-0 mb-0" style={{ background: 'linear-gradient(to right, rgba(102, 126, 234, 0.5), rgba(118, 75, 162, 0.5))' }}> Commission Details: </Card.Subtitle>
+                  <ListGroup>
+                    <ListGroup.Item>
+                      Type: {(listing.listingCommission[0].type).toUpperCase()}
+                    </ListGroup.Item>
+                    {listing.listingCommission[0].type === 'percentage' && (
+                      <ListGroup.Item>
+                        Percentage: {listing.listingCommission[0].percent}%
+                      </ListGroup.Item>
+                    )}
+                    {listing.listingCommission[0].type === 'fixed' && (
+                      <ListGroup.Item>
+                        Amount: {(listing.listingCommission[0].amount).toLocaleString('en-AU', { style: 'currency', currency: 'AUD' })}
+                      </ListGroup.Item>
+                    )}
+                  </ListGroup>
+                </Card>
+              </Col>
+            </Row>
+          )}
           {project && (
             <Row className="mt-1">
               <Col>

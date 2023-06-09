@@ -4,41 +4,54 @@ import React, { useEffect, useState } from "react"
 import utils from "../Utils"
 
 const ChildrenMenu = ({ route, currentPath }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   const isActive = (route) => {
-    return route.action === currentPath
-  }
+    return route.action === currentPath;
+  };
 
   const handleParentClick = (e) => {
     e.preventDefault();
-    e.target.parentElement.classList.toggle('open');
-  }
+    setIsOpen(!isOpen);
+  };
 
-  return <>
-    <li key={utils.newGuid()} className={`nav-item has-sub ${isActive(route) ? 'sidebar-group-active open' : ''}`} >
-      <Link to="#" onClick={handleParentClick}>
-        {route.icon && <i className={route.icon}></i>}<span className="menu-title">{route.name}</span>
-      </Link>
-      <ul className="menu-content" key={utils.newGuid()}>
-        {
-          route.children.map((r) => {
+  useEffect(() => {
+    if (route.children.some((r) => isActive(r))) {
+      setIsOpen(true);
+    }
+  }, [currentPath, route.children]);
+
+  return (
+    <>
+      <li
+        key={utils.newGuid()}
+        className={`nav-item has-sub ${isActive(route) || isOpen ? "sidebar-group-active open" : ""
+          }`}
+      >
+        <Link to={route.action} onClick={handleParentClick}>
+          {route.icon && <i className={route.icon}></i>}
+          <span className="menu-title">{route.name}</span>
+        </Link>
+        <ul className="menu-content" key={utils.newGuid()}>
+          {route.children.map((r) => {
             if (r.isRoute) {
-              return <React.Fragment key={utils.newGuid()}></React.Fragment>
+              return <React.Fragment key={utils.newGuid()}></React.Fragment>;
             }
 
-            return <li key={utils.newGuid()} className={isActive(r) ? 'active' : ''}>
-              <Link to={r.action}>
-              {r.icon && <i className={r.icon}></i>}
-              <span className="menu-item">
-                  {r.name}
-                </span>
-              </Link>
-            </li>
-          })
-        }
-      </ul>
-    </li >
-  </>
-}
+            return (
+              <li key={utils.newGuid()} className={isActive(r) ? "active" : ""}>
+                <Link to={r.action}>
+                  {r.icon && <i className={r.icon}></i>}
+                  <span className="menu-item">{r.name}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </li>
+    </>
+  );
+};
 
 const Sidebar = (props) => {
   const {
@@ -82,7 +95,7 @@ const Sidebar = (props) => {
 
             return <li className={`nav-item ${isActive(route) ? 'active' : ''}`} key={utils.newGuid()} >
               <Link to={route.action}>
-              {route.icon && <i className={route.icon}></i>}<span className="menu-title">{route.name}</span>
+                {route.icon && <i className={route.icon}></i>}<span className="menu-title">{route.name}</span>
               </Link>
             </li>
           })}
