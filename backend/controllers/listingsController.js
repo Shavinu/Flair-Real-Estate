@@ -106,7 +106,7 @@ const searchListings = async (req, res) => {
       queryObject.devloper = '000000000000000000000000';
     }
     if (listingCommission && listingCommission.exists === 'true') {
-      queryObject['listingCommission'] = { $exists: true };
+      queryObject['listingCommission.exists'] = true;
       if (listingCommission.type) {
         if (listingCommission.type === 'fixed') {
           let amount = listingCommission.amount || 0;
@@ -121,7 +121,7 @@ const searchListings = async (req, res) => {
         }
       }
     } else if (listingCommission && listingCommission.exists === 'false') {
-      queryObject['listingCommission'] = { $exists: false };
+      queryObject['listingCommission.exists'] = false;
     }
 
     const listingsQuery = Listing.find(queryObject)

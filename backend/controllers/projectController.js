@@ -222,7 +222,7 @@ const projectController = {
         queryObject.projectOwner = '000000000000000000000000';
       }
       if (projectCommission && projectCommission.exists === 'true') {
-        queryObject['projectCommission'] = { $exists: true };
+        queryObject['projectCommission.exists'] = true;
         if (projectCommission.type) {
           if (projectCommission.type === 'fixed') {
             let amount = projectCommission.amount || 0;
@@ -237,7 +237,7 @@ const projectController = {
           }
         }
       } else if (projectCommission && projectCommission.exists === 'false') {
-        queryObject['projectCommission'] = { $exists: false };
+        queryObject['projectCommission.exists'] = false;
       }
 
       const projectsQuery = Project.find(queryObject)
