@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { Container, Row, Col, Card, ListGroup, Carousel, Badge, Button, ButtonGroup, Table } from "react-bootstrap";
 import { FaSort, FaSortUp, FaSortDown, FaBed, FaExpandArrowsAlt, FaCar, FaBath } from 'react-icons/fa';
 import _, { set } from 'lodash';
-import { ContentHeader } from "../../Components";
+import { ContentHeader, CardBody } from "../../Components";
 import utils from "../../Utils";
 import Toast from "../../Components/Toast";
 import { getCoordinates, renderMapboxMap } from "../../Components/Maps/getCordinates";
