@@ -43,7 +43,19 @@ const projectSchema = new Schema({
     latitude: {
       type: Number,
       required: true
-    }
+    },
+    postcode: {
+      type: Number,
+      required: true
+    },
+    region: {
+      type: String,
+      required: true
+    },
+    suburb: {
+      type: String,
+      required: true
+    },
   }],
   projectTitleImage: {
     type: mongoose.Schema.Types.ObjectId,

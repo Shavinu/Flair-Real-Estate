@@ -1,6 +1,8 @@
 const { response } = require('express');
 const Listing = require('../models/listingsModel');
 const Project = require('../models/projectModel');
+const User = require('../models/userModel');
+const Group = require('../models/groupModel');
 const mongoose = require('mongoose');
 const { listingSchema } = require('../helpers/validation');
 
@@ -66,6 +68,7 @@ const searchListings = async (req, res) => {
       status,
       priceRange,
       streetAddress,
+      suburb,
       postcode,
       region,
       landSize,
@@ -74,6 +77,7 @@ const searchListings = async (req, res) => {
       carSpaces,
       project,
       devloper,
+      listingCommission
     } = req.query;
 
     const queryObject = {};
@@ -81,21 +85,44 @@ const searchListings = async (req, res) => {
     if (listingName) queryObject.listingName = { $regex: listingName, $options: 'i' };
     if (type) queryObject.type = type;
     if (status) queryObject.status = status;
-    if (priceRange && (priceRange.minPrice === '' || priceRange.minPrice !== undefined)) {
+    if (priceRange && priceRange.minPrice !== undefined && priceRange.minPrice !== '') {
       queryObject['priceRange.minPrice'] = { $gte: priceRange.minPrice };
     }
-    if (priceRange && (priceRange.maxPrice === '' || priceRange.maxPrice !== undefined)) {
+    if (priceRange && (priceRange.maxPrice !== undefined && priceRange.maxPrice !== '')) {
       queryObject['priceRange.maxPrice'] = { $lte: priceRange.maxPrice };
     }
     if (streetAddress) queryObject.streetAddress = { $regex: streetAddress, $options: 'i' };
+    if (suburb) queryObject.suburb = { $regex: suburb, $options: 'i' };
     if (postcode) queryObject.postcode = postcode;
     if (region) queryObject.region = { $regex: region, $options: 'i' };
-    if (landSize) queryObject.landSize = { $gte: landSize };
-    if (bedrooms) queryObject.bedrooms = { $gte: bedrooms };
-    if (bathrooms) queryObject.bathrooms = { $gte: bathrooms };
-    if (carSpaces) queryObject.carSpaces = { $gte: carSpaces };
-    if (project) queryObject.project = project;
-    if (devloper) queryObject.devloper = devloper;
+    if (landSize) queryObject.landSize = { $lte: landSize };
+    if (bedrooms) queryObject.bedrooms = { $lte: bedrooms };
+    if (bathrooms) queryObject.bathrooms = { $lte: bathrooms };
+    if (carSpaces) queryObject.carSpaces = { $lte: carSpaces };
+    if (project) queryObject.project = { $regex: project, $options: 'i' };
+    if (devloper !== undefined && devloper !== null && devloper !== '' && devloper !== '0') {
+      queryObject.devloper = devloper;
+    } else if (devloper === '0') {
+      queryObject.devloper = '000000000000000000000000';
+    }
+    if (listingCommission && listingCommission.exists === 'true') {
+      queryObject['listingCommission'] = { $exists: true };
+      if (listingCommission.type) {
+        if (listingCommission.type === 'fixed') {
+          let amount = listingCommission.amount || 0;
+          queryObject['listingCommission.type'] = 'fixed';
+          queryObject['listingCommission.amount'] = { $gte: amount };
+        }
+
+        if (listingCommission.type === 'percentage') {
+          let percent = listingCommission.percent || 0;
+          queryObject['listingCommission.type'] = 'percentage';
+          queryObject['listingCommission.percent'] = { $gte: percent };
+        }
+      }
+    } else if (listingCommission && listingCommission.exists === 'false') {
+      queryObject['listingCommission'] = { $exists: false };
+    }
 
     const listingsQuery = Listing.find(queryObject)
       .populate('devloper', '_id firstName lastName email')
@@ -144,9 +171,10 @@ const createListing = async (req, res) => {
   try {
     const vaildListing = await listingSchema.validateAsync(req.body);
     const listing = new Listing(vaildListing);
-    const savedListing = await listing.save();
 
     //if validListing has project, add listing ID to project
+    const savedListing = await listing.save();
+
     if (vaildListing.project) {
       const project = await Project.findById(vaildListing.project);
       project.projectListings.push(savedListing._id);
@@ -231,18 +259,48 @@ const updateListing = async (req, res) => {
     return res.status(404).json({ error: 'Not a valid id' });
   }
 
-  const listing = await Listing.findOneAndUpdate(
-    { _id: id },
-    {
-      ...req.body,
-    }
-  );
+  const listing = await Listing.findById(id);
 
   if (!listing) {
     return res.status(404).json({ error: 'no listing found' });
   }
 
-  res.status(200).json(listing);
+  const { project, ...updateData } = req.body;
+
+  if (project && project !== listing.project) {
+    const currentProject = await Project.findOne({ _id: listing.project });
+    if (currentProject) {
+      currentProject.projectListings = currentProject.projectListings.filter(
+        (listingId) => listingId.toString() !== id
+      );
+      await currentProject.save();
+    }
+
+    const newProject = await Project.findOne({ _id: project });
+    if (newProject) {
+      newProject.projectListings.push(listing._id);
+      await newProject.save();
+    }
+
+    updateData.project = project;
+
+  } else if (!project && listing.project) {
+    const currentProject = await Project.findOne({ _id: listing.project });
+    if (currentProject) {
+      currentProject.projectListings = currentProject.projectListings.filter(
+        (listingId) => listingId.toString() !== id
+      );
+      await currentProject.save();
+    }
+
+    updateData.project = null;
+  }
+
+  const updatedListing = await Listing.findOneAndUpdate({ _id: id }, updateData, {
+    new: true,
+  });
+
+  res.status(200).json(updatedListing);
 };
 
 module.exports = {

@@ -49,8 +49,12 @@ const Create = () => {
   const [projectType, setProjectType] = useState("");
   const [projectName, setProjectName] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
-  const [coordinates, setCoordinates] = useState(null);
   const [projectLocation, setProjectLocation] = useState("");
+  const [coordinates, setCoordinates] = useState(null);
+  const [postcode, setPostcode] = useState(null);
+  const [region, setRegion] = useState(null);
+  const [suburb, setSuburb] = useState(null);
+
   const [projectOwner, setProjectOwner] = useState("");
   const [projectPriceRange, setProjectPriceRange] = useState({});
   const [titleImage, setTitleImage] = useState(null);
@@ -88,6 +92,12 @@ const Create = () => {
   const handleCoordinatesChange = (newCoordinates) => {
     console.log(newCoordinates);
     setCoordinates(newCoordinates);
+  };
+
+  const handlePostcodeRegionChange = (newPostcodeRegion) => {
+    setPostcode(newPostcodeRegion.postcode);
+    setRegion(newPostcodeRegion.region);
+    setSuburb(newPostcodeRegion.suburb);
   };
 
   const handleProjectOwnerChange = (e) => {
@@ -189,7 +199,7 @@ const Create = () => {
         projectType: projectType.value,
         projectPriceRange: [projectPriceRange],
         projectDescription,
-        projectLocation: [{ locationName: projectLocation, longitude: coordinates.longitude, latitude: coordinates.latitude }],
+        projectLocation: [{ locationName: projectLocation, longitude: coordinates.longitude, latitude: coordinates.latitude, postcode: postcode, region: region, suburb: suburb }],
         projectListings: [],
         projectOwner: user,
         editableBy,
@@ -276,6 +286,7 @@ const Create = () => {
                   selectedLocation={projectLocation}
                   onChange={handleProjectLocationChange}
                   onCoordinatesChange={handleCoordinatesChange}
+                  set_postcode_region={handlePostcodeRegionChange}
                   error={errors.projectLocation}
                 />
               </Group>
@@ -352,12 +363,14 @@ const Create = () => {
                 <Label>Project Status</Label>
                 <Select
                   name="projectStatus"
-                  isDisabled={true}
+                  // isDisabled={true}
                   defaultValue={{ value: "Active", label: "Active" }}
                   onChange={(value) => setProjectStatus(value) && handleProjectStatusChange()}
                   options={[
                     { value: "Active", label: "Active" },
-                    { value: "Inactive", label: "Inactive" }
+                    { value: "Inactive", label: "Inactive" },
+                    { value: "Coming Soon", label: "Coming Soon"},
+                    { value: "Reserved", label: "Reserved"},
                   ]}
                   error={errors.projectStatus}
                 />
