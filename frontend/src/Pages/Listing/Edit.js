@@ -9,6 +9,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
 import * as UserService from "../../Services/UserService";
+import * as GroupService from "../../Services/GroupService";
 import * as ListingService from "../../Services/ListingService";
 
 import LocationAutocomplete from '../../Components/Maps/LocationAutoComplete';
@@ -26,7 +27,10 @@ const Edit = () => {
   const [initialLocationData, setInitialLocationData] = useState();
   const [user, setUser] = useState();
   const [editor, setEditor] = useState("");
-  const [userGroup, setUserGroup] = useState();
+  const [editorGroup, setEditorGroup] = useState();
+  const [editableByWithSubgroups, setEditableByWithSubgroups] = useState([]);
+  const [fetchedEditableByWithSubgroups, setFetchedEditableByWithSubgroups] = useState(false);
+  const [editorAllowed, setEditorAllowed] = useState(false);
   const [developer, setDeveloper] = useState();
   const [listingName, setListingName] = useState("");
   const [listingType, setListingType] = useState();
@@ -57,67 +61,99 @@ const Edit = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    // Fetch listing details
-    const getIdSegment = () => {
-      const url = window.location.href;
-      const urlSegments = url.split("/");
-      const listingID = urlSegments[urlSegments.length - 2];
-      return listingID;
-    };
+  const getIdSegment = () => {
+    const pathArray = window.location.pathname.split('/');
+    return pathArray[pathArray.length - 2];
+  };
 
-    const fetchListing = async () => {
-      const listingID = getIdSegment();
-      try {
-        const fetchedListing = await ListingService.getListing(listingID);
-        setInitialData(fetchedListing);
-      } catch (error) {
-        console.error(error);
+  useEffect(() => {
+
+    const fetchUserAndListing = async () => {
+      const editor = JSON.parse(localStorage.getItem('user'));
+      if (editor) {
+        const editorDetails = await UserService.getUserDetailById(editor.payload._id);
+        setEditor(editorDetails);
+        if (editorDetails.group) {
+          setEditorGroup(editorDetails.group);
+        }
       }
+
+      const listingID = getIdSegment();
+      const fetchedListing = await ListingService.getListing(listingID);
+      setInitialData(fetchedListing);
+
+      const userDetails = await UserService.getUserDetailById(fetchedListing.devloper);
+      setUser(userDetails);
+
+      const editableByWithSubgroups = await Promise.all(fetchedListing.editableBy.map(async (editableGroup) => {
+        if (!editableGroup.includeSubGroups || editableGroup.subgroups.length !== 0) return editableGroup;
+
+        const subgroups = await GroupService.getSubGroupsByParentGroupId(editableGroup.group);
+        return {
+          ...editableGroup,
+          subgroups: subgroups.map(subgroup => ({
+            includeAllSubgroupMembers: true,
+            subgroupMembers: [],
+            subgroup: subgroup._id
+          }))
+        };
+      }));
+
+      setEditableByWithSubgroups(editableByWithSubgroups);
+      setFetchedEditableByWithSubgroups(true);
     };
 
-    fetchListing();
+    fetchUserAndListing();
   }, []);
 
   useEffect(() => {
-    if (initialData && !initialDataSet) {
-      setListingName(initialData.listingName);
-      setListingType({ value: initialData.type, label: initialData.type });
-      setListingStatus({ value: initialData.status, label: initialData.status });
-      setListingPriceRange({ minPrice: initialData.priceRange[0].minPrice, maxPrice: initialData.priceRange[0].maxPrice });
-      setListingDescription(initialData.description);
-      // setSelectedProject(initialData.project);
-      setInitialLocationData([{ locationName: initialData.streetAddress, longitude: initialData.coordinates[0].longitude, latitude: initialData.coordinates[0].latitude, postcode: initialData.postcode, region: initialData.region, suburb: initialData.suburb }]);
-      setListingLocation(initialData.streetAddress);
-      setCoordinates(initialData.coordinates);
-      setPostcode(initialData.postcode);
-      setRegion(initialData.region);
-      setSuburb(initialData.suburb);
-      setEditableBy(initialData.editableBy);
-      setBedrooms(initialData.bedrooms);
-      setBathrooms(initialData.bathrooms);
-      setCarSpaces(initialData.carSpaces);
-      setLandSize(initialData.landSize);
-      setInitialDataSet(true);
+    if (initialData && !initialDataSet && fetchedEditableByWithSubgroups) {
+
+      let editorAllowed = false;
+
+      if (editor._id === initialData.devloper) {
+        editorAllowed = true
+
+      } else {
+        editorAllowed = editableByWithSubgroups.some(group => {
+          if (group.includeAllGroupMembers && editorGroup === group.group) return true;
+
+          if (group.groupMembers.includes(editor._id)) return true;
+
+          return group.subgroups.some(subgroup =>
+            (subgroup.includeAllSubgroupMembers && editorGroup === subgroup.subgroup) || subgroup.subgroupMembers.includes(editor._id)
+          );
+        });
+      }
+
+      setEditorAllowed(editorAllowed);
+
+      if (editorAllowed) {
+        setListingName(initialData.listingName);
+        setListingType({ value: initialData.type, label: initialData.type });
+        setListingStatus({ value: initialData.status, label: initialData.status });
+        setListingPriceRange({ minPrice: initialData.priceRange[0].minPrice, maxPrice: initialData.priceRange[0].maxPrice });
+        setListingDescription(initialData.description);
+        // setSelectedProject(initialData.project);
+        setInitialLocationData([{ locationName: initialData.streetAddress, longitude: initialData.coordinates[0].longitude, latitude: initialData.coordinates[0].latitude, postcode: initialData.postcode, region: initialData.region, suburb: initialData.suburb }]);
+        setListingLocation(initialData.streetAddress);
+        setCoordinates(initialData.coordinates);
+        setPostcode(initialData.postcode);
+        setRegion(initialData.region);
+        setSuburb(initialData.suburb);
+        setEditableBy(initialData.editableBy);
+        setBedrooms(initialData.bedrooms);
+        setBathrooms(initialData.bathrooms);
+        setCarSpaces(initialData.carSpaces);
+        setLandSize(initialData.landSize);
+        setInitialDataSet(true);
+
+      } else {
+        setInitialDataSet(true);
+      }
     }
 
-  }, [initialData, initialDataSet]);
-
-  useEffect(() => {
-    const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
-    if (user) {
-      setUser(user);
-      setEditor(user)
-    }
-
-    const fetchUserGroup = async () => {
-      const userDetails = await UserService.getUserDetailById(user.payload._id);
-      if (!userDetails.group) return;
-      setUserGroup(userDetails.group);
-    }
-
-    fetchUserGroup();
-  }, []);
+  }, [initialData, initialDataSet, user, editor, editableByWithSubgroups, editorGroup]);
 
   useEffect(() => {
     if (reset) {
@@ -206,7 +242,6 @@ const Edit = () => {
   };
 
   const validateInputs = () => {
-    console.log(selectedProject);
     let newErrors = { ...errors };
     if (!listingName) {
       newErrors.listingName = "listing name is required";
@@ -296,11 +331,30 @@ const Edit = () => {
     };
   };
 
-  if (!initialData) {
+  if (!initialDataSet) {
     return (
       <Spinner animation="border" role="status" />
     );
-  } else {
+
+  } else if (initialDataSet && !editorAllowed) {
+    return (
+      <Container>
+        <ContentHeader headerTitle="Edit Listing"
+          breadcrumb={[
+            { name: "Home", link: "/" },
+            { name: "Listings", link: "/listings" },
+            { name: "Edit", active: true },
+          ]}
+          options={[<ButtonGroup>
+            <Button variant="secondary" onClick={() => navigate(-1)}>Back</Button>
+          </ButtonGroup>]}
+        />
+        <div>
+          <h4>Sorry, you are not allowed to edit this listing</h4>
+        </div>
+      </Container>
+    );
+  } else if (initialDataSet && editorAllowed) {
     return (
       <Container>
         <ContentHeader headerTitle="Edit Listing"
@@ -630,7 +684,7 @@ const Edit = () => {
           <Col>
             <Row>
               <Col style={{ background: 'linear-gradient(90deg, #c5e6e0, white)', borderRadius: '13px', margin: '15px 15px 0px 15px', borderBottomLeftRadius: '4px' }}>
-                <p className="text-uppercase mt-2" style={{ fontWeight: 'bold', fontFamily: "'Roboto', sans-serif;" }}>Attributes</p>
+                <p className="text-uppercase mt-2" style={{ fontWeight: 'bold', fontFamily: "'Roboto', sans-serif" }}>Attributes</p>
               </Col>
             </Row>
             <div style={{
@@ -647,13 +701,13 @@ const Edit = () => {
                   <Row className='col-auto col-sm-auto col-md-auto' style={{ marginTop: '10px', marginBottom: '10px' }}>
                     <Col className='col-auto col-xl-auto d-sm-flex d-xl-flex align-items-sm-center align-items-xl-center'><i className="fa fa-arrows-alt" style={{ color: 'rgb(255,255,255)', fontSize: '20px', marginRight: '5px' }}></i><strong style={{ fontFamily: "'Roboto', sans-serif" }}>Land Size</strong></Col>
                     <Col>
-                      <div class="input-group col-auto col-sm-auto col-md-auto">
-                        <input class="form-control" type="text" value={landSize} onChange={handleLandSizeChange} error={errors.landSize} pattern="[0-9]*\.?[0-9]*" name="landSize" placeholder="Enter Land Size" />
-                        <div class="input-group-append"><span class="input-group-text">m&sup2;</span></div>
+                      <div className="input-group col-auto col-sm-auto col-md-auto">
+                        <input className="form-control" type="text" value={landSize} onChange={handleLandSizeChange} error={errors.landSize} pattern="[0-9]*\.?[0-9]*" name="landSize" placeholder="Enter Land Size" />
+                        <div className="input-group-append"><span className="input-group-text">m&sup2;</span></div>
                       </div>
-                      {/* <div class="input-group input-group-sm">
-                          <div class="input-group-prepend d-inline-block"><span class="input-group-text" style={{ width: '80px' }}>Width</span></div><input class="form-control" type="text" value={landSize.width} onChange={handleLandSizeChange} error={errors.landSizeWidth} pattern="[0-9]*\.?[0-9]*" name="landSizeWidth" />
-                          <div class="input-group-append"><span class="input-group-text">m</span></div>
+                      {/* <div className="input-group input-group-sm">
+                          <div className="input-group-prepend d-inline-block"><span className="input-group-text" style={{ width: '80px' }}>Width</span></div><input className="form-control" type="text" value={landSize.width} onChange={handleLandSizeChange} error={errors.landSizeWidth} pattern="[0-9]*\.?[0-9]*" name="landSizeWidth" />
+                          <div className="input-group-append"><span className="input-group-text">m</span></div>
                         </div> */}
 
                     </Col>
@@ -761,14 +815,16 @@ const Edit = () => {
             }}>
               <Row>
                 <Col>
-                  <SelectProjectMembers
-                    user={user}
-                    onSubmitEditableBy={setEditableBy}
-                    setErrors={setErrors}
-                    error={errors.editableBy}
-                    initialData={initialData.editableBy}
-                    reset={reset}
-                  />
+                  {user && (
+                    <SelectProjectMembers
+                      user={user._id}
+                      onSubmitEditableBy={setEditableBy}
+                      setErrors={setErrors}
+                      error={errors.editableBy}
+                      initialData={initialData.editableBy}
+                      reset={reset}
+                    />
+                  )}
                 </Col>
               </Row>
             </div>

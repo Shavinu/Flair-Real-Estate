@@ -1,5 +1,6 @@
 import utils from "../Utils"
 import { api } from "../paths"
+import axios from "axios"
 
 export const createProject = async (body) => {
     return utils.fetch.httpPost(api.projects.create, body);
@@ -16,6 +17,30 @@ export const getAllProjects = async () => {
 export const updateProject = async (id, data) => {
     const url = utils.url.replaceId(api.projects.update, id);
     return utils.fetch.httpPost(url, data);
+};
+
+export const searchProjects = async (page, limit, query = {}) => {
+    if (query) {
+        query.page = page;
+        query.limit = limit;
+    } else {
+        query = {
+            page: page,
+            limit: limit,
+        };
+    }
+
+    axios.defaults.headers.common['Authorization'] = localStorage.getItem('token');
+    return axios.get(`${process.env.REACT_APP_API_URL}${api.projects.search}`, {
+        params: query
+    })
+        .then(
+            response => response.data
+        )
+};
+
+export const getProjectOwners = async () => {
+    return utils.fetch.httpGet(api.projects.getProjectOwners);
 };
 
 export const getProjectByOwner = async (ownerId, page, limit, search = '', initialData) => {

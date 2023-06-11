@@ -68,6 +68,7 @@ const searchListings = async (req, res) => {
       status,
       priceRange,
       streetAddress,
+      suburb,
       postcode,
       region,
       landSize,
@@ -76,6 +77,7 @@ const searchListings = async (req, res) => {
       carSpaces,
       project,
       devloper,
+      listingCommission
     } = req.query;
 
     const queryObject = {};
@@ -83,21 +85,44 @@ const searchListings = async (req, res) => {
     if (listingName) queryObject.listingName = { $regex: listingName, $options: 'i' };
     if (type) queryObject.type = type;
     if (status) queryObject.status = status;
-    if (priceRange && (priceRange.minPrice === '' || priceRange.minPrice !== undefined)) {
+    if (priceRange && priceRange.minPrice !== undefined && priceRange.minPrice !== '') {
       queryObject['priceRange.minPrice'] = { $gte: priceRange.minPrice };
     }
-    if (priceRange && (priceRange.maxPrice === '' || priceRange.maxPrice !== undefined)) {
+    if (priceRange && (priceRange.maxPrice !== undefined && priceRange.maxPrice !== '')) {
       queryObject['priceRange.maxPrice'] = { $lte: priceRange.maxPrice };
     }
     if (streetAddress) queryObject.streetAddress = { $regex: streetAddress, $options: 'i' };
+    if (suburb) queryObject.suburb = { $regex: suburb, $options: 'i' };
     if (postcode) queryObject.postcode = postcode;
     if (region) queryObject.region = { $regex: region, $options: 'i' };
-    if (landSize) queryObject.landSize = { $gte: landSize };
-    if (bedrooms) queryObject.bedrooms = { $gte: bedrooms };
-    if (bathrooms) queryObject.bathrooms = { $gte: bathrooms };
-    if (carSpaces) queryObject.carSpaces = { $gte: carSpaces };
-    if (project) queryObject.project = project;
-    if (devloper) queryObject.devloper = devloper;
+    if (landSize) queryObject.landSize = { $lte: landSize };
+    if (bedrooms) queryObject.bedrooms = { $lte: bedrooms };
+    if (bathrooms) queryObject.bathrooms = { $lte: bathrooms };
+    if (carSpaces) queryObject.carSpaces = { $lte: carSpaces };
+    if (project) queryObject.project = { $regex: project, $options: 'i' };
+    if (devloper !== undefined && devloper !== null && devloper !== '' && devloper !== '0') {
+      queryObject.devloper = devloper;
+    } else if (devloper === '0') {
+      queryObject.devloper = '000000000000000000000000';
+    }
+    if (listingCommission && listingCommission.exists === 'true') {
+      queryObject['listingCommission'] = { $exists: true };
+      if (listingCommission.type) {
+        if (listingCommission.type === 'fixed') {
+          let amount = listingCommission.amount || 0;
+          queryObject['listingCommission.type'] = 'fixed';
+          queryObject['listingCommission.amount'] = { $gte: amount };
+        }
+
+        if (listingCommission.type === 'percentage') {
+          let percent = listingCommission.percent || 0;
+          queryObject['listingCommission.type'] = 'percentage';
+          queryObject['listingCommission.percent'] = { $gte: percent };
+        }
+      }
+    } else if (listingCommission && listingCommission.exists === 'false') {
+      queryObject['listingCommission'] = { $exists: false };
+    }
 
     const listingsQuery = Listing.find(queryObject)
       .populate('devloper', '_id firstName lastName email')
@@ -256,7 +281,7 @@ const updateListing = async (req, res) => {
       newProject.projectListings.push(listing._id);
       await newProject.save();
     }
-    
+
     updateData.project = project;
 
   } else if (!project && listing.project) {

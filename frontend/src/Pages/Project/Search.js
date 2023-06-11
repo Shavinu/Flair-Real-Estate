@@ -4,116 +4,101 @@ import { FaBed, FaExpandArrowsAlt, FaCar, FaBath } from 'react-icons/fa';
 import Select, { components } from 'react-select';
 import { ContentHeader } from "../../Components";
 import { Link } from "react-router-dom";
-import * as ListingService from "../../Services/ListingService";
+import * as ProjectService from "../../Services/ProjectService";
 import * as FileService from "../../Services/FileService";
 import SearchLocations from "../../Components/Maps/SearchBased";
 import "./List.css";
 
 const SearchComponent = ({ onSearch, all = true }) => {
   const initialState = {
-    listingName: '',
-    type: '',
-    status: '',
-    priceRange: {
+    projectName: '',
+    projectType: '',
+    projectStatus: '',
+    projectPriceRange: {
       minPrice: '',
       maxPrice: ''
     },
-    streetAddress: '',
-    postcode: '',
-    region: '',
-    landSize: '',
-    bedrooms: '',
-    bathrooms: '',
-    carSpaces: '',
-    project: '',
-    listingCommission: {
+    projectLocation: {
+        locationName: '',
+        suburb: '',
+        postcode: '',
+        region: '',
+    },
+    projectCommission: {
       exists: '',
       type: '',
       amount: '',
       percent: '',
     },
-    devloper: all ? '' : localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).payload._id : '0',
+    projectOwner: all ? '' : localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).payload._id : 0,
   };
 
   const [search, setSearch] = useState({
-    listingName: '',
-    type: '',
-    status: '',
-    priceRange: {
+    projectName: '',
+    projectType: '',
+    projectStatus: '',
+    projectPriceRange: {
       minPrice: '',
       maxPrice: ''
     },
-    streetAddress: '',
-    postcode: '',
-    region: '',
-    landSize: '',
-    bedrooms: '',
-    bathrooms: '',
-    carSpaces: '',
-    project: '',
-    listingCommission: {
+    projectLocation: {
+        locationName: '',
+        suburb: '',
+        postcode: '',
+        region: '',
+    },
+    projectCommission: {
       exists: '',
       type: '',
       amount: '',
       percent: '',
     },
-    devloper: all ? '' : localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).payload._id : '0',
+    projectOwner: all ? '' : localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).payload._id : 0,
   });
 
-  const [developers, setDevelopers] = useState([]);
-  const [priceRange, setPriceRange] = useState({ minPrice: null, maxPrice: null });
+  const [projectOwners, setProjectOwners] = useState([]);
+  const [projectPriceRange, setProjectPriceRange] = useState({ minPrice: null, maxPrice: null });
   const [activeKey, setActiveKey] = useState('0');
-  const [streetAddress, setStreetAddress] = useState('');
+  const [locationName, setLocationName] = useState('');
   const [suburb, setSuburb] = useState('');
   const [postcode, setPostcode] = useState('');
   const [region, setRegion] = useState('');
   const [reset, setReset] = useState(false);
 
-  const developerRef = useRef();
+  const projectOwnerRef = useRef();
 
   useEffect(() => {
-    const fetchDevelopers = async () => {
+    const fetchProjectOwners = async () => {
       try {
-        const response = await ListingService.getDevelopers();
+        const response = await ProjectService.getProjectOwners();
         return response;
       } catch (error) {
-        console.error("Error fetching developers:", error);
+        console.error("Error fetching project owners:", error);
       }
     };
-    fetchDevelopers().then((data) => {
-      const formattedDevelopers = data.map((item) => ({
-        value: item.developer._id,
-        label: `${item.developer.firstName} ${item.developer.lastName}`,
+    fetchProjectOwners().then((data) => {
+      const formattedProjectOwners = data.map((item) => ({
+        value: item.projectOwner._id,
+        label: `${item.projectOwner.firstName} ${item.projectOwner.lastName}`,
       }));
-      formattedDevelopers.unshift({ value: '', label: 'All' });
-      setDevelopers(formattedDevelopers);
+      formattedProjectOwners.unshift({ value: '', label: 'All' });
+      setProjectOwners(formattedProjectOwners);
     });
   }, []);
 
   const typeOptions = [
-    { value: '', label: 'Any' },
-    { value: 'Land or Multiple House', label: 'Land or Multiple House' },
-    { value: 'House and Land Package', label: 'House and Land Package' },
-    { value: 'Apartment & Unit', label: 'Apartment & Unit' },
-    { value: 'Townhouse', label: 'Townhouse' },
-    { value: 'Duplex', label: 'Duplex' },
-    { value: 'Villa', label: 'Villa' },
     { value: 'Land', label: 'Land' },
-    { value: 'Acreage', label: 'Acreage' },
-    { value: 'Rural', label: 'Rural' },];
+    { value: 'Multiple', label: 'Multiple' },];
 
   const statusOptions = [
     { value: '', label: 'Any' },
-    { value: 'Available', label: 'Available' },
-    { value: 'Sold', label: 'Sold' },
-    { value: 'Under Offer', label: 'Under Offer' },
-    { value: 'Withdrawn', label: 'Withdrawn' },];
-  const bedroomsOptions = [{ value: '', label: 'Any' }, { value: 1, label: 'Less than 1' }, { value: 2, label: 'Less than 2' }, { value: 3, label: 'Less than 3' }, { value: 4, label: 'Less than 4' }, { value: 5, label: 'Less than 5' }];
-  const carSpacesOptions = [{ value: '', label: 'Any' }, { value: 1, label: 'Less than 1' }, { value: 2, label: 'Less than 2' }, { value: 3, label: 'Less than 3' }, { value: 4, label: 'Less than 4' }, { value: 5, label: 'Less than 5' }];
-  const bathroomsOptions = [{ value: '', label: 'Any' }, { value: 1, label: 'Less than 1' }, { value: 2, label: 'Less than 2' }, { value: 3, label: 'Less than 3' }, { value: 4, label: 'Less than 4' }, { value: 5, label: 'Less than 5' }];
-  const developerOptions = developers;
-  const listingCommissionExist = [{ value: '', label: 'Any' }, { value: true, label: 'Yes' }, { value: false, label: 'No' }];
-  const listingCommissionTypes = [{ value: '', label: 'Any' }, { value: 'fixed', label: 'Fixed' }, { value: 'percentage', label: 'Percentage' }];
+    { value: 'Active', label: 'Active' },
+    { value: 'Inactive', label: 'Inactive' },
+    { value: 'Coming Soon', label: 'Coming Soon' },
+    { value: 'Reserved', label: 'Reserved' },];
+  const projectOwnersOptions = projectOwners;
+  const projectCommissionExist = [{ value: '', label: 'Any' }, { value: true, label: 'Yes' }, { value: false, label: 'No' }];
+  const projectCommissionTypes = [{ value: '', label: 'Any' }, { value: 'fixed', label: 'Fixed' }, { value: 'percentage', label: 'Percentage' }];
 
   useEffect(() => {
     if (reset) {
@@ -123,8 +108,8 @@ const SearchComponent = ({ onSearch, all = true }) => {
 
   const resetForm = () => {
     setReset(true);
-    if (developerRef && developerRef.current) {
-      developerRef.current.clearValue();
+    if (projectOwnerRef && projectOwnerRef.current) {
+        projectOwnerRef.current.clearValue();
     }
     setSearch(initialState);
   };
@@ -155,10 +140,10 @@ const SearchComponent = ({ onSearch, all = true }) => {
   };
 
   const handlePriceRangeChange = (newPriceRange) => {
-    setPriceRange(newPriceRange);
+    setProjectPriceRange(newPriceRange);
     setSearch({
       ...search,
-      priceRange: newPriceRange
+      projectPriceRange: newPriceRange
     });
   };
 
@@ -170,8 +155,8 @@ const SearchComponent = ({ onSearch, all = true }) => {
     ) {
       setSearch({
         ...search,
-        listingCommission : {
-          ...search.listingCommission,
+        projectCommission : {
+          ...search.projectCommission,
           amount: val
         }
       });
@@ -184,8 +169,8 @@ const SearchComponent = ({ onSearch, all = true }) => {
     {
       setSearch({
         ...search,
-        listingCommission : {
-          ...search.listingCommission,
+        projectCommission : {
+          ...search.projectCommission,
           percent: val
         }
       });
@@ -196,15 +181,15 @@ const SearchComponent = ({ onSearch, all = true }) => {
     let parameters = [];
     for (let key in search) {
       if (search[key] !== '' && search[key] !== null && typeof search[key] !== 'object') {
-        if (key === 'devloper') {
-          const selectedDeveloper = developers.find(developer => developer.value === search[key]);
-          parameters.push(`${key}: ${selectedDeveloper ? selectedDeveloper.label : ''}`);
+        if (key === 'projectOwner') {
+          const selectedProjectOwner = projectOwners.find(projectOwner => projectOwner.value === search[key]);
+          parameters.push(`${key}: ${selectedProjectOwner ? selectedProjectOwner.label : ''}`);
         } else {
           parameters.push(`${key}: ${search[key]}`);
         }
       }
       if (typeof search[key] === 'object') {
-        if (key === 'listingCommission') {
+        if (key === 'projectCommission') {
           if (search[key].exists === true && search[key].exists !== '') {
             parameters.push(`${key}.exists: 'Yes'`);
 
@@ -259,28 +244,28 @@ const SearchComponent = ({ onSearch, all = true }) => {
                 <Col xs={12} md={12}>
                   <Row className="mt-0 mb-2">
                     <Col xs={12} md={6}>
-                      <p style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#333' }}>Listing Name</p>
-                      <Form.Control placeholder="Listing Name" name="listingName" value={search.listingName} onChange={handleInputChange} />
+                      <p style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#333' }}>Project Name</p>
+                      <Form.Control placeholder="Project Name" name="projectName" value={search.projectName} onChange={handleInputChange} />
                     </Col>
                     {all && <Col xs={12} md={6}>
                       <Row>
                         <Col xs={12}>
-                          <p style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#333' }}>Developer Based</p>
+                          <p style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#333' }}>Project Owner Based</p>
                         </Col>
                         <Col xs={12}>
                           <Select
-                            options={developerOptions}
+                            options={projectOwnersOptions}
                             isClearable={true}
-                            name="devloper"
+                            name="projectOwner"
                             onChange={handleSelectChange}
-                            placeholder="Developer"
+                            placeholder="Project Owner"
                             styles={{
                               menuPortal: base => ({ ...base, zIndex: 9999 }),
                               control: base => ({ ...base, fontSize: 12 }),
                               option: base => ({ ...base, fontSize: 12 }),
                               singleValue: base => ({ ...base, fontSize: 12 })
                             }}
-                            ref={developerRef}
+                            ref={projectOwnerRef}
                           />
                         </Col>
                       </Row>
@@ -289,12 +274,12 @@ const SearchComponent = ({ onSearch, all = true }) => {
                   </Row>
                   <Row className="mb-0">
                     <Col xs={12} md={6}>
-                      <p style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#333' }}>Listing Type</p>
+                      <p style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#333' }}>Project Type</p>
                       <Select
-                        value={search.type ? { value: search.type, label: search.type } : null }
+                        value={search.type ? { value: search.projectType, label: search.projectType } : null }
                         options={typeOptions}
                         isClearable
-                        name="type"
+                        name="projectType"
                         onChange={handleSelectChange}
                         placeholder="Type"
                         menuPortalTarget={document.body}
@@ -308,12 +293,12 @@ const SearchComponent = ({ onSearch, all = true }) => {
                       />
                     </Col>
                     <Col xs={12} md={6}>
-                      <p style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#333' }}>Listing Status</p>
+                      <p style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#333' }}>Project Status</p>
                       <Select
-                        value={search.status ? { value: search.status, label: search.status } : null }
+                        value={search.projectStatus ? { value: search.projectStatus, label: search.projectStatus } : null }
                         options={statusOptions}
                         isClearable
-                        name="status"
+                        name="projectStatus"
                         onChange={handleSelectChange}
                         placeholder="Status"
                         menuPortalTarget={document.body}
@@ -328,7 +313,7 @@ const SearchComponent = ({ onSearch, all = true }) => {
                     </Col>
                   </Row>
                   <Row className="my-1">
-                    <p className="ml-1 mt-1" style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#333' }}>Listing Price Range</p>
+                    <p className="ml-1 mt-1" style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#333' }}>Project Price Range</p>
                     <PriceRangeInput
                       min={0}
                       max={2000000}
@@ -339,50 +324,78 @@ const SearchComponent = ({ onSearch, all = true }) => {
                         { till: 10000000, step: 500000 }
                       ]}
                       onChange={handlePriceRangeChange}
-                      parentMinPrice={priceRange.minPrice}
-                      parentMaxPrice={priceRange.maxPrice}
+                      parentMinPrice={projectPriceRange.minPrice}
+                      parentMaxPrice={projectPriceRange.maxPrice}
                       reset={reset}
                     />
                   </Row>
                   <Row className="my-1">
                     <SearchLocations
                       onAddressChange={(address) => {
-                        setStreetAddress(address);
-                        setSearch((prevSearch) => ({ ...prevSearch, streetAddress: address }));
+                        setLocationName(address);
+                        setSearch((prevSearch) => (
+                            {   ...prevSearch, 
+                                projectLocation: {
+                                    ...prevSearch.projectLocation,
+                                    locationName: address
+                                }
+                            }
+                        ));
                       }}
                       onSuburbChange={(sub) => {
                         setSuburb(sub);
-                        setSearch((prevSearch) => ({ ...prevSearch, suburb: sub }));
+                        setSearch((prevSearch) => (
+                            { ...prevSearch, 
+                                projectLocation: {
+                                    ...prevSearch.projectLocation,
+                                    suburb: sub
+                                }
+                            }
+                        ));
                       }}
                       onPostcodeChange={(code) => {
                         setPostcode(code);
-                        setSearch((prevSearch) => ({ ...prevSearch, postcode: code }));
+                        setSearch((prevSearch) => (
+                            { ...prevSearch, 
+                                projectLocation: {
+                                    ...prevSearch.projectLocation,
+                                    postcode: code
+                                }
+                            }
+                        ));
                       }}
                       onRegionChange={(reg) => {
                         setRegion(reg);
-                        setSearch((prevSearch) => ({ ...prevSearch, region: reg }));
+                        setSearch((prevSearch) => (
+                            { ...prevSearch, 
+                                projectLocation: {
+                                    ...prevSearch.projectLocation,
+                                    region: reg
+                                }
+                            }
+                        ));
                       }}
                       reset={reset}
                     />
                   </Row>
                   <Row className="my-1">
                     <Col xs={12} md={12}> 
-                      <p style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#333' }}>Listing Commission</p>
+                      <p style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#333' }}>Project Commission</p>
                     </Col>
                     <Col xs={12} sm={6} md={3}>
                       <p style={{ fontSize: '0.8rem', fontWeight: 'bold', color: '#333', margin: '0' }}>Exist?</p>
                       <Select
                         value={
-                          search.listingCommission.exists !== (null || '')
+                          search.projectCommission.exists !== (null || '')
                             ? {
-                                value: search.listingCommission.exists,
-                                label: search.listingCommission.exists === true ? 'Yes' : search.listingCommission.exists === false ? 'No' : 'Any'
+                                value: search.projectCommission.exists,
+                                label: search.projectCommission.exists === true ? 'Yes' : search.projectCommission.exists === false ? 'No' : 'Any'
                               }
                             : { value: '', label: 'Any' }
                         }
-                        options={listingCommissionExist}
+                        options={projectCommissionExist}
                         isClearable = {true}
-                        name="listingCommission.exists"
+                        name="projectCommission.exists"
                         onChange={handleSelectChange}
                         placeholder="Commission Exist?"
                         menuPortalTarget={document.body}
@@ -399,19 +412,19 @@ const SearchComponent = ({ onSearch, all = true }) => {
                     <p style={{ fontSize: '0.8rem', fontWeight: 'bold', color: '#333', margin: '0' }}>Commission Type</p>
                     <Select
                       value={
-                        search.listingCommission.type !== (null || '') 
+                        search.projectCommission.type !== (null || '') 
                           ? { 
-                              value: search.listingCommission.type, 
-                              label: search.listingCommission.type === 'fixed' ? 'Fixed' : 'Percentage'
+                              value: search.projectCommission.type, 
+                              label: search.projectCommission.type === 'fixed' ? 'Fixed' : 'Percentage'
                             }
                           : { 
                               value: '', label: 'Any' 
                             }
                       }
-                      options={listingCommissionTypes}
+                      options={projectCommissionTypes}
                       isClearable
-                      isDisabled={search.listingCommission.exists === '' || search.listingCommission.exists === false}
-                      name="listingCommission.type"
+                      isDisabled={search.projectCommission.exists === '' || search.projectCommission.exists === false}
+                      name="projectCommission.type"
                       onChange={handleSelectChange}
                       placeholder="Commission Type"
                       menuPortalTarget={document.body}
@@ -432,10 +445,10 @@ const SearchComponent = ({ onSearch, all = true }) => {
                         </InputGroup.Text>
                         <Form.Control
                           type="text"
-                          disabled={search.listingCommission.type === 'percentage' || search.listingCommission.exists === '' || search.listingCommission.exists === false || search.listingCommission.type === ''}
+                          disabled={search.projectCommission.type === 'percentage' || search.projectCommission.exists === '' || search.projectCommission.exists === false || search.projectCommission.type === ''}
                           placeholder="Commission Amount"
-                          name="listingCommission.amount"
-                          value={search.listingCommission.amount}
+                          name="projectCommission.amount"
+                          value={search.projectCommission.amount}
                           onChange={handleCommissionAmountChange}
                           className="rounded-0"
                         />
@@ -449,85 +462,14 @@ const SearchComponent = ({ onSearch, all = true }) => {
                         </InputGroup.Text>
                         <Form.Control
                           type="text"
-                          disabled={search.listingCommission.type === 'fixed' || search.listingCommission.exists === '' || search.listingCommission.exists === false || search.listingCommission.type === ''}
+                          disabled={search.projectCommission.type === 'fixed' || search.projectCommission.exists === '' || search.projectCommission.exists === false || search.projectCommission.type === ''}
                           placeholder="Commission Percent"
-                          name="listingCommission.percent"
-                          value={search.listingCommission.percent}
+                          name="projectCommission.percent"
+                          value={search.projectCommission.percent}
                           onChange={handleCommissionPercentChange}
                           className="rounded-0"
                         />
                       </InputGroup>
-                    </Col>
-                  </Row>
-                  <Row className="my-1">
-                    <Col xs={12} md={12}> 
-                      <p style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#333' }}>Listing Attributes</p>
-                    </Col>
-                    <Col xs={12} md={3}>
-                      <InputGroup className="rounded">
-                        <InputGroup.Text className="rounded-0">
-                          <i className="fa fa-arrows-alt"></i>
-                        </InputGroup.Text>
-                        <Form.Control placeholder="Land Size less than" name="landSize" value={search.landSize} onChange={handleInputChange} className="rounded-0" />
-                        <InputGroup.Text className="rounded-0">m&sup2;</InputGroup.Text>
-                      </InputGroup>
-                    </Col>
-                    <Col xs={12} md={3}>
-                      <Select
-                        value={search.bedrooms !== (null || '') ? { value: search.bedrooms, label: `Less than ${search.bedrooms}` } : { value: '', label: 'Any' }}
-                        options={bedroomsOptions}
-                        isClearable
-                        name="bedrooms"
-                        onChange={handleSelectChange}
-                        placeholder="Bedrooms"
-                        menuPortalTarget={document.body}
-                        menuPosition={'fixed'}
-                        components={{ Control: (props) => <CustomControl {...props} Icon={FaBed} /> }}
-                        styles={{
-                          menuPortal: base => ({ ...base, zIndex: 9999 }),
-                          control: base => ({ ...base, fontSize: 12 }),
-                          option: base => ({ ...base, fontSize: 12 }),
-                          singleValue: base => ({ ...base, fontSize: 12 })
-                        }}
-                      />
-                    </Col>
-                    <Col xs={12} md={3}>
-                      <Select
-                        value={search.bathrooms !== (null || '') ? { value: search.bathrooms, label: `Less than ${search.bathrooms}` } : { value: '', label: 'Any' }}
-                        options={bathroomsOptions}
-                        isClearable
-                        name="bathrooms"
-                        onChange={handleSelectChange}
-                        placeholder="Bathrooms"
-                        menuPortalTarget={document.body}
-                        menuPosition={'fixed'}
-                        components={{ Control: (props) => <CustomControl {...props} Icon={FaBath} /> }}
-                        styles={{
-                          menuPortal: base => ({ ...base, zIndex: 9999 }),
-                          control: base => ({ ...base, fontSize: 12 }),
-                          option: base => ({ ...base, fontSize: 12 }),
-                          singleValue: base => ({ ...base, fontSize: 12 })
-                        }}
-                      />
-                    </Col>
-                    <Col xs={12} md={3}>
-                      <Select
-                        value={search.carSpaces !== (null || '') ? { value: search.carSpaces, label: `Less than ${search.carSpaces}` } : { value: '', label: 'Any' }}
-                        options={carSpacesOptions}
-                        isClearable
-                        name="carSpaces"
-                        onChange={handleSelectChange}
-                        placeholder="Car Spaces"
-                        menuPortalTarget={document.body}
-                        menuPosition={'fixed'}
-                        components={{ Control: (props) => <CustomControl {...props} Icon={FaCar} /> }}
-                        styles={{
-                          menuPortal: base => ({ ...base, zIndex: 9999 }),
-                          control: base => ({ ...base, fontSize: 12 }),
-                          option: base => ({ ...base, fontSize: 12 }),
-                          singleValue: base => ({ ...base, fontSize: 12 })
-                        }}
-                      />
                     </Col>
                   </Row>
                   <Button variant="secondary" onClick={resetForm} className="mt-2 mb-0 mr-1">Reset</Button>
@@ -644,8 +586,8 @@ const PriceRangeInput = ({ onChange, min, max, step, parentMinPrice, parentMaxPr
 
 const Search = () => {
   const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
-  const developer = user ? user.payload._id : null;
-  const [listings, setListings] = useState([]);
+  const projectOwner = user ? user.payload._id : null;
+  const [projects, setProjects] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [imageUrls, setImageUrls] = useState({});
@@ -653,22 +595,22 @@ const Search = () => {
 
   useEffect(() => {
 
-    fetchListings(searchParams);
+    fetchProjects(searchParams);
 
   }, [currentPage, searchParams]);
 
-  const fetchListings = async () => {
+  const fetchProjects = async () => {
     try {
-      const response = await ListingService.searchListings(currentPage, 6, searchParams);
-      setListings(response.listings);
+      const response = await ProjectService.searchProjects(currentPage, 6, searchParams);
+      setProjects(response.projects);
       setTotalPages(response.totalPages);
 
-      response.listings.forEach((listing) => {
-        getImageUrl(listing.titleImage);
+      response.projects.forEach((project) => {
+        getImageUrl(project.projectTitleImage);
       });
 
     } catch (error) {
-      console.error("Error fetching listings:", error);
+      console.error("Error fetching projects:", error);
     }
   };
 
@@ -703,42 +645,42 @@ const Search = () => {
 
   return (
     <Container className="mt-0">
-      <ContentHeader headerTitle="Listings"
+      <ContentHeader headerTitle="Projects"
         breadcrumb={[
           { name: "Home", link: "/" },
-          { name: "All Listings", active: true },
+          { name: "Projects", active: true },
         ]}
-        options={<Link className="btn btn-primary waves-effect waves-light" to="/listings/create">Create Listing</Link>}
+        options={<Link className="btn btn-primary waves-effect waves-light" to="/projects/create">Create Project</Link>}
       />
       <Row>
         <SearchComponent onSearch={handleSearch} />
       </Row>
       <Row>
-        {listings.map((listing) => (
-          <Col key={listing._id} lg={4} md={6} className="mb-4">
-            <Card className="listing-card h-100">
-            {listing.listingCommission[0]?.exists && (
-                <div className={`badge ${listing.listingCommission[0]?.exists && (listing.listingCommission[0]?.type === 'percentage' ? 'badge-warning' : 'badge-danger')}`} style={{ position: 'absolute', top: '0.5rem', right: '0.5rem', fontSize: '0.9rem', fontWeight: 'bold', textShadow: '1px 1px 2px rgba(0, 0, 0, 0.5)' }}>
-                {listing.listingCommission[0]?.type === 'percentage'
-                  ? `Commission: ${listing.listingCommission[0]?.percent}%`
-                  : `Commission: $${listing.listingCommission[0]?.amount?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+        {projects.map((project) => (
+          <Col key={project._id} lg={4} md={6} className="mb-4">
+            <Card className="project-card h-100">
+            {project.projectCommission[0]?.exists && (
+                <div className={`badge ${project.projectCommission[0]?.exists && (project.projectCommission[0]?.type === 'percentage' ? 'badge-warning' : 'badge-danger')}`} style={{ position: 'absolute', top: '0.5rem', right: '0.5rem', fontSize: '0.9rem', fontWeight: 'bold', textShadow: '1px 1px 2px rgba(0, 0, 0, 0.5)' }}>
+                {project.projectCommission[0]?.type === 'percentage'
+                  ? `Commission: ${project.projectCommission[0]?.percent}%`
+                  : `Commission: $${project.projectCommission[0]?.amount?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
               </div>
               )}
-              <Card.Img variant="top" src={imageUrls[listing.titleImage]} style={{ width: "100%", height: "200px", objectFit: "cover" }} />
+              <Card.Img variant="top" src={imageUrls[project.projectTitleImage]} style={{ width: "100%", height: "200px", objectFit: "cover" }} />
               <Card.Body className="p-0">
-                <Card.Title className="text-white bg-dark p-1 mb-0" style={{ background: 'linear-gradient(to right, rgba(19, 198, 137, 1) , rgba(19, 198, 150, 1))' }}>{listing.listingName}</Card.Title>
+                <Card.Title className="text-white bg-dark p-1 mb-0" style={{ background: 'linear-gradient(to right, rgba(19, 198, 137, 1) , rgba(19, 198, 150, 1))' }}>{project.projectName}</Card.Title>
                 <Card.Text className="text-right text-white bg-info pl-1 pr-1" style={{ background: 'linear-gradient(to right, rgba(102, 126, 234, 0.5), rgba(118, 75, 162, 0.5))' }}>
-                  {listing.streetAddress}
+                  {project.projectLocation[0]?.locationName}
                 </Card.Text>
-                <Card.Text className="pl-1 pr-1"><div className="truncate-text" dangerouslySetInnerHTML={{ __html: listing.description }} /></Card.Text>
+                <Card.Text className="pl-1 pr-1"><div className="truncate-text" dangerouslySetInnerHTML={{ __html: project.projectDescription }} /></Card.Text>
               </Card.Body>
               <Card.Footer>
                 <ButtonGroup>
-                  <Link to={`/listings/${listing._id}`} className="btn btn-primary">
+                  <Link to={`/projects/${project._id}`} className="btn btn-primary">
                     View
                   </Link>
-                  {developer === listing.devloper._id &&
-                    <Link to={`/listings/${listing._id}/edit`} className="btn btn-secondary">
+                  {projectOwner === project.projectOwner._id &&
+                    <Link to={`/projects/${project._id}/edit`} className="btn btn-secondary">
                       Edit
                     </Link>
                   }

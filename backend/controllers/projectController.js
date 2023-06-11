@@ -174,57 +174,196 @@ const projectController = {
     }
   },
 
-// Get projects by owner
-getProjectsByOwner: async (req, res) => {
-  try {
-    const { ownerId } = req.params;
-    const page = parseInt(req.query.page);
-    const limit = parseInt(req.query.limit);
-    const skip = page && limit ? (page - 1) * limit : 0;
-    const search = req.query.search || '';
-    const initialId = req.query.initialData;
+  // Search projects
+  searchProjects: async (req, res) => {
+    try {
+      const page = parseInt(req.query.page);
+      const limit = parseInt(req.query.limit);
+      const skip = page && limit ? (page - 1) * limit : 0;
 
-    const queryObject = {
-      projectOwner: ownerId,
-      projectName: { $regex: search, $options: 'i' },
-    };
+      const {
+        projectName,
+        projectType,
+        projectStatus,
+        projectPriceRange,
+        projectLocation,
+        projectCommission,
+        projectOwner,
+      } = req.query;
 
-    if (initialId) {
-      const initialProject = await Project.findById(initialId);
-      if (initialProject) {
-        const initialProjectIndex = await Project.find(queryObject)
-          .sort({ createdAt: -1 })
-          .then(projects => projects.findIndex(project => project._id.toString() === initialId));
-        res.locals.initialProjectPage = Math.ceil((initialProjectIndex + 1) / limit);
+      const queryObject = {};
+
+      if (projectName) queryObject.projectName = { $regex: projectName, $options: 'i' };
+      if (projectType) queryObject.projectType = projectType;
+      if (projectStatus) queryObject.projectStatus = projectStatus;
+
+      if (projectPriceRange && projectPriceRange.minPrice !== undefined && projectPriceRange.minPrice !== '') {
+        queryObject['projectPriceRange.minPrice'] = { $gte: projectPriceRange.minPrice };
       }
+      if (projectPriceRange && (projectPriceRange.maxPrice !== undefined && projectPriceRange.maxPrice !== '')) {
+        queryObject['projectPriceRange.maxPrice'] = { $lte: projectPriceRange.maxPrice };
+      }
+
+      if (projectLocation && projectLocation.locationName) {
+        queryObject['projectLocation.locationName'] = { $regex: projectLocation.locationName, $options: 'i' };
+      }
+      if (projectLocation && projectLocation.suburb) {
+        queryObject['projectLocation.suburb'] = { $regex: projectLocation.suburb, $options: 'i' };
+      }
+      if (projectLocation && projectLocation.region) {
+        queryObject['projectLocation.region'] = { $regex: projectLocation.region, $options: 'i' };
+      }
+      if (projectLocation && projectLocation.postcode) {
+        queryObject['projectLocation.postcode'] = projectLocation.postcode;
+      }
+      if (projectOwner !== undefined && projectOwner !== null && projectOwner !== '' && projectOwner !== '0') {
+        queryObject.projectOwner = projectOwner;
+      } else if (projectOwner === '0') {
+        queryObject.projectOwner = '000000000000000000000000';
+      }
+      if (projectCommission && projectCommission.exists === 'true') {
+        queryObject['projectCommission'] = { $exists: true };
+        if (projectCommission.type) {
+          if (projectCommission.type === 'fixed') {
+            let amount = projectCommission.amount || 0;
+            queryObject['projectCommission.type'] = 'fixed';
+            queryObject['projectCommission.amount'] = { $gte: amount };
+          }
+
+          if (projectCommission.type === 'percentage') {
+            let percent = projectCommission.percent || 0;
+            queryObject['projectCommission.type'] = 'percentage';
+            queryObject['projectCommission.percent'] = { $gte: percent };
+          }
+        }
+      } else if (projectCommission && projectCommission.exists === 'false') {
+        queryObject['projectCommission'] = { $exists: false };
+      }
+
+      const projectsQuery = Project.find(queryObject)
+        .populate('projectOwner', '_id firstName lastName email')
+        .sort({ createdAt: -1 });
+
+      if (skip) {
+        projectsQuery.skip(skip);
+      }
+
+      if (limit) {
+        projectsQuery.limit(limit);
+      }
+
+      const projects = await projectsQuery.exec();
+
+      const totalProjects = await Project.countDocuments(queryObject);
+
+      res.status(200).json({
+        projects,
+        currentPage: page || 1,
+        totalPages: limit ? Math.ceil(totalProjects / limit) : 1,
+      });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
     }
+  },
 
-    const projectsQuery = Project.find(queryObject)
-      .populate('projectOwner', '_id firstName lastName email')
-      .sort({ createdAt: -1 });
+  // Get users with projects
+  getUsersWithProjects: async (req, res) => {
+    try {
+      const projectOwners = await Project.aggregate([
+        {
+          $group: {
+            _id: '$projectOwner',
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $match: {
+            count: { $gt: 0 },
+          },
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: '_id',
+            foreignField: '_id',
+            as: 'projectOwner',
+          },
+        },
+        {
+          $unwind: '$projectOwner',
+        },
+        {
+          $project: {
+            _id: 0,
+            projectOwner: {
+              _id: '$projectOwner._id',
+              firstName: '$projectOwner.firstName',
+              lastName: '$projectOwner.lastName',
+              email: '$projectOwner.email',
+              count: '$count',
+            },
+          },
+        },
+      ]);
 
-    if (skip) {
-      projectsQuery.skip(skip);
+
+      res.status(200).json(projectOwners);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
     }
+  },
 
-    if (limit) {
-      projectsQuery.limit(limit);
+  // Get projects by owner
+  getProjectsByOwner: async (req, res) => {
+    try {
+      const { ownerId } = req.params;
+      const page = parseInt(req.query.page);
+      const limit = parseInt(req.query.limit);
+      const skip = page && limit ? (page - 1) * limit : 0;
+      const search = req.query.search || '';
+      const initialId = req.query.initialData;
+
+      const queryObject = {
+        projectOwner: ownerId,
+        projectName: { $regex: search, $options: 'i' },
+      };
+
+      if (initialId) {
+        const initialProject = await Project.findById(initialId);
+        if (initialProject) {
+          const initialProjectIndex = await Project.find(queryObject)
+            .sort({ createdAt: -1 })
+            .then(projects => projects.findIndex(project => project._id.toString() === initialId));
+          res.locals.initialProjectPage = Math.ceil((initialProjectIndex + 1) / limit);
+        }
+      }
+
+      const projectsQuery = Project.find(queryObject)
+        .populate('projectOwner', '_id firstName lastName email')
+        .sort({ createdAt: -1 });
+
+      if (skip) {
+        projectsQuery.skip(skip);
+      }
+
+      if (limit) {
+        projectsQuery.limit(limit);
+      }
+
+      const projects = await projectsQuery.exec();
+
+      const totalProjects = await Project.countDocuments(queryObject);
+
+      res.status(200).json({
+        projects,
+        currentPage: page || 1,
+        totalPages: limit ? Math.ceil(totalProjects / limit) : 1,
+        initialProjectPage: res.locals.initialProjectPage,
+      });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
     }
-
-    const projects = await projectsQuery.exec();
-
-    const totalProjects = await Project.countDocuments(queryObject);
-
-    res.status(200).json({
-      projects,
-      currentPage: page || 1,
-      totalPages: limit ? Math.ceil(totalProjects / limit) : 1,
-      initialProjectPage: res.locals.initialProjectPage,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-},
+  },
 
 
   // Add members to a project

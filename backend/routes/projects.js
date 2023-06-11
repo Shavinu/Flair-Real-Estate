@@ -12,6 +12,14 @@ router.post('/', projectController.createProject);
 // GET /api/projects
 router.get('/', projectController.getAllProjects);
 
+// Get project Owners
+// GET /api/projects/projectOwners
+router.get('/projectOwners', projectController.getUsersWithProjects);
+
+// Search projects
+// GET /api/projects/search
+router.get('/search', projectController.searchProjects);
+
 // Get a project by ID
 // GET /api/projects/:projectId
 router.get('/:projectId', projectController.getProjectById);

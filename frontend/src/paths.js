@@ -76,7 +76,7 @@ export const views = [
         name: 'All Projects',
         action: '/projects',
         icon: 'feather icon-search',
-        // element: <Project.Search />,
+        element: <Project.Search />,
         isRoute: false
       },
       {
@@ -300,10 +300,12 @@ export const api = {
   },
   projects: {
     create: '/api/projects/',
+    search: '/api/projects/search',
     get: '/api/projects/{{id}}',
     getAll: '/api/projects/',
     update: '/api/projects/{{id}}',
     delete: '/api/projects/{{id}}',
+    getProjectOwners: '/api/projects/projectOwners',
     getProjectByOwner: '/api/projects/owner/{{Id}}',
     addMembers: '/api/projects/{{id}}/add-members/',
     removeMembers: '/api/projects/{{id}}/remove-members/'

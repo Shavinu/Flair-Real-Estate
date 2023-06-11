@@ -541,7 +541,7 @@ const Create = () => {
         <Col>
           <Row>
             <Col style={{ background: 'linear-gradient(90deg, #c5e6e0, white)', borderRadius: '13px', margin: '15px 15px 0px 15px', borderBottomLeftRadius: '4px' }}>
-              <p className="text-uppercase mt-2" style={{ fontWeight: 'bold', fontFamily: "'Roboto', sans-serif;" }}>Attributes</p>
+              <p className="text-uppercase mt-2" style={{ fontWeight: 'bold', fontFamily: "'Roboto', sans-serif" }}>Attributes</p>
             </Col>
           </Row>
           <div style={{
@@ -558,13 +558,13 @@ const Create = () => {
                 <Row className='col-auto col-sm-auto col-md-auto' style={{ marginTop: '10px', marginBottom: '10px' }}>
                   <Col className='col-auto col-xl-auto d-sm-flex d-xl-flex align-items-sm-center align-items-xl-center'><i className="fa fa-arrows-alt" style={{ color: 'rgb(255,255,255)', fontSize: '20px', marginRight: '5px' }}></i><strong style={{ fontFamily: "'Roboto', sans-serif" }}>Land Size</strong></Col>
                   <Col>
-                    <div class="input-group col-auto col-sm-auto col-md-auto">
-                      <input class="form-control" type="text" value={landSize} onChange={handleLandSizeChange} error={errors.landSize} pattern="[0-9]*\.?[0-9]*" name="landSize" placeholder="Enter Land Size" />
-                      <div class="input-group-append"><span class="input-group-text">m&sup2;</span></div>
+                    <div className="input-group col-auto col-sm-auto col-md-auto">
+                      <input className="form-control" type="text" value={landSize} onChange={handleLandSizeChange} error={errors.landSize} pattern="[0-9]*\.?[0-9]*" name="landSize" placeholder="Enter Land Size" />
+                      <div className="input-group-append"><span className="input-group-text">m&sup2;</span></div>
                     </div>
-                    {/* <div class="input-group input-group-sm">
-                      <div class="input-group-prepend d-inline-block"><span class="input-group-text" style={{ width: '80px' }}>Width</span></div><input class="form-control" type="text" value={landSize.width} onChange={handleLandSizeChange} error={errors.landSizeWidth} pattern="[0-9]*\.?[0-9]*" name="landSizeWidth" />
-                      <div class="input-group-append"><span class="input-group-text">m</span></div>
+                    {/* <div className="input-group input-group-sm">
+                      <div className="input-group-prepend d-inline-block"><span className="input-group-text" style={{ width: '80px' }}>Width</span></div><input className="form-control" type="text" value={landSize.width} onChange={handleLandSizeChange} error={errors.landSizeWidth} pattern="[0-9]*\.?[0-9]*" name="landSizeWidth" />
+                      <div className="input-group-append"><span className="input-group-text">m</span></div>
                     </div> */}
 
                   </Col>
@@ -673,7 +673,7 @@ const Create = () => {
             <Row>
               <Col>
                 <SelectListingMembers
-                  user={user}
+                  user={developer}
                   onSubmitEditableBy={setEditableBy}
                   setErrors={setErrors}
                   error={errors.editableBy}

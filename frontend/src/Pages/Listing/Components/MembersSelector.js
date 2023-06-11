@@ -76,7 +76,7 @@ const SelectListingMembers = ({ user, onSubmitEditableBy, initialData, reset }) 
       try {
         if (user) {
           //get user's details
-          const userDetails = await UserService.getUserDetailById(user.payload._id);
+          const userDetails = await UserService.getUserDetailById(user);
 
           //if userDetails.group does not exist return
           if (!userDetails.group) return;

@@ -5,6 +5,7 @@ import LocationAutocomplete from '../../Components/Maps/LocationAutoComplete';
 import { PriceRangeInput } from '../../Components/Form/PriceRange';
 import * as UserService from "../../Services/UserService";
 import * as ProjectService from "../../Services/ProjectService";
+import * as GroupService from "../../Services/GroupService";
 import React, { useState, useEffect } from "react";
 import { Button, ButtonGroup, Container, Spinner } from 'react-bootstrap';
 import { ContentHeader } from "../../Components";
@@ -22,6 +23,10 @@ const EditProject = () => {
   const [initialDataSet, setInitialDataSet] = useState(false);
   const [user, setUser] = useState();
   const [editor, setEditor] = useState("");
+  const [editorGroup, setEditorGroup] = useState();
+  const [editableByWithSubgroups, setEditableByWithSubgroups] = useState([]);
+  const [fetchedEditableByWithSubgroups, setFetchedEditableByWithSubgroups] = useState(false);
+  const [editorAllowed, setEditorAllowed] = useState(false);
   const [reset, setReset] = useState(false);
   const [key, setKey] = useState(0);
   const [errors, setErrors] = useState({});
@@ -32,7 +37,6 @@ const EditProject = () => {
   const [projectStatus, setProjectStatus] = useState();
   const [projectPriceRange, setProjectPriceRange] = useState();
   const [projectDescription, setProjectDescription] = useState();
-  const [userGroup, setUserGroup] = useState();
   const [editableBy, setEditableBy] = useState();
   const [commissionData, setCommissionData] = useState();
   const [projectLocation, setProjectLocation] = useState();
@@ -113,7 +117,6 @@ const EditProject = () => {
         projectPriceRange: [projectPriceRange],
         projectDescription,
         projectLocation: [{ locationName: projectLocation, longitude: coordinates.longitude, latitude: coordinates.latitude, postcode: postcode, region: region, suburb: suburb }],
-        projectListings: [],
         editableBy,
         projectStatus: projectStatus,
         projectCommission: [commissionData]
@@ -136,62 +139,89 @@ const EditProject = () => {
     }
   };
 
+  const getIdSegment = () => {
+    const pathArray = window.location.pathname.split('/');
+    return pathArray[pathArray.length - 2];
+  };
 
   useEffect(() => {
-    // Fetch project details
-    const getIdSegment = () => {
-      const url = window.location.href;
-      const urlSegments = url.split("/");
-      const projectId = urlSegments[urlSegments.length - 2];
-      return projectId;
-    };
-
-    const fetchProject = async () => {
-      const projectId = getIdSegment();
-      try {
-        const fetchedProject = await ProjectService.getProject(projectId);
-        setInitialData(fetchedProject);
-      } catch (error) {
-        console.error(error);
+    const fetchUserAndProject = async () => {
+      const editor = JSON.parse(localStorage.getItem('user'));
+      if (editor) {
+        const editorDetails = await UserService.getUserDetailById(editor.payload._id);
+        setEditor(editorDetails);
+        if (editorDetails.group) {
+          setEditorGroup(editorDetails.group);
+        }
       }
+
+      const projectId = getIdSegment();
+      const fetchedProject = await ProjectService.getProject(projectId);
+      setInitialData(fetchedProject);
+
+      const userDetails = await UserService.getUserDetailById(fetchedProject.projectOwner._id);
+      setUser(userDetails);
+
+      const editableByWithSubgroups = await Promise.all(fetchedProject.editableBy.map(async (editableGroup) => {
+        if (!editableGroup.includeSubGroups || editableGroup.subgroups.length !== 0) return editableGroup;
+
+        const subgroups = await GroupService.getSubGroupsByParentGroupId(editableGroup.group);
+        return {
+          ...editableGroup,
+          subgroups: subgroups.map(subgroup => ({
+            includeAllSubgroupMembers: true,
+            subgroupMembers: [],
+            subgroup: subgroup._id
+          }))
+        };
+      }));
+
+      setEditableByWithSubgroups(editableByWithSubgroups);
+      setFetchedEditableByWithSubgroups(true);
     };
 
-    fetchProject();
+    fetchUserAndProject();
   }, []);
 
   useEffect(() => {
-    if (initialData && !initialDataSet) {
-      setProjectName(initialData.projectName);
-      setProjectType(initialData.projectType);
-      setProjectStatus(initialData.projectStatus);
-      setProjectPriceRange({ minPrice: initialData.projectPriceRange[0].minPrice, maxPrice: initialData.projectPriceRange[0].maxPrice });
-      setProjectDescription(initialData.projectDescription);
-      setEditableBy(initialData.editableBy);
-      setProjectLocation(initialData.projectLocation);
-      setCoordinates({ longitude: initialData.projectLocation[0].longitude, latitude: initialData.projectLocation[0].latitude });
-      setPostcode(initialData.projectLocation[0].postcode);
-      setRegion(initialData.projectLocation[0].region);
-      setSuburb(initialData.projectLocation[0].suburb);
-      setInitialDataSet(true);
+    if (initialData && !initialDataSet && fetchedEditableByWithSubgroups) {
+      let editorAllowed = false;
+
+      if (editor._id === initialData.projectOwner._id) {
+        editorAllowed = true;
+
+      } else {
+        editorAllowed = editableByWithSubgroups.some(group => {
+          if (group.includeAllGroupMembers && editorGroup === group.group) return true;
+
+          if (group.groupMembers.includes(editor._id)) return true;
+
+          return group.subgroups.some(subgroup =>
+            (subgroup.includeAllSubgroupMembers && editorGroup === subgroup.subgroup) || subgroup.subgroupMembers.includes(editor._id)
+          );
+        });
+      }
+
+      setEditorAllowed(editorAllowed);
+
+      if (editorAllowed) {
+        setProjectName(initialData.projectName);
+        setProjectType(initialData.projectType);
+        setProjectStatus(initialData.projectStatus);
+        setProjectPriceRange({ minPrice: initialData.projectPriceRange[0].minPrice, maxPrice: initialData.projectPriceRange[0].maxPrice });
+        setProjectDescription(initialData.projectDescription);
+        setEditableBy(initialData.editableBy);
+        setProjectLocation(initialData.projectLocation);
+        setCoordinates({ longitude: initialData.projectLocation[0].longitude, latitude: initialData.projectLocation[0].latitude });
+        setPostcode(initialData.projectLocation[0].postcode);
+        setRegion(initialData.projectLocation[0].region);
+        setSuburb(initialData.projectLocation[0].suburb);
+        setInitialDataSet(true);
+      } else {
+        setInitialDataSet(true);
+      }
     }
-
-  }, [initialData, initialDataSet]);
-
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user) {
-      setUser(user.payload._id);
-      setEditor(user.payload.email)
-    }
-
-    const fetchUserGroup = async () => {
-      const userDetails = await UserService.getUserDetailById(user.payload._id);
-      if (!userDetails.group) return;
-      setUserGroup(userDetails.group);
-    }
-
-    fetchUserGroup();
-  }, []);
+  }, [initialData, initialDataSet, user, editor, editableByWithSubgroups, editorGroup]);
 
   useEffect(() => {
     if (reset) {
@@ -249,11 +279,29 @@ const EditProject = () => {
     setDeletedSlideshowImages([]);
   };
 
-  if (!initialData) {
+  if (!initialDataSet) {
     return (
       <Spinner animation="border" role="status" />
     );
-  } else {
+  } else if (initialDataSet && !editorAllowed) {
+    return (
+      <Container>
+        <ContentHeader headerTitle="Edit Project"
+          breadcrumb={[
+            { name: "Home", link: "/" },
+            { name: "Projects", link: "/projects" },
+            { name: "Edit", active: true },
+          ]}
+          options={[<ButtonGroup>
+            <Button variant="secondary" onClick={() => navigate(-1)}>Back</Button>
+          </ButtonGroup>]}
+        />
+        <div>
+          <h4>Sorry, you are not allowed to edit this project</h4>
+        </div>
+      </Container>
+    );
+  } else if (initialDataSet && editorAllowed) {
     return (<Container>
       <ContentHeader headerTitle="Edit Project"
         breadcrumb={[
@@ -294,7 +342,9 @@ const EditProject = () => {
               overflowX="scroll"
               options={[
                 { value: "Active", label: "Active" },
-                { value: "Inactive", label: "Inactive" }
+                { value: "Inactive", label: "Inactive" },
+                { value: "Coming Soon", label: "Coming Soon" },
+                { value: "Reserved", label: "Reserved" },
               ]}
               error={errors.projectStatus}
             />
@@ -400,14 +450,16 @@ const EditProject = () => {
             reset={reset}
           />
         </Group>
-        <SelectListingMembers
-          user={user}
-          onSubmitEditableBy={setEditableBy}
-          setErrors={setErrors}
-          error={errors.editableBy}
-          initialData={initialData.editableBy}
-          reset={reset}
-        />
+        {user && (
+          <SelectListingMembers
+            user={user._id}
+            onSubmitEditableBy={setEditableBy}
+            setErrors={setErrors}
+            error={errors.editableBy}
+            initialData={initialData.editableBy}
+            reset={reset}
+          />
+        )}
         <ProjectCommission
           onCommissionChange={setCommissionData}
           setErrors={setErrors}

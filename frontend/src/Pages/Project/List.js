@@ -5,47 +5,53 @@ import { Link } from "react-router-dom";
 import * as ProjectService from "../../Services/ProjectService";
 import * as FileService from "../../Services/FileService";
 import "./List.css";
+import { SearchComponent, PriceRangeInput } from "./Search";
 
 const ProjectsListing = () => {
   const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
-  const ownerId = user ? user.payload._id : null;
+  const projectOwner = user ? user.payload._id : null;
   const [projects, setProjects] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [imageUrls, setImageUrls] = useState({});
+  const [searchParams, setSearchParams] = useState({projectOwner: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).payload._id : 0});
 
   useEffect(() => {
-    const getImageUrl = async (imageId) => {
-      if (!imageUrls[imageId]) {
-        const url = await FileService.getImageUrl(imageId);
-        setImageUrls((prevState) => ({ ...prevState, [imageId]: url }));
-      }
-    };
 
-    const fetchProjects = async () => {
-      try {
-        const response = await ProjectService.getProjectByOwner(ownerId, currentPage, 6);
-        setProjects(response.projects);
-        setCurrentPage(response.currentPage);
-        setTotalPages(response.totalPages);
+    fetchProjects(searchParams);
 
-        response.projects.forEach((project) => {
-          getImageUrl(project.projectTitleImage);
-        });
+  }, [currentPage, searchParams]);
 
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      }
-    };
-    fetchProjects();
-  }, [ownerId, currentPage, imageUrls]);
+  const fetchProjects = async () => {
+    try {
+      const response = await ProjectService.searchProjects(currentPage, 6, searchParams);
+      setProjects(response.projects);
+      setTotalPages(response.totalPages);
+
+      response.projects.forEach((project) => {
+        getImageUrl(project.projectTitleImage);
+      });
+
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    }
+  };
+
+  const handleSearch = (newSearchParams) => {
+    let searchParams = { ...newSearchParams };
+    setSearchParams(searchParams);
+    setCurrentPage(1);
+  };
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
   };
 
   const getImageUrl = (imageId) => {
-    return FileService.streamFile(imageId);
+    if (!imageUrls[imageId]) {
+      const url = FileService.getImageUrl(imageId);
+      setImageUrls((prevState) => ({ ...prevState, [imageId]: url }));
+    }
   };
 
   const renderPagination = () => {
@@ -62,7 +68,7 @@ const ProjectsListing = () => {
 
   return (
     <Container className="mt-0">
-      <ContentHeader headerTitle="Project List"
+      <ContentHeader headerTitle="Projects"
         breadcrumb={[
           { name: "Home", link: "/" },
           { name: "Projects", active: true },
@@ -70,15 +76,24 @@ const ProjectsListing = () => {
         options={<Link className="btn btn-primary waves-effect waves-light" to="/projects/create">Create Project</Link>}
       />
       <Row>
+        <SearchComponent onSearch={handleSearch} all={false} />
+      </Row>
+      <Row>
         {projects.map((project) => (
           <Col key={project._id} lg={4} md={6} className="mb-4">
-            {/* make card height all the same size */}
             <Card className="project-card h-100">
+            {project.projectCommission[0]?.exists && (
+                <div className={`badge ${project.projectCommission[0]?.exists && (project.projectCommission[0]?.type === 'percentage' ? 'badge-warning' : 'badge-danger')}`} style={{ position: 'absolute', top: '0.5rem', right: '0.5rem', fontSize: '0.9rem', fontWeight: 'bold', textShadow: '1px 1px 2px rgba(0, 0, 0, 0.5)' }}>
+                {project.projectCommission[0]?.type === 'percentage'
+                  ? `Commission: ${project.projectCommission[0]?.percent}%`
+                  : `Commission: $${project.projectCommission[0]?.amount?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+              </div>
+              )}
               <Card.Img variant="top" src={imageUrls[project.projectTitleImage]} style={{ width: "100%", height: "200px", objectFit: "cover" }} />
               <Card.Body className="p-0">
-                <Card.Title className="text-white bg-dark p-1 mb-0" style={{ background: 'linear-gradient(to right, rgba(102, 126, 234, 0.5), rgba(118, 75, 162, 0.5))' }}>{project.projectName}</Card.Title>
+                <Card.Title className="text-white bg-dark p-1 mb-0" style={{ background: 'linear-gradient(to right, rgba(19, 198, 137, 1) , rgba(19, 198, 150, 1))' }}>{project.projectName}</Card.Title>
                 <Card.Text className="text-right text-white bg-info pl-1 pr-1" style={{ background: 'linear-gradient(to right, rgba(102, 126, 234, 0.5), rgba(118, 75, 162, 0.5))' }}>
-                  {project.projectLocation['locationName']}
+                  {project.projectLocation[0]?.locationName}
                 </Card.Text>
                 <Card.Text className="pl-1 pr-1"><div className="truncate-text" dangerouslySetInnerHTML={{ __html: project.projectDescription }} /></Card.Text>
               </Card.Body>
@@ -87,9 +102,11 @@ const ProjectsListing = () => {
                   <Link to={`/projects/${project._id}`} className="btn btn-primary">
                     View
                   </Link>
-                  <Link to={`/projects/${project._id}/edit`} className="btn btn-secondary">
-                    Edit
-                  </Link>
+                  {projectOwner === project.projectOwner._id &&
+                    <Link to={`/projects/${project._id}/edit`} className="btn btn-secondary">
+                      Edit
+                    </Link>
+                  }
                 </ButtonGroup>
               </Card.Footer>
             </Card>

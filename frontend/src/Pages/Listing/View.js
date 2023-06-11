@@ -6,6 +6,7 @@ import utils from "../../Utils";
 import Toast from "../../Components/Toast";
 import { getCoordinates, renderMapboxMap } from "../../Components/Maps/getCordinates";
 import NearbyPOIs from "../../Components/Maps/getNearbyPOIs";
+import * as GroupService from "../../Services/GroupService";
 import * as ListingService from "../../Services/ListingService";
 import * as ProjectService from "../../Services/ProjectService";
 import * as FileService from "../../Services/FileService";
@@ -17,6 +18,11 @@ import { useState, useEffect } from "react";
 const ListingDetails = () => {
   const [listing, setListing] = useState(null);
   const [project, setProject] = useState(null);
+  const [editor, setEditor] = useState(null);
+  const [editorGroup, setEditorGroup] = useState(null);
+  const [editableByWithSubgroups, setEditableByWithSubgroups] = useState([]);
+  const [fetchedEditableByWithSubgroups, setFetchedEditableByWithSubgroups] = useState(false);
+  const [editorAllowed, setEditorAllowed] = useState(false);
   const [developer, setDeveloper] = useState(null);
   const [imageUrls, setImageUrls] = useState({});
   const [locationName, setLocationName] = useState(null);
@@ -37,14 +43,38 @@ const ListingDetails = () => {
       try {
         const fetchedListing = await ListingService.getListing(listingId);
         setListing(fetchedListing);
-        // console.log(fetchedListing);
         if (fetchedListing.project) {
           const fetchedProject = await ProjectService.getProject(fetchedListing.project);
-          // console.log(fetchedProject);
           setProject(fetchedProject);
         }
         const fetchedUser = await UserService.getUserDetailById(fetchedListing.devloper);
         setDeveloper(fetchedUser);
+
+        const editor = JSON.parse(localStorage.getItem('user'));
+        if (!editor) return;
+
+        const editorDetails = await UserService.getUserDetailById(editor.payload._id);
+        setEditor(editorDetails);
+        if (!editorDetails.group) return;
+        setEditorGroup(editorDetails.group);
+
+        const editableByWithSubgroups = await Promise.all(fetchedListing.editableBy.map(async (editableGroup) => {
+          if (!editableGroup.includeSubGroups || editableGroup.subgroups.length !== 0) return editableGroup;
+
+          const subgroups = await GroupService.getSubGroupsByParentGroupId(editableGroup.group);
+          return {
+            ...editableGroup,
+            subgroups: subgroups.map(subgroup => ({
+              includeAllSubgroupMembers: true,
+              subgroupMembers: [],
+              subgroup: subgroup._id
+            }))
+          };
+        }));
+
+        setEditableByWithSubgroups(editableByWithSubgroups);
+        setFetchedEditableByWithSubgroups(true);
+
       } catch (error) {
         console.error(error);
       }
@@ -55,7 +85,6 @@ const ListingDetails = () => {
 
   useEffect(() => {
     if (listing) {
-      // console.log(listing);
       setLocationName(listing.streetAddress);
       setLongitude(listing.coordinates[0].longitude.toString());
       setLatitude(listing.coordinates[0].latitude.toString());
@@ -80,6 +109,25 @@ const ListingDetails = () => {
       });
     }
   }, [listing]);
+
+  useEffect(() => {
+    if (fetchedEditableByWithSubgroups) {
+      let editorAllowed = false;
+
+      if (listing.devloper === editor._id) {
+        editorAllowed = true;
+      } else {
+        editorAllowed = editableByWithSubgroups.some(group => {
+          if (group.includeAllGroupMembers && editorGroup === group.group) return true;
+          if (group.groupMembers.includes(editor._id)) return true;
+          return group.subgroups.some(subgroup =>
+            (subgroup.includeAllSubgroupMembers && editorGroup === subgroup.subgroup) || subgroup.subgroupMembers.includes(editor._id)
+          );
+        });
+      }
+      setEditorAllowed(editorAllowed);
+    }
+  }, [fetchedEditableByWithSubgroups, editorGroup, editor, listing]);
 
   if (!listing) {
     return <ContentHeader headerTitle="View Listing"
@@ -114,7 +162,7 @@ const ListingDetails = () => {
               <Link to={`/listings/`} className="btn btn-secondary">
                 Back
               </Link>
-              {developer && localStorage.getItem('user') && JSON.parse(localStorage.getItem('user')).payload._id === developer._id &&
+              {editorAllowed &&
                 <Link to={`/listings/${listing._id}/edit`} className="btn btn-primary">
                   Edit
                 </Link>

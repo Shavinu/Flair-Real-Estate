@@ -361,12 +361,14 @@ const Create = () => {
                 <Label>Project Status</Label>
                 <Select
                   name="projectStatus"
-                  isDisabled={true}
+                  // isDisabled={true}
                   defaultValue={{ value: "Active", label: "Active" }}
                   onChange={(value) => setProjectStatus(value) && handleProjectStatusChange()}
                   options={[
                     { value: "Active", label: "Active" },
-                    { value: "Inactive", label: "Inactive" }
+                    { value: "Inactive", label: "Inactive" },
+                    { value: "Coming Soon", label: "Coming Soon"},
+                    { value: "Reserved", label: "Reserved"},
                   ]}
                   error={errors.projectStatus}
                 />
