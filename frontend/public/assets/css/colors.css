@@ -1,3 +1,5 @@
+
+
 .white {
   color : #FFFFFF !important;
 }
@@ -7698,4 +7700,8 @@ input:focus ~ .bg-danger {
   background : #640064;
   /* The Fallback */
   background : rgba(100, 0, 100, 0.6);
+}
+
+.bg-red {
+  background-color: #c70404 !important;
 }

@@ -1,5 +1,6 @@
 import utils from "../Utils"
 import { api } from "../paths"
+import axios from "axios"
 
 export const createProject = async (body) => {
     return utils.fetch.httpPost(api.projects.create, body);
@@ -18,7 +19,31 @@ export const updateProject = async (id, data) => {
     return utils.fetch.httpPost(url, data);
 };
 
-export const getProjectByOwner = async (ownerId, page, limit) => {
+export const searchProjects = async (page, limit, query = {}) => {
+    if (query) {
+        query.page = page;
+        query.limit = limit;
+    } else {
+        query = {
+            page: page,
+            limit: limit,
+        };
+    }
+
+    axios.defaults.headers.common['Authorization'] = localStorage.getItem('token');
+    return axios.get(`${process.env.REACT_APP_API_URL}${api.projects.search}`, {
+        params: query
+    })
+        .then(
+            response => response.data
+        )
+};
+
+export const getProjectOwners = async () => {
+    return utils.fetch.httpGet(api.projects.getProjectOwners);
+};
+
+export const getProjectByOwner = async (ownerId, page, limit, search = '', initialData) => {
     let url = utils.url.replaceId(api.projects.getProjectByOwner, ownerId);
     if (page) {
         url += `?page=${page}`;
@@ -26,8 +51,14 @@ export const getProjectByOwner = async (ownerId, page, limit) => {
     if (limit) {
         url += page ? `&limit=${limit}` : `?limit=${limit}`;
     }
+    if (search) {
+        url += url.includes('?') ? `&search=${search}` : `?search=${search}`;
+    }
+    if (initialData) {
+        url += url.includes('?') ? `&initialData=${initialData}` : `?initialData=${initialData}`;
+    }
     return utils.fetch.httpGet(url);
-};
+};  
 
 export const deleteProject = async (id) => {
     return utils.fetch.httpDelete(utils.url.replaceId(api.projects.delete, id));

@@ -70,6 +70,11 @@ const ProjectCommission = ({ onCommissionChange, setErrors, error, initialData, 
       setLocalError('Please provide a commission amount');
     } else if (exists && type === 'percentage' && percent === '') {
       setLocalError('Please provide a commission percentage');
+    } else if (
+      (exists && type.value === 'fixed' && amount === '') ||
+      (exists && type.value === 'percentage' && percent === '')
+    ) {
+      setLocalError('Please enter a valid amount or percentage');
     } else {
       setLocalError(null);
     }

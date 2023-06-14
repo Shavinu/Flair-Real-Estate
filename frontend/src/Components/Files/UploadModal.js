@@ -3,7 +3,6 @@ import * as FileService from '../../Services/FileService';
 import axios from 'axios';
 import { Button, Form, Modal, Alert, Row, Col } from 'react-bootstrap';
 import { api } from '../../paths';
-import { set } from 'mongoose';
 
 const FileUploadModal = () => {
   const [userId, setUserId] = useState();

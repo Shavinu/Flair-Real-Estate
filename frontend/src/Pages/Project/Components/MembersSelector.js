@@ -154,7 +154,11 @@ const SelectProjectMembers = ({ user, onSubmitEditableBy, initialData, reset }) 
         const data = initialData[0];
 
         if (data.subgroups) {
-          setAllowSubgroupEdit(true);
+          if (data.includeSubGroups) {
+            setAllowSubgroupEdit(true);
+          } else {
+            setAllowSubgroupEdit(false);
+          }
 
           // get all subgroups in the group
           const fetchedSubgroups = await GroupService.getSubGroupsByParentGroupId(data.group);
