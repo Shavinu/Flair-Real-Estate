@@ -129,20 +129,20 @@ const Create = () => {
       firstName: firstName,
       lastName: lastName,
       email: email,
+      password: password,
+      mobileNo: mobileNo,
       phoneNo: phoneNo,
-      accType: accType,
-      company: company,
       addressLine1: addressLine1,
       addressLine2: addressLine2,
       city: city,
       country: country,
       postcode: postcode,
-      password: password,
+      accType: accType,
+      jobType: jobType,
+      company: company,
+      licence: licence,
+      group: group,
     };
-
-    // if (birthday) {
-    //   body.birthday = birthday
-    // }
 
     if (group) {
       body.group = group;
@@ -180,17 +180,17 @@ const Create = () => {
         ]}
         options={
           <div>
-            <Button
+            <Link
               type='reset'
               className='btn waves-effect waves-light mr-75'
-              onClick={onCancel}>
+              to={`/users`}>
               Cancel
-            </Button>
+            </Link>
             <Button
               className='btn btn-primary waves-effect waves-light'
               onClick={onSubmit}
               isLoading={isLoading}>
-              Save
+              Create
             </Button>
           </div>
         }

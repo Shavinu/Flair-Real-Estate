@@ -12,6 +12,7 @@ const List = () => {
   const [selectedUsers, setSelectedUsers] = useState([]);
 
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
+  const [modalTitle, setModalTitle] = useState('');
 
   const getUserList = () => {
     UserService.getUserList()
@@ -72,6 +73,11 @@ const List = () => {
 
   const onSelectDelete = (user) => {
     setSelectedUsers([user]);
+    if (selectedUsers.length > 1){
+      setModalTitle = "Delete Users";
+    } else if (selectedUsers.length == 1){
+      setModalTitle = "Delete User";
+    }
     setShowConfirmDeleteModal(true);
   }
 
@@ -124,6 +130,7 @@ const List = () => {
     <ConfirmModal show={showConfirmDeleteModal}
       setShow={setShowConfirmDeleteModal}
       onSubmit={onConfirmDeleteUsers}
+      title={modalTitle}
     />
   </>
 }

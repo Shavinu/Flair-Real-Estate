@@ -95,10 +95,6 @@ const EditProfile = ({ page }) => {
     window.jQuery('#' + modalName).modal('hide');
   };
 
-  const onCancel = (e) => {
-    page(1);
-  };
-
   const isValid = () => {
     let isValid = true;
     let errors = {};
@@ -332,17 +328,18 @@ const EditProfile = ({ page }) => {
       <ContentHeader
         headerTitle='Edit Profile'
         breadcrumb={[
-          { name: 'User' },
-          { name: 'Profile', link: `/profile/edit/${id}`, active: true },
+          { name: 'Home', link: '/'},
+          { name: 'Profile',link:'/profile' },
+          { name: 'Edit Profile', active: true},
         ]}
         options={
           <div className='col-12 d-flex mt-1 px-0'>
-            <Button
+            <Link
               type='reset'
               className='btn waves-effect waves-light mr-75'
-              onClick={onCancel}>
+              to={`/profile/${id}`}>
               Cancel
-            </Button>
+            </Link>
             <Button
               type='submit'
               className='btn btn-primary waves-effect waves-light mr-75'
@@ -571,7 +568,7 @@ const EditProfile = ({ page }) => {
                 <Col>
                   <Group>
                     <Label htmlFor='role'>Role</Label>
-                    <span name='role'>{accType}</span>
+                    <div name='role'>{accType}</div>
                   </Group>
                   <Group>
                     <Label htmlFor='job'>Job Title</Label>
@@ -598,7 +595,7 @@ const EditProfile = ({ page }) => {
                     <Label htmlFor='company'>
                       <Label htmlFor='company'>Company</Label>
                     </Label>
-                    <span
+                    <div
                       name='company'
                       className='float-right'
                       data-backdrop='true'
@@ -609,18 +606,18 @@ const EditProfile = ({ page }) => {
                       <i>
                         <u>Request change</u>
                       </i>
-                    </span>
+                    </div>
                     <div name='company'>{company}</div>
                   </Group>
                   <Group>
                     <Label htmlFor='licence'>Licence Number</Label>
-                    <span name='licence'>{licence}</span>
+                    <div name='licence'>{licence}</div>
                   </Group>
                   <Group>
                     <Label htmlFor='licenceVerify'>
                       Licence Verification Status
                     </Label>
-                    <span name='licenceVerify'>{verificationStatus}</span>
+                    <div name='licenceVerify'>{verificationStatus}</div>
                   </Group>
                   <Group>
                     <Label htmlFor='group'>Group</Label>
