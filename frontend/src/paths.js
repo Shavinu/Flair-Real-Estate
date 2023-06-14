@@ -44,6 +44,13 @@ export const views = [
     isRoute: true,
   },
   {
+    name: 'Edit Profile',
+    action: '/profile/edit/:id',
+    icon: 'feather icon-user-check',
+    element: <Dashboard.EditProfile />,
+    isRoute: true,
+  },
+  {
     name: 'User Groups',
     action: '/groups',
     icon: 'feather icon-users',

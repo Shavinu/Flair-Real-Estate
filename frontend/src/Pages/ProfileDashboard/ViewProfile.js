@@ -66,23 +66,28 @@ const ViewProfile = () => {
   }, [id]);
 
   return (
-    <>
-      {page === 2 ? (
-        <EditProfile page={setPage} />
-      ) : (
+    // <>
+    //   {page === 2 ? (
+    //     <EditProfile page={setPage} />
+    //   ) : (
         <>
           <ContentHeader
             headerTitle='My Profile'
             breadcrumb={[
-              { name: 'User', link: '' },
-              { name: 'Profile', link: `/profile/view/${id}`, active: true },
+              { name: 'Home', link: '/' },
+              { name: 'Profile', active: true },
             ]}
             options={
+              // <Link
+              //   className='btn btn-primary waves-effect waves-light'
+              //   onClick={() => {
+              //     setPage(2);
+              //   }}>
+              //   Edit Profile
+              // </Link>
               <Link
                 className='btn btn-primary waves-effect waves-light'
-                onClick={() => {
-                  setPage(2);
-                }}>
+                to={`/profile/edit/${id}`}>
                 Edit Profile
               </Link>
             }
@@ -182,26 +187,26 @@ const ViewProfile = () => {
                   <Row>
                     <Col>
                       <Group>
-                        <Label htmlFor=''>Role</Label>
-                        <span name=''>{accType}</span>
+                        <Label htmlFor='acc'>Role</Label>
+                        <div name='acc'>{accType}</div>
                       </Group>
                       <Group>
                         <Label htmlFor='job'>Job Title</Label>
-                        <span name='job'>{jobType}</span>
+                        <div name='job'>{jobType}</div>
                       </Group>
                       <Group>
                         <Label htmlFor='comapny'>Company</Label>
-                        <span name='comapny'>{company}</span>
+                        <div name='comapny'>{company}</div>
                       </Group>
                       <Group>
                         <Label htmlFor='licence'>Licence Number</Label>
-                        <span name='licence'>{licence}</span>
+                        <div name='licence'>{licence}</div>
                       </Group>
                       <Group>
                         <Label htmlFor='licenceVerify'>
                           Licence Verification Status
                         </Label>
-                        <span name='licenceVerify'>{verificationStatus}</span>
+                        <div name='licenceVerify'>{verificationStatus}</div>
                       </Group>
                       <Group>
                         <Label htmlFor=''>Group</Label>
@@ -220,8 +225,8 @@ const ViewProfile = () => {
             </Col>
           </Row>
         </>
-      )}
-    </>
+    //   )}
+    // </>
   );
 };
 
