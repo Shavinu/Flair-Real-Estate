@@ -8,6 +8,11 @@ import * as Dashboard from "./Pages/ProfileDashboard"
 import * as File from "./Pages/File"
 // import Listing from "./Pages/Project/Test"
 import * as Listing from "./Pages/Listing"
+import * as About from "./Pages/Contact/About"
+import * as ContactForm from "./Pages/Contact/ContactForm"
+import * as BuyersArticles from './Pages/Resources/BuyersArticles';
+import * as MortgageCal from './Pages/Resources/MortgageCal';
+import * as News from './Pages/Resources/News';
 
 export const views = [
   {
@@ -15,6 +20,41 @@ export const views = [
     action: '/',
     icon: 'feather icon-home',
     element: <Home />
+  },
+  {
+    name: 'About',
+    action: '/About',
+    icon: 'feather icon-about',
+    element: <About.default />,
+    isRoute: true,
+  },
+  {
+    name: 'Contact Form',
+    action: '/ContactForm',
+    icon: 'feather icon-about',
+    element: <ContactForm.default />,
+    isRoute: true,
+  },
+  {
+    name: 'Buyers Articles',
+    action: '/BuyersArticles',
+    icon: 'feather icon-about',
+    element: <BuyersArticles.default />,
+    isRoute: true,
+  },
+  {
+    name: 'Mortgage Calculator',
+    action: '/MortgageCal',
+    icon: 'feather icon-about',
+    element: <MortgageCal.default />,
+    isRoute: true,
+  },
+  {
+    name: 'News',
+    action: '/News',
+    icon: 'feather icon-about',
+    element: <News.default />,
+    isRoute: true,
   },
   {
     name: 'Users',
@@ -185,6 +225,7 @@ export const views = [
     element: <File.Browser />,
     isRoute: true
   },
+
 
   // {
   //   name: 'Menu',

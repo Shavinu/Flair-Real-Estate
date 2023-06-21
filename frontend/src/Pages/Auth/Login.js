@@ -169,11 +169,11 @@ const Login = () => {
                             </fieldset>
                           </div>
                           <div className='text-right'>
-                            <a
-                              href='auth-forgot-password.html'
-                              className='card-link'>
-                              Forgot Password?
-                            </a>
+                            <Link
+                              to=''
+                              className=''>
+                              by-pass meeee
+                            </Link>
                           </div>
                         </div>
                         <Button
