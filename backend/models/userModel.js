@@ -26,7 +26,7 @@ const userSchema = new Schema(
     },
     phoneNo: {
       type: String,
-      required: true,
+      // required: true,
     },
     email: {
       type: String,
@@ -34,6 +34,11 @@ const userSchema = new Schema(
       unique: true,
       required: [true,],
       validate: [],
+    },
+    verified: {
+      type: Boolean,
+      required: true,
+      default: false,
     },
     password: {
       type: String,
@@ -46,11 +51,12 @@ const userSchema = new Schema(
     licence: {
       type: String,
       unique: true,
-      required: true,
+      // required: true,
     },
     verifiedLicence: {
       type: Boolean,
       required: true,
+      default: false,
     },
     group: {
       type: Schema.Types.ObjectId,

@@ -4,13 +4,15 @@ const userSchema = Joi.object({
   accType: Joi.string().required(),
   jobType: Joi.string().optional(),
   licence: Joi.string().optional(),
-  verifiedLicence: Joi.string().required(),
+  verifiedLicence: Joi.bool().required(),
   email: Joi.string().email().required(),
+  verified: Joi.boolean().required(),
   password: Joi.string().required(),
+  jobType: Joi.string(),
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
   mobileNo: Joi.string().optional(),
-  phoneNo: Joi.string().required(),
+  phoneNo: Joi.string()/*.required()*/,
   company: Joi.string(),
   addressLine1: Joi.string(),
   addressLine1: Joi.string(),
@@ -18,6 +20,16 @@ const userSchema = Joi.object({
   country: Joi.string(),
   postcode: Joi.string()
 });
+
+const forgotPassSchema = Joi.object({
+  email: Joi.string().email().required(),
+})
+
+const updatePassSchema = Joi.object({
+  userId: Joi.string().required(),
+  password: Joi.string().required(),
+  token: Joi.string().required(),
+})
 
 const authSchema = Joi.object({
   email: Joi.string().email().required(),
@@ -190,5 +202,7 @@ module.exports = {
   validateSchema,
   projectSchema,
   updateProjectSchema,
-  listingSchema
+  listingSchema,
+  forgotPassSchema,
+  updatePassSchema,
 }

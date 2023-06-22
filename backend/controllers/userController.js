@@ -1,5 +1,6 @@
 const { response } = require('express');
 const User = require('../models/userModel');
+const UserVerification = require('../models/verificationToken');
 const mongoose = require('mongoose');
 const createError = require('http-errors');
 const JWT = require('jsonwebtoken');
@@ -9,7 +10,6 @@ const { userSchema } = require('../helpers/validation');
 
 //get all users
 const getUsers = async (req, res) => {
-
   const users = await User.find().sort({ CreateAt: -1 });
 
   res.status(200).json(users);

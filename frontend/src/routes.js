@@ -51,6 +51,12 @@ const RenderRouters = () => {
       <Route element={<Auth />}>
         {getRoutes(AuthViews)}
       </Route>
+      {/* <Route
+        path={`${process.env.REACT_APP_API_URL}/api/auth/verify/:userId/:token`}
+        element={<Verified />}
+      >
+        {getRoutes(AuthViews)}
+      </Route> */}
       <Route element={<Admin />}>
         {getRoutes(views)}
       </Route>

@@ -1,11 +1,10 @@
-import { Suspense, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Group, Input, Label, Select } from '../../Components/Form';
 import utils from '../../Utils';
 import * as AuthServices from '../../Services/AuthService';
 import Toast from '../../Components/Toast';
 import { Alert, Button, Card } from '../../Components';
-import RegisterGen from './RegisterGen';
 import CardBody from '../../Components/Card/CardBody';
 
 
@@ -23,9 +22,9 @@ const Register = ({ type, page }) => {
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
 
   const [alertMessage, setAlertMessage] = useState('');
+  const [message, setMessage] = useState('');
   const [errors, setErrors] = useState();
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
 
   const isValid = () => {
     let isValid = true;
@@ -81,7 +80,7 @@ const Register = ({ type, page }) => {
     }
 
     if (passwordConfirmation && passwordConfirmation !== password) {
-      errors = { ...errors, passwordConfirmation: 'Password does not match' };
+      errors = { ...errors, passwordConfirmation: 'Passwords do not match' };
       isValid = false;
     }
 
@@ -143,32 +142,41 @@ const Register = ({ type, page }) => {
             licence: licence,
             verifiedLicence: verifiedLicence,
             accType: type,
+            verified: false,
           })
             .then((response) => {
-              setAlertMessage();
-              Toast('Registered successfully!', 'success');
-              navigate('/');
+              if (response?.message) {
+                setAlertMessage();
+                setMessage(response.message); // TEST THIS OUT
+              }
             })
             .catch((response) => {
               if (
                 response.response.data?.error &&
                 response.response.data?.error.message
               ) {
+                setMessage();
                 setAlertMessage(response.response.data.error.message);
               }
+              errorShake();
               // Toast('Registeration failed!', 'warning');
             })
             .finally(() => setIsLoading(false));
         } else {
-          setAlertMessage(response.data.message);
-          Toast('Licence verification failed!', 'warning');
+          console.log(response.data.message);
+          setAlertMessage('Licence verification failed');
+          setMessage();
+          errorShake();
+          // Toast('Licence verification failed!', 'warning');
           setIsLoading(false);
           return;
         }
       })
       .catch((error) => {
         setAlertMessage('An error occurred while verifying the licence.');
-        Toast('Licence verification failed!', 'warning');
+        setMessage();
+        errorShake();
+        // Toast('Licence verification failed!', 'warning');
         setIsLoading(false);
         return;
       });
@@ -201,6 +209,14 @@ const Register = ({ type, page }) => {
                       className='mx-2'
                       type='danger'
                       message={alertMessage}
+                      icon={<i class='feather icon-info mr-1 align-middle'></i>}
+                    />
+                  )}
+                  {message && (
+                    <Alert
+                      className='mx-2'
+                      type='success'
+                      message={message}
                       icon={<i class='feather icon-info mr-1 align-middle'></i>}
                     />
                   )}
@@ -350,17 +366,15 @@ const Register = ({ type, page }) => {
                                 </span>
                                 <span className=''>
                                   {' '}
-                                  I accept the terms & conditions.
+                                  I accept the <a href="">terms & conditions</a>.
+                                  {/* the above needs to be implemented. The below Register button should not be
+                                  clickable unless this is ticked. Terms and conditions must link to t&c provided
+                                  by Flair Real Estate*/ }
                                 </span>
                               </div>
                             </fieldset>
                           </div>
                         </div>
-                        {/* <Link
-                          to='/auth/login'
-                          className='btn btn-outline-primary float-left btn-inline mb-50'>
-                          Login
-                        </Link> */}
                         <Button
                           type='submit'
                           className='btn btn-primary float-right btn-inline mb-50'
