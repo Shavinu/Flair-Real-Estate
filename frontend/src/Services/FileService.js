@@ -40,7 +40,11 @@ export const streamFile = (fileId) => {
 };
 
 export const getImageUrl = (imageId) => {
-  return `${process.env.REACT_APP_API_URL}${utils.url.replaceId(api.files.stream, imageId)}`;
+  if (imageId) {
+    return `${process.env.REACT_APP_API_URL}${utils.url.replaceId(api.files.stream, imageId)}`;
+  } else {
+    return null;
+  }
 };
 
 export const downloadFile = (fileId) => {

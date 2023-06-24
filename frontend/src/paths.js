@@ -6,6 +6,11 @@ import * as Dashboard from './Pages/ProfileDashboard';
 import * as File from './Pages/File';
 import * as Listing from './Pages/Listing';
 import * as Auth from './Pages/Auth'
+import * as About from "./Pages/Contact/About"
+import * as ContactForm from "./Pages/Contact/ContactForm"
+import * as BuyersArticles from './Pages/Resources/BuyersArticles';
+import * as MortgageCal from './Pages/Resources/MortgageCal';
+import * as News from './Pages/Resources/News';
 
 export const views = [
   {
@@ -13,6 +18,41 @@ export const views = [
     action: '/',
     icon: 'feather icon-home',
     element: <Home />,
+  },
+  {
+    name: 'About',
+    action: '/About',
+    icon: 'feather icon-about',
+    element: <About.default />,
+    isRoute: true,
+  },
+  {
+    name: 'Contact Form',
+    action: '/ContactForm',
+    icon: 'feather icon-about',
+    element: <ContactForm.default />,
+    isRoute: true,
+  },
+  {
+    name: 'Buyers Articles',
+    action: '/BuyersArticles',
+    icon: 'feather icon-about',
+    element: <BuyersArticles.default />,
+    isRoute: true,
+  },
+  {
+    name: 'Mortgage Calculator',
+    action: '/MortgageCal',
+    icon: 'feather icon-about',
+    element: <MortgageCal.default />,
+    isRoute: true,
+  },
+  {
+    name: 'News',
+    action: '/News',
+    icon: 'feather icon-about',
+    element: <News.default />,
+    isRoute: true,
   },
   {
     name: 'Users',
@@ -75,16 +115,30 @@ export const views = [
   },
   {
     name: 'Projects',
-    action: '/projects',
     icon: 'feather icon-inbox',
-    element: <Project.List />,
-  },
-  {
-    name: 'Create Project',
-    action: '/projects/create',
-    icon: 'feather icon-inbox',
-    element: <Project.Create />,
-    isRoute: true,
+    children: [
+      {
+        name: 'Create Project',
+        action: '/projects/create',
+        icon: 'feather icon-plus-circle',
+        element: <Project.Create />,
+        isRoute: false,
+      },
+      {
+        name: 'All Projects',
+        action: '/projects',
+        icon: 'feather icon-search',
+        element: <Project.Search />,
+        isRoute: false
+      },
+      {
+        name: 'Your Projects',
+        action: '/projects/your',
+        icon: 'feather icon-layers',
+        element: <Project.List />,
+        isRoute: false
+      }
+    ]
   },
   {
     name: 'View Project',
@@ -135,18 +189,18 @@ export const views = [
     ],
   },
   {
-    name: 'Create Project',
-    action: '/listings/create',
-    icon: 'feather icon-inbox',
-    element: <Listing.Create />,
-    isRoute: true,
-  },
-  {
     name: 'View Listing',
     action: '/listings/:id',
     icon: 'feather icon-inbox',
     element: <Listing.View />,
-    isRoute: true,
+    isRoute: true
+  },
+  {
+    name: 'Edit Listing',
+    action: '/listings/:id/edit',
+    icon: 'feather icon-inbox',
+    element: <Listing.Edit />,
+    isRoute: true
   },
   // {
   //   name: 'Edit Listing',
@@ -176,6 +230,7 @@ export const views = [
     element: <File.Browser />,
     isRoute: true,
   },
+
 
   // {
   //   name: 'Menu',
@@ -320,20 +375,22 @@ export const api = {
   },
   projects: {
     create: '/api/projects/',
+    search: '/api/search/projects_search',
     get: '/api/projects/{{id}}',
     getAll: '/api/projects/',
     update: '/api/projects/{{id}}',
     delete: '/api/projects/{{id}}',
+    getProjectOwners: '/api/search/projectOwners',
     getProjectByOwner: '/api/projects/owner/{{Id}}',
     addMembers: '/api/projects/{{id}}/add-members/',
     removeMembers: '/api/projects/{{id}}/remove-members/',
   },
   listings: {
     create: '/api/listings/create',
-    search: '/api/listings/search',
+    search: '/api/search/listings_search',
     get: '/api/listings/{{id}}',
     getAll: '/api/listings',
-    getDevelopers: '/api/listings/developers',
+    getDevelopers: '/api/search/developers',
     update: '/api/listings/{{id}}',
     delete: '/api/listings/{{id}}',
     getByDeveloper: '/api/listings/developer/{{id}}',

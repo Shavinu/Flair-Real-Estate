@@ -56,17 +56,19 @@ const CardCarousel = ({ project, imageUrls }) => {
 
   return (
     <Container>
-      <Row className="justify-content-center">
+      <Row className="justify-content-center m-auto p-auto">
         {project.projectSlideImages.map((slideImage, index) => {
           const fileId = slideImage[Object.keys(slideImage)[0]];
           return (
             <Col md={2} sm={3} xs={4} key={index}>
-              <Card className="thumb-card mb-0" onClick={() => handleThumbnailClick(index)}>
-                <Card.Img id="thumb-img"
-                  variant="top"
-                  src={imageUrls[fileId]}
-                  alt={Object.keys(slideImage)[0]}
-                />
+              <Card className="mb-0" onClick={() => handleThumbnailClick(index)}>
+                <div className="thumb-container thumb-card">
+                  <Card.Img id="thumb-img"
+                    variant="top"
+                    src={imageUrls[fileId]}
+                    alt={Object.keys(slideImage)[0]}
+                  />
+                </div>
               </Card>
             </Col>
           );
@@ -86,11 +88,13 @@ const CardCarousel = ({ project, imageUrls }) => {
                     <Row>
                       <Col md={12}>
                         <Card className="zoom-card m-1" onClick={() => handleImageClick(imageUrls[fileId])}>
-                          <Card.Img
-                            variant="top"
-                            src={imageUrls[fileId]}
-                            alt={Object.keys(slideImage)[0]}
-                          />
+                          <div className="carousel-item-container">
+                            <Card.Img
+                              variant="top"
+                              src={imageUrls[fileId]}
+                              alt={Object.keys(slideImage)[0]}
+                            />
+                          </div>
                         </Card>
                       </Col>
                     </Row>

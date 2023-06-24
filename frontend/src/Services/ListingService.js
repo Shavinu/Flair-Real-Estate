@@ -11,23 +11,23 @@ export const getListing = async (id) => {
 };
 
 export const searchListings = async (page, limit, query = {}) => {
-  if (query) {
-    query.page = page;
-    query.limit = limit;
+    if (query) {
+        query.page = page;
+        query.limit = limit;
     } else {
-    query = {
-        page: page,
-        limit: limit,
-    };
+        query = {
+            page: page,
+            limit: limit,
+        };
     }
 
-  axios.defaults.headers.common['Authorization'] = localStorage.getItem('token');
+    axios.defaults.headers.common['Authorization'] = localStorage.getItem('token');
     return axios.get(`${process.env.REACT_APP_API_URL}${api.listings.search}`, {
         params: query
     })
-    .then(
-        response => response.data
-    )
+        .then(
+            response => response.data
+        )
 
 };
 
@@ -41,7 +41,7 @@ export const getDevelopers = async () => {
 
 export const updateListing = async (id, data) => {
     const url = utils.url.replaceId(api.listings.update, id);
-    return utils.fetch.httpPost(url, data);
+    return utils.fetch.httpPatch(url, data);
 };
 
 export const getListingsByDeveloper = async (developerId, page, limit) => {

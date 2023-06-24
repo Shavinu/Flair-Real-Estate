@@ -6,7 +6,7 @@ import * as FileService from '../../../Services/FileService';
 import '../List.css';
 import './ChooseProject.css';
 
-const ChooseProject = ({ onProjectChange }) => {
+const ChooseProject = ({ onProjectChange, initialData, reset }) => {
   const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
   const ownerId = user ? user.payload._id : null;
   const [selectedProject, setSelectedProject] = useState(null);
@@ -16,6 +16,7 @@ const ChooseProject = ({ onProjectChange }) => {
   const [totalPages, setTotalPages] = useState(1);
   const [projects, setProjects] = useState([]);
   const [imageUrls, setImageUrls] = useState({});
+  const [initialDataSet, setInitialDataSet] = useState(false);
 
   useEffect(() => {
     const getImageUrl = async (imageId) => {
@@ -27,9 +28,30 @@ const ChooseProject = ({ onProjectChange }) => {
 
     const fetchListings = async () => {
       try {
-        const response = await ProjectService.getProjectByOwner(ownerId, currentPage, 6, search);
+        let response;
+        if (initialData && !initialDataSet) {
+          response = await ProjectService.getProjectByOwner(ownerId, currentPage, 6, search, initialData);
+        } else {
+          response = await ProjectService.getProjectByOwner(ownerId, currentPage, 6, search);
+        }
         setProjects(response.projects);
-        setCurrentPage(response.currentPage);
+
+        if (initialData && !initialDataSet) {
+          const initialProject = response.projects.find((project) => project._id === initialData);
+          if (initialProject) {
+            setSelectedProject(initialProject);
+            setSelectedProjectId(initialProject._id);
+            setCurrentPage(response.initialProjectPage);
+            onProjectChange(initialProject._id);
+            setInitialDataSet(true);
+          }
+        }
+
+        if (initialData && !initialDataSet) {
+          setCurrentPage(response.initialProjectPage);
+        } else {
+          setCurrentPage(response.currentPage);
+        }
         setTotalPages(response.totalPages);
 
         response.projects.forEach((project) => {
@@ -40,8 +62,16 @@ const ChooseProject = ({ onProjectChange }) => {
       }
     };
     fetchListings();
-  }
-    , [ownerId, currentPage, imageUrls, search]);
+  }, [ownerId, currentPage, imageUrls, search, initialData, reset]);
+
+  useEffect(() => {
+    if (reset) {
+      setSelectedProject(null);
+      setSelectedProjectId(null);
+      onProjectChange(null);
+      setInitialDataSet(false);
+    }
+  }, [reset]);
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);

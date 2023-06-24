@@ -3,6 +3,7 @@ import Admin from './Layouts/Admin';
 import Auth from './Layouts/Auth';
 import { views, AuthViews } from './paths';
 
+
 //get all paths which are defined in paths.js file
 export const getPaths = (r, parentIndex = 0) => {
   let rs = [];

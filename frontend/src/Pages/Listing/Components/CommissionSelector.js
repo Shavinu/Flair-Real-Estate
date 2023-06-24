@@ -7,7 +7,7 @@ const options = [
   { value: 'percentage', label: 'Percentage' },
 ];
 
-const ProjectCommission = ({ onCommissionChange, setErrors, error, initialData, reset }) => {
+const ListingCommission = ({ onCommissionChange, setErrors, error, initialData, reset }) => {
   const [exists, setExists] = useState(false);
   const [type, setType] = useState(null);
   const [amount, setAmount] = useState('');
@@ -39,16 +39,17 @@ const ProjectCommission = ({ onCommissionChange, setErrors, error, initialData, 
       } else if (data.type === 'percentage') {
         setPercent(data.percent.toString());
       }
+      setLocalError(null);
     }
   }, [reset]);
 
   useEffect(() => {
     if (localError) {
-      setErrors((prevErrors) => ({ ...prevErrors, ProjectCommission: localError }));
+      setErrors((prevErrors) => ({ ...prevErrors, listingCommission: localError }));
     } else {
       setErrors((prevErrors) => {
         const errorsCopy = { ...prevErrors };
-        delete errorsCopy.ProjectCommission;
+        delete errorsCopy.listingCommission;
         return errorsCopy;
       });
     }
@@ -70,6 +71,11 @@ const ProjectCommission = ({ onCommissionChange, setErrors, error, initialData, 
       setLocalError('Please provide a commission amount');
     } else if (exists && type === 'percentage' && percent === '') {
       setLocalError('Please provide a commission percentage');
+    } else if (
+      (exists && type.value === 'fixed' && amount === '') ||
+      (exists && type.value === 'percentage' && percent === '')
+    ) {
+      setLocalError('Please enter a valid amount or percentage');
     } else {
       setLocalError(null);
     }
@@ -183,4 +189,4 @@ const ProjectCommission = ({ onCommissionChange, setErrors, error, initialData, 
   );
 };
 
-export default ProjectCommission;
+export default ListingCommission;
