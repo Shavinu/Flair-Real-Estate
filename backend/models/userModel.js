@@ -8,6 +8,9 @@ const Joi = require('@hapi/joi');
  */
 const userSchema = new Schema(
   {
+    avatar: {
+      type: String,
+    },
     accType: {
       type: String,
       required: true,
@@ -26,7 +29,7 @@ const userSchema = new Schema(
     },
     phoneNo: {
       type: String,
-      // required: true,
+      required: true,
     },
     email: {
       type: String,
@@ -46,12 +49,12 @@ const userSchema = new Schema(
     },
     jobType: {
       type: String,
-      required: false,
+      required: true,
     },
     licence: {
       type: String,
       unique: true,
-      // required: true,
+      required: true,
     },
     verifiedLicence: {
       type: Boolean,

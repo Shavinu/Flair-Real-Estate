@@ -119,7 +119,6 @@ const Register = ({ type, page }) => {
       .then((response) => {
         if (response?.error) {
           setAlertMessage(response.error.message);
-          // Toast('Licence verification failed!', 'warning');
           setIsLoading(false);
           errorShake();
           return;
@@ -127,7 +126,6 @@ const Register = ({ type, page }) => {
 
         if (response?.message === 'Licence is valid') {
           setAlertMessage();
-          // Toast('Licence verified!', 'success');
           setVerifiedLicence(true);
 
           AuthServices.register({
@@ -147,7 +145,7 @@ const Register = ({ type, page }) => {
             .then((response) => {
               if (response?.message) {
                 setAlertMessage();
-                setMessage(response.message); // TEST THIS OUT
+                setMessage(response.message);
               }
             })
             .catch((response) => {
@@ -159,7 +157,6 @@ const Register = ({ type, page }) => {
                 setAlertMessage(response.response.data.error.message);
               }
               errorShake();
-              // Toast('Registeration failed!', 'warning');
             })
             .finally(() => setIsLoading(false));
         } else {
@@ -167,7 +164,6 @@ const Register = ({ type, page }) => {
           setAlertMessage('Licence verification failed');
           setMessage();
           errorShake();
-          // Toast('Licence verification failed!', 'warning');
           setIsLoading(false);
           return;
         }
@@ -176,7 +172,6 @@ const Register = ({ type, page }) => {
         setAlertMessage('An error occurred while verifying the licence.');
         setMessage();
         errorShake();
-        // Toast('Licence verification failed!', 'warning');
         setIsLoading(false);
         return;
       });
@@ -217,7 +212,6 @@ const Register = ({ type, page }) => {
                       className='mx-2'
                       type='success'
                       message={message}
-                      icon={<i class='feather icon-info mr-1 align-middle'></i>}
                     />
                   )}
                   <Card>
@@ -307,6 +301,7 @@ const Register = ({ type, page }) => {
                         </Group>
                         {type !== 'builder' && type !== 'developer' && (
                           <Group className='form-label-group'>
+                            <Label htmlFor='job'>Job Title</Label>
                             <Select
                               options={[
                                 {
@@ -323,11 +318,11 @@ const Register = ({ type, page }) => {
                                   label: 'Assistant Agent',
                                 },
                               ]}
+                              name='job'
                               value={jobType}
                               onChange={(value) => setJobType(value)}
                               error={errors?.jobType}
                             />
-                            <Label for='job'>Job Title</Label>
                           </Group>
                         )}
                         <Group className='form-label-group'>

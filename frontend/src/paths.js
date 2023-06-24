@@ -35,6 +35,13 @@ export const views = [
     isRoute: true,
   },
   {
+    name: 'Request Change',
+    action: '/users/request-change/:userId/:token/:company',
+    icon: 'feather icon-user',
+    element: <Users.RequestChange />,
+    isRoute: true,
+  },
+  {
     name: 'View Profile',
     action: '/profile/:id',
     icon: 'feather icon-user-check',
@@ -277,6 +284,9 @@ export const api = {
     edit: '/api/users/{{id}}',
     delete: '/api/users/{{id}}',
     deleteMany: '/api/users/delete-many',
+    requestChange:'api/users/request-change',
+    verifyRequest:'api/users/verify-request/:userId/:token/:company',
+    deleteToken:'api/users/deleteToken',
   },
   groups: {
     list: '/api/groups/getGroups',

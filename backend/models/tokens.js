@@ -1,9 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-// const bcrypt = require('bcrypt');
-// const Joi = require('@hapi/joi');
 
-const verificationSchema = new Schema(
+const tokenSchema = new Schema(
   {
     userId: {
       type: String,
@@ -23,4 +21,4 @@ const verificationSchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model('verificationToken', verificationSchema);
+module.exports = mongoose.model('token', tokenSchema);

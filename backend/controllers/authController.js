@@ -1,8 +1,7 @@
 const createError = require('http-errors');
 const JWT = require('jsonwebtoken');
 const User = require('../models/userModel');
-const VerifyToken = require('../models/verificationToken');
-const ResetToken = require('../models/resetPassToken');
+const Token = require('../models/tokens');
 require('dotenv').config();
 const {
   userSchema,
@@ -40,7 +39,7 @@ const register = async (req, res, next) => {
     user.password = user.generateHash(validatedResult.password);
     await user.save();
 
-    const token = await new VerifyToken({
+    const token = await new Token({
       userId: user._id,
       token: crypto.randomBytes(32).toString('hex'),
     }).save();
@@ -49,10 +48,11 @@ const register = async (req, res, next) => {
     const html = `<p>Verify your email address to cocmplete the signup process and login into your account.</p><p>This link
         <b>expires in 1 hour.</b></p><p>Press <a href=${url}>here</a> to proceed.</p>`;
 
-    await sendEmail(user.email, subject, html);
+    await sendEmail(process.env.MOD_EMAIL, user.email, subject, html);
 
-    res.status(201).json({
-      message: 'An Email has been sent to your address. Please verify your account',
+    res.status(201).send({
+      message:
+        'An Email has been sent to your address. Please verify your account',
     });
   } catch (error) {
     if (error.isJoi === true) error.status = 422;
@@ -65,30 +65,29 @@ const verifyEmail = async (req, res, next) => {
     const user = await User.findOne({ _id: req.params.userId });
     if (!user) throw createError.UnprocessableEntity('User does not exist');
 
-    const token = await VerifyToken.findOne({
+    const token = await Token.findOne({
       userId: user._id,
       token: req.params.token,
     });
-    if (!token)
-      throw createError.BadRequest('Invalid Link');
+    if (!token) throw createError.BadRequest('Invalid Link');
 
-    const savedUser = await User.updateOne({ _id: user._id }, { verified: true });
-    if(!savedUser)
+    const savedUser = await User.updateOne(
+      { _id: user._id },
+      { verified: true }
+    );
+    if (!savedUser)
       throw createError.InternalServerError('Internal Server Error');
 
-    const deleteToken = await VerifyToken.findOneAndDelete({ _id: token._id });
+    const deleteToken = await Token.findOneAndDelete({ _id: token._id });
     if (!deleteToken) {
-      return res.status(400).json({ message: 'Unable to delete token' });
+      return res.status(400).send({ message: 'Unable to delete token' });
     }
 
-    const { accessToken, payload } = await signAccessToken(
-      user.id,
-      user.email
-    );
+    const { accessToken, payload } = await signAccessToken(user.id, user.email);
 
     res
       .status(200)
-      .json({ accessToken, payload, message: 'Email verified successfully' });
+      .send({ accessToken, payload, message: 'Email verified successfully' });
   } catch (error) {
     error.status = 500;
     next(error);
@@ -108,27 +107,29 @@ const login = async (req, res, next) => {
       throw createError.Unauthorized('Email or password is incorrect');
 
     if (!user.verified) {
-      let token = await VerifyToken.findOne({ userId: user._id });
+      let token = await Token.findOne({ userId: user._id });
       if (!token) {
-        token = await new VerifyToken({
+        token = await new Token({
           userId: user._id,
           token: crypto.randomBytes(32).toString('hex'),
         }).save();
-        const subject = "Verify Email"
+        const subject = 'Verify Email';
         const url = `${process.env.REACT_APP_PUBLIC_URL}/auth/verify/${user._id}/${token.token}`;
         const html = `<p>Verify your email address to cocmplete the signup process and login into your account.</p><p>This link
             <b>expire in 1 hour.</b></p><p>Press <a href=${url}>here</a> to proceed.</p>`;
 
-        await sendEmail(user.email, subject, html);
+        await sendEmail(process.env.MOD_EMAIL, user.email, subject, html);
       }
       return res
-        .status(400)
-        .json({ message: 'An Email sent to your address. Please verify your account' });
+        .status(201)
+        .send({
+          message: 'An Email sent to your address. Please verify your account',
+        });
     }
 
     const { accessToken, payload } = await signAccessToken(user.id, user.email);
 
-    res.status(200).json({ accessToken, payload });
+    res.status(200).send({ accessToken, payload });
   } catch (error) {
     if (error.isJoi === true) error.status = 422;
     next(error);
@@ -140,55 +141,49 @@ const forgotPassword = async (req, res, next) => {
     const validatedResult = await forgotPassSchema.validateAsync(req.body);
 
     const user = await User.findOne({ email: validatedResult.email });
-    if (!user) throw createError.UnprocessableEntity('No user exists with this email');
+    if (!user)
+      throw createError.UnprocessableEntity('No user exists with this email');
 
-    let token = await ResetToken.findOne({ userId: user._id });
-      if (!token) {
-        token = await new ResetToken({
-          userId: user._id,
-          token: crypto.randomBytes(32).toString('hex'),
-        }).save();
-        const subject = "Password Reset"
-        const url = `${process.env.REACT_APP_PUBLIC_URL}/auth/reset-password/${user._id}/${token.token}`;
-        const html = `<p>Reset your password using the following link.</p><p>This link
+    let token = await Token.findOne({ userId: user._id });
+    if (!token) {
+      token = await new Token({
+        userId: user._id,
+        token: crypto.randomBytes(32).toString('hex'),
+      }).save();
+      const subject = 'Password Reset';
+      const url = `${process.env.REACT_APP_PUBLIC_URL}/auth/reset-password/${user._id}/${token.token}`;
+      const html = `<p>Reset your password using the following link.</p><p>This link
         <b>expires in 1 hour.</b></p><p>Press <a href=${url}>here</a> to proceed.</p>`;
 
-        const mail = await sendEmail(user.email, subject, html);
-        if(!mail)
-          throw createError.InternalServerError('Internal Server Error');
-      }
-      return res
-        .status(400)
-        .json({ message: 'A password reset link has been sent to your email' });
-
+      await sendEmail(process.env.MOD_EMAIL,user.email, subject, html);
+    }
+    return res
+      .status(201)
+      .send({ message: 'A password reset link has been sent to your email' });
   } catch (error) {
-    // res.status(500).json({ message: 'Internal server error' });
     if (error.isJoi === true) error.status = 422;
     next(error);
   }
-}
+};
 
 // verify reset password url
 const resetPassword = async (req, res, next) => {
   try {
     const user = await User.findOne({ _id: req.params.userId });
-    if (!user)
-      throw createError.UnprocessableEntity('User does not exist')
+    if (!user) throw createError.UnprocessableEntity('User does not exist');
 
-    const token = await ResetToken.findOne({
+    const token = await Token.findOne({
       userId: user._id,
       token: req.params.token,
     });
-    if (!token)
-      throw createError.BadRequest('Invalid Link');
+    if (!token) throw createError.BadRequest('Invalid Link');
 
-    res.status(200).json({ message: "Valid URL" })
-
+    res.status(200).send({ message: 'Valid URL' });
   } catch (error) {
     error.status = 500;
     next(error);
   }
-}
+};
 
 // update password after reset
 const updatePassword = async (req, res, next) => {
@@ -197,33 +192,28 @@ const updatePassword = async (req, res, next) => {
 
     // check if user exists
     const user = await User.findOne({ _id: validatedResult.userId });
-    if (!user)
-      throw createError.UnprocessableEntity('Uer does not exist');
+    if (!user) throw createError.UnprocessableEntity('Uer does not exist');
 
-    const token = await ResetToken.findOne({
+    const token = await Token.findOne({
       userId: user._id,
       token: validatedResult.token,
     });
-    if (!token)
-      throw createError.BadRequest('Invalid Link')
+    if (!token) throw createError.BadRequest('Invalid Link');
 
     if (!user.verified) user.verified = true;
     user.password = user.generateHash(validatedResult.password);
     await user.save();
 
-    const deleteToken = await ResetToken.findOneAndDelete({ _id: token._id });
+    const deleteToken = await Token.findOneAndDelete({ _id: token._id });
     if (!deleteToken) {
-      return res.status(400).json({ message: 'Unable to delete token' });
+      return res.status(400).send({ message: 'Unable to delete token' });
     }
-    res
-      .status(200)
-      .json({ message: 'Password updated successfully' });
-
+    res.status(200).send({ message: 'Password has been updated successfully' });
   } catch (error) {
     if (error.isJoi === true) error.status = 422;
     next(error);
   }
-}
+};
 
 //verify licence
 const verifyLicenceNumber = async (req, res, next) => {

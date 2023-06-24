@@ -59,7 +59,7 @@ const ForgotPassword = () => {
     })
       .then((response) => {
         setAlertMessage();
-        setMessage('Password reset email has been sent')
+        setMessage(response.message)
       })
       .catch((response) => {
         if (
@@ -68,11 +68,8 @@ const ForgotPassword = () => {
         ) {
           setAlertMessage(response.response?.data?.error.message);
           setMessage();
-        } else {
-          setMessage(response.response?.data?.message);
-          setAlertMessage('');
+          errorShake();
         }
-        errorShake();
       })
       .finally(() => setIsLoading(false));
   };
@@ -108,7 +105,7 @@ const ForgotPassword = () => {
                       className='mx-2'
                       type='success'
                       message={message}
-                      icon={<i className='feather icon-info mr-1 align-middle'></i>}
+                      // icon={<i className='feather icon-info mr-1 align-middle'></i>}
                     />
                   )}
                   <div className='card-content'>

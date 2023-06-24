@@ -1,9 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-// const bcrypt = require('bcrypt');
-// const Joi = require('@hapi/joi');
 
-const restPassTokenSchema = new Schema(
+const requestChangeTokenSchema = new Schema(
   {
     userId: {
       type: String,
@@ -13,14 +11,17 @@ const restPassTokenSchema = new Schema(
       type: String,
       required: true,
     },
+    company: {
+      type: String,
+      required: true,
+    },
     createdAt: {
       type: Date,
       required: true,
       default: Date.now(),
-      expires: 3600, // 1 hour
     },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model('resetPassToken', restPassTokenSchema);
+module.exports = mongoose.model('requestToken', requestChangeTokenSchema);

@@ -6,7 +6,10 @@ const {
   createUser,
   deleteUser,
   deleteManyUsers,
-  updateUser
+  updateUser,
+  requestChange,
+  verifyRequest,
+  deleteToken,
 } = require('../controllers/userController')
 
 //Get all users
@@ -34,8 +37,17 @@ router.post('/delete-many', deleteManyUsers)
 //delete a user
 router.delete('/:id', deleteUser)
 
-
 //UPDATE a user
 router.patch('/:id', updateUser)
+
+// request change
+router.post("/request-change", requestChange)
+
+// verify request link
+router.get('/verify-request/:userId/:token/:company', verifyRequest)
+
+// delete token
+router.post('/deleteToken', deleteToken);
+
 
 module.exports = router;

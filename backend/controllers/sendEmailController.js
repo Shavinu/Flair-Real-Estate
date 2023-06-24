@@ -1,7 +1,7 @@
 // email handler
 const nodemailer = require('nodemailer');
 
-module.exports = async (email, subject, html) => {
+module.exports = async (from ,to, subject, html) => {
   try {
     const transporter = nodemailer.createTransport({
       host: process.env.AUTH_HOST,
@@ -18,8 +18,8 @@ module.exports = async (email, subject, html) => {
     });
 
     await transporter.sendMail({
-      from: process.env.AUTH_EMAIL,
-      to: email,
+      from: from,
+      to: to,
       subject: subject,
       html: html,
     });

@@ -1,4 +1,4 @@
-import moment from "moment"
+// import moment from "moment"
 import utils from "../Utils"
 import { api } from "../paths"
 
@@ -8,6 +8,7 @@ export const login = (credentials) => {
       let user = response;
       console.log(response);
       localStorage.setItem('user', JSON.stringify(user));
+      return response;
     })
 }
 
@@ -16,30 +17,23 @@ export const register = (credentials) => {
     .then((response) => {
       let user = response;
       localStorage.setItem('user', JSON.stringify(user));
+      return response;
     })
 }
 
 export const forgotPassword = (credentials) => {
   return utils.fetch.httpPost(api.auth.forgotPassword, credentials)
     .then((response) => {
-      let user = response;
-      console.log(response);
-      localStorage.setItem('user', JSON.stringify(user));
+      return response
     })
 }
 
 export const updatePassword = (credentials) => {
-  // return utils.fetch.httpPost(api.auth.updatePassword, credentials)
   return utils.fetch.httpPatch(api.auth.updatePassword, credentials)
     .then((response) => {
-      let user = response;
-      localStorage.setItem('user', JSON.stringify(user));
+      return response;
     })
 }
-
-// export const updateUser = (id, body) => {
-//   return utils.fetch.httpPatch(utils.url.replaceId(api.users.edit, id), body);
-// }
 
 export const verifyEmail = (userId, token) =>{
   const url = api.auth.verifyEmail.replace(':userId', userId).replace(':token', token);
@@ -65,10 +59,10 @@ export const resetPassword = (userId, token) =>{
       return response;
     })
     .catch(error => {
+      console.log(error)
       if (error.response && error.response.data && error.response.data.error) {
         return Promise.resolve(error.response.data);
       }
-      console.error(error);
       return Promise.reject(error);
     });
 }

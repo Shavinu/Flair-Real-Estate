@@ -7,7 +7,7 @@ import utils from '../../Utils';
 import Toast from '../../Components/Toast';
 import { Alert, Button } from '../../Components';
 
-const Login = () => {
+const ResetPassword = () => {
   const [validUrl, setValidUrl] = useState();
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
@@ -24,7 +24,6 @@ const Login = () => {
         AuthServices.resetPassword(param.userId, param.token)
         .then((response) => {
           if (response?.error) {
-            console.log(response.error.message)
             setAlertMessage(response.error.message);
             setMessage();
             return;
@@ -99,7 +98,7 @@ const Login = () => {
     })
       .then((response) => {
         setAlertMessage();
-        setMessage('Password has been updated');
+        setMessage(response.message)
         setUpdated(true);
       })
       .catch((response) => {
@@ -108,10 +107,9 @@ const Login = () => {
           response.response?.data?.error.message
         ) {
           setAlertMessage(response.response?.data?.error.message);
+          setMessage();
+          errorShake();
         }
-        setMessage(response.response?.data?.message);
-        setAlertMessage('');
-        errorShake();
       })
       .finally(() => setIsLoading(false));
   };
@@ -144,7 +142,7 @@ const Login = () => {
                       className='mx-2'
                       type='success'
                       message={message}
-                      icon={<i class='feather icon-info mr-1 align-middle'></i>}
+                      // icon={<i class='feather icon-info mr-1 align-middle'></i>}
                     />
                   )}
                   {updated ? (
@@ -221,4 +219,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ResetPassword;

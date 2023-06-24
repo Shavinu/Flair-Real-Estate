@@ -24,3 +24,32 @@ export const deleteUser = (id) => {
 export const deleteManyUser = (ids) => {
   return utils.fetch.httpPost(api.users.deleteMany, ids);
 }
+
+export const requestChange = (credentials /*userId, token*/) => {
+    return utils.fetch.httpPost(api.users.requestChange, credentials)
+    .then((response) => {
+      return response
+    })
+}
+
+export const verifyRequest = (userId, token, company) => {
+  const url = api.users.verifyRequest.replace(':userId', userId).replace(':token', token).replace(':company', company);
+  return utils.fetch.httpGet(url)
+    .then(response => {
+      return response;
+    })
+    .catch(error => {
+      console.log(error)
+      if (error.response && error.response.data && error.response.data.error) {
+        return Promise.resolve(error.response.data);
+      }
+      return Promise.reject(error);
+    });
+}
+
+export const deleteToken = (credentials) => {
+  return utils.fetch.httpPost(api.users.deleteToken, credentials)
+    .then((response) => {
+      return response
+    })
+}
