@@ -1,13 +1,11 @@
-import Home from "./Pages/Admin/Home"
-import * as Users from "./Pages/Admin/Users"
-import * as Groups from "./Pages/Admin/Groups"
-import * as Project from "./Pages/Project"
-import Login from "./Pages/Auth/Login"
-import Register from "./Pages/Auth/RegisterGen"
-import * as Dashboard from "./Pages/ProfileDashboard"
-import * as File from "./Pages/File"
-// import Listing from "./Pages/Project/Test"
-import * as Listing from "./Pages/Listing"
+import Home from './Pages/Admin/Home';
+import * as Users from './Pages/Admin/Users';
+import * as Groups from './Pages/Admin/Groups';
+import * as Project from './Pages/Project';
+import * as Dashboard from './Pages/ProfileDashboard';
+import * as File from './Pages/File';
+import * as Listing from './Pages/Listing';
+import * as Auth from './Pages/Auth'
 import * as About from "./Pages/Contact/About"
 import * as ContactForm from "./Pages/Contact/ContactForm"
 import * as BuyersArticles from './Pages/Resources/BuyersArticles';
@@ -19,7 +17,7 @@ export const views = [
     name: 'Home',
     action: '/',
     icon: 'feather icon-home',
-    element: <Home />
+    element: <Home />,
   },
   {
     name: 'About',
@@ -60,7 +58,7 @@ export const views = [
     name: 'Users',
     action: '/users',
     icon: 'feather icon-user',
-    element: <Users.List />
+    element: <Users.List />,
   },
   {
     name: 'Create Users',
@@ -74,6 +72,13 @@ export const views = [
     action: '/users/:id',
     icon: 'feather icon-user',
     element: <Users.Edit />,
+    isRoute: true,
+  },
+  {
+    name: 'Request Change',
+    action: '/users/request-change/:userId/:token/:company',
+    icon: 'feather icon-user',
+    element: <Users.RequestChange />,
     isRoute: true,
   },
   {
@@ -140,21 +145,21 @@ export const views = [
     action: '/projects/:id',
     icon: 'feather icon-inbox',
     element: <Project.View />,
-    isRoute: true
+    isRoute: true,
   },
   {
     name: 'Edit Project',
     action: '/projects/:id/edit',
     icon: 'feather icon-inbox',
     element: <Project.Edit />,
-    isRoute: true
+    isRoute: true,
   },
   {
     name: 'Test',
     action: '/projects/test',
     icon: 'feather icon-inbox',
     element: <Project.Test />,
-    isRoute: true
+    isRoute: true,
   },
   {
     name: 'Listings',
@@ -172,16 +177,16 @@ export const views = [
         action: '/listings',
         icon: 'feather icon-search',
         element: <Listing.Search />,
-        isRoute: false
+        isRoute: false,
       },
       {
         name: 'Your Listings',
         action: '/listings/your',
         icon: 'feather icon-layers',
         element: <Listing.List />,
-        isRoute: false
-      }
-    ]
+        isRoute: false,
+      },
+    ],
   },
   {
     name: 'View Listing',
@@ -209,21 +214,21 @@ export const views = [
     action: '/listings/test',
     icon: 'feather icon-inbox',
     element: <Listing.Test />,
-    isRoute: true
+    isRoute: true,
   },
   {
     name: 'File Upload',
     action: '/files/upload',
     icon: 'feather icon-inbox',
     element: <File.Upload />,
-    isRoute: true
+    isRoute: true,
   },
   {
     name: 'File Browser',
     action: '/files/browser',
     icon: 'feather icon-inbox',
     element: <File.Browser />,
-    isRoute: true
+    isRoute: true,
   },
 
 
@@ -274,7 +279,7 @@ export const views = [
   //     },
   //   ],
   // },
-]
+];
 
 // export const pages = [
 //   {
@@ -293,21 +298,40 @@ export const AuthViews = [
   {
     name: 'Login',
     action: '/auth/login',
-    element: <Login />,
+    element: <Auth.Login />,
   },
   {
     name: 'Register',
     action: '/auth/register',
-    element: <Register />,
-  }
-]
+    element: <Auth.RegisterGen />,
+  },
+  {
+    name: 'Verify Email',
+    action: `/auth/verify/:userId/:token`,
+    element: <Auth.Verified />,
+  },
+  {
+    name: "Forgot",
+    action: '/auth/forgot-password',
+    element: <Auth.ForgotPassword />,
+  },
+  {
+    name: "Reset",
+    action: '/auth/reset-password/:userId/:token',
+    element: <Auth.ResetPassword />,
+  },
+];
 
 export const api = {
   auth: {
     login: '/api/auth/login',
     register: '/api/auth/register',
     verifyLicence: '/api/auth/verify-licence/:accType/:licence',
-    verifyMobile: 'api/auth/verify-mobile/:code/:number'
+    verifyMobile: 'api/auth/verify-mobile/:code/:number',
+    verifyEmail: 'api/auth/verify/:userId/:token',
+    forgotPassword: 'api/auth/forgot-password',
+    resetPassword: 'api/auth/reset-password/:userId/:token',
+    updatePassword: 'api/auth/update-password',
   },
   users: {
     list: '/api/users',
@@ -315,6 +339,9 @@ export const api = {
     edit: '/api/users/{{id}}',
     delete: '/api/users/{{id}}',
     deleteMany: '/api/users/delete-many',
+    requestChange:'api/users/request-change',
+    verifyRequest:'api/users/verify-request/:userId/:token/:company',
+    deleteToken:'api/users/deleteToken',
   },
   groups: {
     list: '/api/groups/getGroups',
@@ -327,7 +354,7 @@ export const api = {
     availableUsers: '/api/groups/getAvailableUsers',
     addUserToGroup: '/api/groups/addUserToGroup',
     removeUserFromGroup: '/api/groups/deleteUserFromGroup',
-    removeManyUsersFromGroup: '/api/groups/removeManyUsersFromGroup'
+    removeManyUsersFromGroup: '/api/groups/removeManyUsersFromGroup',
   },
   files: {
     uploadSingle: '/api/files/uploadSingle',
@@ -356,7 +383,7 @@ export const api = {
     getProjectOwners: '/api/search/projectOwners',
     getProjectByOwner: '/api/projects/owner/{{Id}}',
     addMembers: '/api/projects/{{id}}/add-members/',
-    removeMembers: '/api/projects/{{id}}/remove-members/'
+    removeMembers: '/api/projects/{{id}}/remove-members/',
   },
   listings: {
     create: '/api/listings/create',
@@ -367,5 +394,5 @@ export const api = {
     update: '/api/listings/{{id}}',
     delete: '/api/listings/{{id}}',
     getByDeveloper: '/api/listings/developer/{{id}}',
-  }
-}
+  },
+};

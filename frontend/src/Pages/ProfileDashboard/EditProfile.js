@@ -1,6 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate, Navigate } from 'react-router-dom';
-import { Button, Card, Col, Modal, ContentHeader, Row } from '../../Components';
+import {
+  Button,
+  Card,
+  Col,
+  Modal,
+  ContentHeader,
+  Row,
+  Alert,
+} from '../../Components';
 import CardBody from '../../Components/Card/CardBody';
 import * as UserService from '../../Services/UserService';
 import { Group, Input, Label, Select } from '../../Components/Form';
@@ -10,8 +18,24 @@ import Toast from '../../Components/Toast';
 import moment from 'moment';
 import * as GroupService from '../../Services/GroupService';
 
+function convertToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+    fileReader.readAsDataURL(file);
+    fileReader.onload = () => {
+      resolve(fileReader.result);
+    };
+
+    fileReader.onerror = (error) => {
+      reject(error);
+    };
+  });
+}
+
 const EditProfile = ({ page }) => {
   const [user, setUser] = useState();
+  const [image, setImage] = useState({ avatar: '' });
+  const [url, setUrl] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -32,17 +56,16 @@ const EditProfile = ({ page }) => {
   const [isLoading, setIsLoading] = useState(false);
   const { id } = useParams();
 
-  // const [showPasswordChangeModal, setShowPasswordChangeModal] = useState(false);
   const [modalStep, setModalStep] = useState(1);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
-  // const [showEmailChangeModal, setShowEmailChangeModal] = useState(false);
   const [newEmail, setNewEmail] = useState('');
-  // const [showCompanyChangeModal, setShowCompanyChangeModal] = useState("");
   const [newCompany, setNewCompany] = useState('');
+  const [alertMessage, setAlertMessage] = useState('');
+  const [message, setMessage] = useState('');
 
-  // const [alertMessage, setAlertMessage] = useState('');
+  const navigate = useNavigate();
 
   const getGroupDetailById = (id) => {
     GroupService.getGroupDetailById(id).then((response) => {
@@ -53,6 +76,7 @@ const EditProfile = ({ page }) => {
   const getUserDetailById = () => {
     UserService.getUserDetailById(id).then((response) => {
       setUser(response);
+      response.avatar && setImage({ avatar: response.avatar });
       setFirstName(response.firstName);
       setLastName(response.lastName);
       setEmail(response.email);
@@ -70,7 +94,7 @@ const EditProfile = ({ page }) => {
       setCity(response.city);
       setCountry(response.country);
       setPostcode(response.postcode);
-      getGroupDetailById(response.group);
+      response.group && getGroupDetailById(response.group);
     });
   };
 
@@ -102,31 +126,37 @@ const EditProfile = ({ page }) => {
     if (!firstName) {
       errors = { ...errors, firstName: 'Please provide your first name' };
       isValid = false;
+      console.log('at fname');
     }
 
     if (!lastName) {
       errors = { ...errors, lastName: 'Please provide your last name' };
       isValid = false;
+      console.log('at lname');
     }
 
     if (!phoneNo) {
       errors = { ...errors, phoneNo: 'Please provide your phone number' };
       isValid = false;
+      console.log('at phone');
     }
 
     if (phoneNo && !utils.string.isValidMobile(phoneNo)) {
       errors = { ...errors, phoneNo: 'Please provide a valid phone number' };
       isValid = false;
+      console.log('at phone2');
     }
 
     if (mobileNo && !utils.string.isValidMobile(mobileNo)) {
       errors = { ...errors, mobileNo: 'Please provide a valid mobile number' };
       isValid = false;
+      console.log('at mobile');
     }
 
     if (!jobType) {
       errors = { ...errors, jobType: 'Please provide a job title' };
       isValid = false;
+      console.log('at job');
     }
 
     setErrors(errors);
@@ -198,21 +228,19 @@ const EditProfile = ({ page }) => {
       password: currentPassword,
     })
       .then((response) => {
-        // setAlertMessage();
+        setAlertMessage();
         setCurrentPassword('');
         setModalStep(2);
-        // Toast('Login successfully!', 'success');
       })
       .catch((response) => {
         if (
           response.response?.data?.error &&
           response.response?.data?.error.message
         ) {
-          // setAlertMessage(response.response.data.error.message);
+          setAlertMessage('Password is incorrect');
         }
-        Toast('Password is incorrect', 'warning');
-      });
-    // .finally(() => setIsLoading(false));
+      })
+      .finally(() => setIsLoading(false));
   };
 
   const changePassword = (e) => {
@@ -238,8 +266,10 @@ const EditProfile = ({ page }) => {
         setNewPassword('');
         setConfirmNewPassword('');
       })
-      .catch(() => {
-        // Toast('Failed to update password!', 'danger');
+      .catch((error) => {
+        console.log(error);
+        setAlertMessage(error);
+        setMessage();
         errorShake();
       })
       .finally(() => setIsLoading(false));
@@ -268,33 +298,58 @@ const EditProfile = ({ page }) => {
         setNewEmail('');
         Toast('Email has been updated successfully!', 'success');
       })
-      .catch(() => {
-        // Toast('Failed to update email', 'danger');
+      .catch((error) => {
+        setAlertMessage(error);
+        setMessage();
         errorShake();
       })
       .finally(() => setIsLoading(false));
   };
 
-  const verifyCompany = (e) => {};
+  const verifyCompany = (e) => {
+    setIsLoading(true);
+    e.preventDefault();
+
+    UserService.requestChange({
+      userId: id,
+      company: newCompany,
+    })
+      .then((response) => {
+        console.log(response);
+        setMessage(response.message);
+        setAlertMessage();
+        setNewCompany();
+      })
+      .catch((error) => {
+        console.log(error);
+        setAlertMessage(error);
+        setMessage();
+      });
+  };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    const base64 = await convertToBase64(file);
+    setImage({ ...image, avatar: base64 });
+  };
 
   const onSubmit = (e) => {
     setIsLoading(true);
     e.preventDefault();
     if (!isValid()) {
       setIsLoading(false);
+      console.log('not valid');
       errorShake();
       return;
     }
 
     const body = {
+      avatar: image.avatar,
       firstName: firstName,
       lastName: lastName,
       jobType: jobType,
-      // email: email,
       mobileNo: mobileNo,
       phoneNo: phoneNo,
-      // accType: accType,
-      // company: company,
       addressLine1: addressLine1,
       addressLine2: addressLine2,
       city: city,
@@ -302,17 +357,15 @@ const EditProfile = ({ page }) => {
       postcode: postcode,
     };
 
-    // if (password) {
-    //   body.password = password;
-    // }
-
     UserService.updateUser(id, body)
       .then((response) => {
         Toast('User has been updated successfully!', 'success');
         getUserDetailById(id);
+        navigate(`/profile/${id}`);
         setErrors();
       })
-      .catch(() => {
+      .catch((error) => {
+        console.log(error);
         Toast('Failed to update user!', 'danger');
         errorShake();
       })
@@ -328,9 +381,9 @@ const EditProfile = ({ page }) => {
       <ContentHeader
         headerTitle='Edit Profile'
         breadcrumb={[
-          { name: 'Home', link: '/'},
-          { name: 'Profile',link:'/profile' },
-          { name: 'Edit Profile', active: true},
+          { name: 'Home', link: '/' },
+          { name: 'Profile', link: '/profile' },
+          { name: 'Edit Profile', active: true },
         ]}
         options={
           <div className='col-12 d-flex mt-1 px-0'>
@@ -359,20 +412,22 @@ const EditProfile = ({ page }) => {
               <div className='media mb-2'>
                 <div className='mr-2 my-25'>
                   <img
-                    src={`${process.env.REACT_APP_PUBLIC_URL}/assets/images/default/avatar.jpg`}
-                    alt='avatar'
-                    className='users-avatar-shadow rounded'
+                    src={
+                      image.avatar ||
+                      `${process.env.REACT_APP_PUBLIC_URL}/assets/images/avatar.jpg`
+                    }
+                    alt=''
                     height='90'
                     width='90'
                   />
-                </div>
-                <div className='media-body mt-50'>
-                  <div className='col-12 d-flex mt-1 px-0'>
-                    <Button className='btn btn-primary mr-75'>Change</Button>
-                    <Button className='btn btn-outline-danger mr-75'>
-                      Remove
-                    </Button>
-                  </div>
+
+                  <input
+                    type='file'
+                    label='image'
+                    id='file-upload'
+                    accept='image/*'
+                    onChange={(e) => handleFileUpload(e)}
+                  />
                 </div>
               </div>
 
@@ -476,7 +531,7 @@ const EditProfile = ({ page }) => {
                       onChange={(e) => {
                         setPhoneNo(e.target.value);
                       }}
-                      error={errors?.company}
+                      error={errors?.phoneNo}
                     />
                   </Group>
                 </Col>
@@ -648,6 +703,16 @@ const EditProfile = ({ page }) => {
               md={8}>
               <Group>
                 <p>Please enter your password to access this</p>
+                {alertMessage && (
+                  <Alert
+                    className='mx-2'
+                    type='danger'
+                    message={alertMessage}
+                    icon={
+                      <i className='feather icon-info mr-1 align-middle'></i>
+                    }
+                  />
+                )}
                 <Label>
                   Current Password:
                   <Input
@@ -674,6 +739,23 @@ const EditProfile = ({ page }) => {
               sm={12}
               md={8}>
               <Group>
+                {alertMessage && (
+                  <Alert
+                    className='mx-2'
+                    type='danger'
+                    message={alertMessage}
+                    icon={
+                      <i className='feather icon-info mr-1 align-middle'></i>
+                    }
+                  />
+                )}
+                {message && (
+                  <Alert
+                    className='mx-2'
+                    type='success'
+                    message={message}
+                  />
+                )}
                 <Label>
                   New Password:
                   <Input
@@ -741,6 +823,23 @@ const EditProfile = ({ page }) => {
               sm={12}
               md={8}>
               <Group>
+                {alertMessage && (
+                  <Alert
+                    className='mx-2'
+                    type='danger'
+                    message={alertMessage}
+                    icon={
+                      <i className='feather icon-info mr-1 align-middle'></i>
+                    }
+                  />
+                )}
+                {message && (
+                  <Alert
+                    className='mx-2'
+                    type='success'
+                    message={message}
+                  />
+                )}
                 <Label>
                   New Email:
                   <Input
@@ -772,6 +871,23 @@ const EditProfile = ({ page }) => {
             md={8}>
             <Group>
               <p>Please enter your company</p>
+              {alertMessage && (
+                <Alert
+                  className='mx-2'
+                  type='danger'
+                  message={alertMessage}
+                  icon={
+                    <i className='feather icon-info mr-1 align-middle'></i>
+                  }
+                />
+              )}
+              {message && (
+                <Alert
+                  className='mx-2'
+                  type='success'
+                  message={message}
+                />
+              )}
               <Label>
                 Company Name:
                 <Input

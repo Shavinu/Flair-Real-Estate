@@ -8,6 +8,9 @@ const Joi = require('@hapi/joi');
  */
 const userSchema = new Schema(
   {
+    avatar: {
+      type: String,
+    },
     accType: {
       type: String,
       required: true,
@@ -35,13 +38,18 @@ const userSchema = new Schema(
       required: [true,],
       validate: [],
     },
+    verified: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
     password: {
       type: String,
       required: true,
     },
     jobType: {
       type: String,
-      required: false,
+      required: true,
     },
     licence: {
       type: String,
@@ -51,6 +59,7 @@ const userSchema = new Schema(
     verifiedLicence: {
       type: Boolean,
       required: true,
+      default: false,
     },
     group: {
       type: Schema.Types.ObjectId,

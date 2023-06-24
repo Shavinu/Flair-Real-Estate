@@ -3,12 +3,24 @@ const router = express.Router();
 const { verifyAccessToken } = require('../helpers/token');
 const {
     register,
+    verifyEmail,
     verifyLicenceNumber,
     login,
+    forgotPassword,
+    resetPassword,
+    updatePassword,
     getCurrentUser,
 } = require('../controllers/authController');
 
 router.post('/register', register);
+
+router.get("/verify/:userId/:token", verifyEmail);
+
+router.post("/forgot-password", forgotPassword);
+
+router.get("/reset-password/:userId/:token", resetPassword);
+
+router.patch("/update-password", updatePassword);
 
 router.get('/verify-licence/:accType/:licence', verifyLicenceNumber)
 
