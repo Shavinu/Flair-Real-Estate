@@ -14,55 +14,33 @@ const Listings = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [imageUrls, setImageUrls] = useState({});
+  const [searchParams, setSearchParams] = useState({devloper: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).payload._id : '0'});
 
   useEffect(() => {
-    const getImageUrl = async (imageId) => {
-      if (!imageUrls[imageId]) {
-        const url = await FileService.getImageUrl(imageId);
-        setImageUrls((prevState) => ({ ...prevState, [imageId]: url }));
-      }
-    };
 
-    const fetchListings = async (searchParams = null) => {
-      try {
-        const response = await ListingService.getListingsByDeveloper(developer, currentPage, 6);
-        setListings(response.listings);
-        setCurrentPage(response.currentPage);
-        setTotalPages(response.totalPages);
+    fetchListings(searchParams);
 
-        console.log(response);
-        response.listings.forEach((listing) => {
-          getImageUrl(listing.titleImage);
-        });
+  }, [currentPage, searchParams]);
 
-      } catch (error) {
-        console.error("Error fetching listings:", error);
-      }
-    };
-    fetchListings();
-  }, [developer, currentPage, imageUrls]);
-
-  const fetchListings = async (searchParams = null) => {
+  const fetchListings = async () => {
     try {
-      console.log(searchParams);
       const response = await ListingService.searchListings(currentPage, 6, searchParams);
       setListings(response.listings);
-      setCurrentPage(response.currentPage);
       setTotalPages(response.totalPages);
-
-      console.log(response);
+  
       response.listings.forEach((listing) => {
         getImageUrl(listing.titleImage);
       });
-
+  
     } catch (error) {
       console.error("Error fetching listings:", error);
     }
   };
 
-  const handleSearch = (searchParams) => {
+  const handleSearch = (newSearchParams) => {
+    let searchParams = { ...newSearchParams };
+    setSearchParams(searchParams);
     setCurrentPage(1);
-    fetchListings(searchParams);
   };
 
   const handlePageChange = (newPage) => {
@@ -70,7 +48,10 @@ const Listings = () => {
   };
 
   const getImageUrl = (imageId) => {
-    return FileService.streamFile(imageId);
+    if (!imageUrls[imageId]) {
+      const url = FileService.getImageUrl(imageId);
+      setImageUrls((prevState) => ({ ...prevState, [imageId]: url }));
+    }
   };
 
   const renderPagination = () => {
@@ -101,6 +82,13 @@ const Listings = () => {
         {listings.map((listing) => (
           <Col key={listing._id} lg={4} md={6} className="mb-4">
             <Card className="listing-card h-100">
+            {listing.listingCommission[0]?.exists && (
+                <div className={`badge ${listing.listingCommission[0]?.exists && (listing.listingCommission[0]?.type === 'percentage' ? 'badge-warning' : 'badge-danger')}`} style={{ position: 'absolute', top: '0.5rem', right: '0.5rem', fontSize: '0.9rem', fontWeight: 'bold', textShadow: '1px 1px 2px rgba(0, 0, 0, 0.5)' }}>
+                {listing.listingCommission[0]?.type === 'percentage'
+                  ? `Commission: ${listing.listingCommission[0]?.percent}%`
+                  : `Commission: $${listing.listingCommission[0]?.amount?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+              </div>
+              )}
               <Card.Img variant="top" src={imageUrls[listing.titleImage]} style={{ width: "100%", height: "200px", objectFit: "cover" }} />
               <Card.Body className="p-0">
                 <Card.Title className="text-white bg-dark p-1 mb-0" style={{ background: 'linear-gradient(to right, rgba(19, 198, 137, 1) , rgba(19, 198, 150, 1))' }}>{listing.listingName}</Card.Title>

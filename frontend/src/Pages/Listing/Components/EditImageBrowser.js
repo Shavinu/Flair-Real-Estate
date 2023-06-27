@@ -8,12 +8,12 @@ const EditImageBrowser = ({ titleImage, setTitleImage, slideshowImages, setSlide
 
   const [initialDataSet, setInitialDataSet] = useState(false);
 
-  // const dummyData = { "projectSlideImages": [{ "slideshowImage_0": "64655a75b095b3b886057203" }, { "slideshowImage_1": "64655a75b095b3b886057204" }, { "slideshowImage_2": "64655a75b095b3b886057205" }, { "slideshowImage_3": "64655a75b095b3b88605720a" }] }
+  // const dummyData = { "slideImages": [{ "slideshowImage_0": "64655a75b095b3b886057203" }, { "slideshowImage_1": "64655a75b095b3b886057204" }, { "slideshowImage_2": "64655a75b095b3b886057205" }, { "slideshowImage_3": "64655a75b095b3b88605720a" }] }
 
   useEffect(() => {
     // Set initial data
     // const setInitialData = async () => {
-    //     let initialImages = await Promise.all(initialData.projectSlideImages.map(async (item) => {
+    //     let initialImages = await Promise.all(initialData.slideImages.map(async (item) => {
     //         let id = Object.values(item)[0];
     //         let url = await FileService.getImageUrl(id);
     //         return { id: id, url: url };
@@ -23,15 +23,15 @@ const EditImageBrowser = ({ titleImage, setTitleImage, slideshowImages, setSlide
     // };
     if (initialData && !initialDataSet) {
       // console.log(initialData);
-      if(initialData.projectTitleImage) {
-      const titleImageId = initialData.projectTitleImage;
-      const titleImageUrl = FileService.getImageUrl(titleImageId);
-      setTitleImage({ id: titleImageId, url: titleImageUrl, isNew: false });
+      if (initialData.titleImage) {
+        const titleImageId = initialData.titleImage;
+        const titleImageUrl = FileService.getImageUrl(titleImageId);
+        setTitleImage({ id: titleImageId, url: titleImageUrl, isNew: false });
       } else {
         setTitleImage(null);
       }
 
-      const initialImages = initialData.projectSlideImages.map((item) => {
+      const initialImages = initialData.slideImages.map((item) => {
         let id = Object.values(item)[0];
         let url = FileService.getImageUrl(id);
         let isNew = false;
@@ -294,7 +294,7 @@ const UploadTitle = async (titleImage, deletedTitleImage, user) => {
 const UploadSlides = async (slideshowImages, deletedSlideshowImages, user) => {
 
   if (slideshowImages.length === 0) {
-    let projectSlideImages = [];
+    let slideImages = [];
     //check if there are any deletedSlideshowImages
     if (deletedSlideshowImages.length > 0) {
       //delete all deletedSlideshowImages
@@ -304,11 +304,11 @@ const UploadSlides = async (slideshowImages, deletedSlideshowImages, user) => {
       );
     }
 
-    return JSON.stringify(projectSlideImages);
+    return JSON.stringify(slideImages);
   }
 
   if (slideshowImages.length > 0) {
-    let projectSlideImages = [];
+    let slideImages = [];
 
     //check if any slideshowImages have isNew = false, get their index inside slideshowImages
     let slideshowImagesToUpdate = slideshowImages.filter((image) => image.isNew === false);
@@ -339,17 +339,17 @@ const UploadSlides = async (slideshowImages, deletedSlideshowImages, user) => {
 
         const response = await FileService.uploadSingle(formData);
 
-        projectSlideImages.push({ [response.file.metadata.label]: response.file._id });
+        slideImages.push({ [response.file.metadata.label]: response.file._id });
       })
     );
 
-    //push all slideshowImages that have isNew = false with their index inside slideshowImages to projectSlideImages
+    //push all slideshowImages that have isNew = false with their index inside slideshowImages to slideImages
     slideshowImagesToUpdate.forEach((image, index) => {
-      projectSlideImages.push({ [`slideshowImage_${slideshowImagesToUpdateIndexes[index]}`]: image.id });
+      slideImages.push({ [`slideshowImage_${slideshowImagesToUpdateIndexes[index]}`]: image.id });
     }
     );
 
-    return JSON.stringify(projectSlideImages);
+    return JSON.stringify(slideImages);
 
   } else {
     return '[]';

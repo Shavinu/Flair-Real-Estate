@@ -4,7 +4,7 @@ import { Form } from 'react-bootstrap';
 import * as UserService from '../../../Services/UserService'
 import * as GroupService from '../../../Services/GroupService'
 
-const SelectProjectMembers = ({ user, onSubmitEditableBy, initialData, reset }) => {
+const SelectListingMembers = ({ user, onSubmitEditableBy, initialData, reset }) => {
   const [groupId, setGroupId] = useState('');
   const [groupMembers, setGroupMembers] = useState([]);
   const [allowGroupEdit, setAllowGroupEdit] = useState(true);
@@ -358,7 +358,7 @@ const SelectProjectMembers = ({ user, onSubmitEditableBy, initialData, reset }) 
         <Form.Check className='mt-1 mb-1'
           type="switch"
           id={`group-checkbox`}
-          label={"Allow your group members to edit project"}
+          label={"Allow your group members to edit listing"}
           checked={allowGroupEdit}
           onChange={() => setAllowGroupEdit(!allowGroupEdit)}
         />
@@ -375,7 +375,7 @@ const SelectProjectMembers = ({ user, onSubmitEditableBy, initialData, reset }) 
             <Form.Check className='mt-2 mb-1'
               type="switch"
               id={`subgroup-checkbox`}
-              label={"Allow subgroups to edit project"}
+              label={"Allow subgroups to edit listing"}
               checked={allowSubgroupEdit}
               onChange={() => setAllowSubgroupEdit(!allowSubgroupEdit)}
             />
@@ -403,4 +403,4 @@ const SelectProjectMembers = ({ user, onSubmitEditableBy, initialData, reset }) 
   }
 };
 
-export default SelectProjectMembers;
+export default SelectListingMembers;

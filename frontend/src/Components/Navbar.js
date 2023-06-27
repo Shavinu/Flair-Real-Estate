@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, NavLink } from 'react-router-dom';
 import { getUserDetailById } from '../Services/UserService';
 import * as AuthServices from '../Services/AuthService';
 import './Navbar.css';
+import { views } from "../paths"
 
 const Navbar = () => {
   const [user, setUser] = useState();
@@ -46,92 +47,103 @@ const Navbar = () => {
               </ul>
               <ul className="navbar-nav">
                 <li className="nav-item">
-                  <button className="nav-link btn">Home</button>
+                  <Link className="nav-link btn" to={'/'}>Home</Link>
                 </li>
                 <li className="nav-item">
-                  <button className="nav-link btn">About Us</button>
+                  <Link className="nav-link btn" to='/listings' >Search</Link>
                 </li>
                 <div className="dropdown">
-                  <button className="nav-link btn">NSW Listings</button>
-                    <div className="dropdown-options">
-                      <a href="#">Sydney North West</a>
-                      <a href="#">Sydney South West</a>
-                      <a href="#">Newcastle</a>
-                      <a href="#">Central Coast</a>
-                      <a href="#">Wollongong</a>
-                    </div>
+                  <Link className="nav-link btn" to='/listings'>NSW Listings</Link>
+                  <div className="dropdown-options">
+                    <a href="#">Sydney North West</a>
+                    <a href="#">Sydney South West</a>
+                    <a href="#">Newcastle</a>
+                    <a href="#">Central Coast</a>
+                    <a href="#">Wollongong</a>
+                  </div>
                 </div>
                 <div className='dropdown'>
-                  <button className='nav-link btn'>Resources</button>
+                  <Link className='nav-link btn'>Resources</Link>
                   <div className='dropdown-options'>
-                    <a href='#'>Mortgage Calculator</a>
-                    <a href='#'>Buying and Selling process</a>
-                    <a href='#'>Property news</a>
+                    <Link to='/MortgageCal'>Mortgage Calculator</Link>
+                    <Link to='/BuyersArticles'>Articles</Link>
+                    <Link to='/News'>Property News</Link>
                   </div>
                 </div>
-                  <li className='nav-item'>
-                    <button className='nav-link btn'>About Us</button>
-                  </li>
-                </ul>
-              </div>
-              <ul className='nav navbar-nav float-right'>
-                <li className='dropdown dropdown-user nav-item'>
-                  <a
-                    className='dropdown-toggle nav-link dropdown-user-link'
-                    href='#'
-                    data-toggle='dropdown'>
-                    <div className='user-nav d-sm-flex d-none'>
-                      <span className='user-name text-bold-600'>
-                        {name || user?.email}
-                      </span>
-                      <span className='user-status'>Available</span>
-                    </div>
-                    <span>
-                      <img
-                        className='round'
-                        src={`${process.env.REACT_APP_PUBLIC_URL}/assets/images/default/avatar.jpg`}
-                        alt='avatar'
-                        height='40'
-                        width='40'
-                      />
-                    </span>
-                  </a>
-                  <div className='dropdown-menu dropdown-menu-right'>
-                    <a
-                      className='dropdown-item'
-                      href={`/profile/${user?._id}`}>
-                      <i className='feather icon-user'></i> Profile
-                    </a>
-                    <a
-                      className='dropdown-item'
-                      href='#'>
-                      <i className='feather icon-mail'></i> My Inbox
-                    </a>
-                    <a
-                      className='dropdown-item'
-                      href='#'>
-                      <i className='feather icon-check-square'></i> Task
-                    </a>
-                    <a
-                      className='dropdown-item'
-                      href='#'>
-                      <i className='feather icon-message-square'></i> Chats
-                    </a>
-                    <div className='dropdown-divider'></div>
-                    <Link
-                      className='dropdown-item'
-                      to='#'
-                      onClick={onLogout}>
-                      <i className='feather icon-power'></i> Logout
+                <div className='dropdown'>
+                  <button className='nav-link btn'>About Us</button>
+                  <div className='dropdown-options'>
+                    <Link to='/About'>
+                      <a>About</a>
+                    </Link>
+                    <Link to='/ContactForm'>
+                      <a>Contact</a>
                     </Link>
                   </div>
+                </div>
+                <li className='nav-item'>
+
                 </li>
               </ul>
             </div>
+            <ul className='nav navbar-nav float-right'>
+              <li className='dropdown dropdown-user nav-item'>
+                <a
+                  className='dropdown-toggle nav-link dropdown-user-link'
+                  href='#'
+                  data-toggle='dropdown'>
+                  <div className='user-nav d-sm-flex d-none'>
+                    <span className='user-name text-bold-600'>
+                      {name || user?.email}
+                    </span>
+                    <span className='user-status'>Available</span>
+                  </div>
+                  <span>
+                    <img
+                      className='round'
+                      src={`${process.env.REACT_APP_PUBLIC_URL}/assets/images/default/avatar.jpg`}
+                      alt='avatar'
+                      height='40'
+                      width='40'
+                    />
+                  </span>
+                </a>
+                <div className='dropdown-menu dropdown-menu-right'>
+                  <a
+                    className='dropdown-item'
+                    href={`/profile/${user?._id}`}>
+                    <i className='feather icon-user'></i> Profile
+                  </a>
+                  <a
+                    className='dropdown-item'
+                    href='#'>
+                    <i className='feather icon-mail'></i> My Inbox
+                  </a>
+                  <a
+                    className='dropdown-item'
+                    href='#'>
+                    <i className='feather icon-check-square'></i> Task
+                  </a>
+                  <a
+                    className='dropdown-item'
+                    href='#'>
+                    <i className='feather icon-message-square'></i> Chats
+                  </a>
+                  <div className='dropdown-divider'></div>
+                  <Link
+                    className='dropdown-item'
+                    to='#'
+                    onClick={onLogout}>
+                    <i className='feather icon-power'></i> Logout
+                  </Link>
+                </div>
+              </li>
+            </ul>
           </div>
         </div>
-      </nav>
-    </>
+      </div>
+    </nav>
+  </>
 };
 
 export default Navbar;

@@ -16,6 +16,8 @@ import { PriceRangeInput } from "../../Components/Form/PriceRange";
 import { FileBrowser, UploadFiles } from "./Components/FileBrowser";
 import { ImageBrowser, UploadTitle, UploadSlides } from './Components/ImageBrowser';
 import ChooseProject from './Components/ChooseProject';
+import SelectListingMembers from "./Components/MembersSelector";
+import ListingCommission from './Components/CommissionSelector';
 
 const Create = () => {
 
@@ -32,9 +34,12 @@ const Create = () => {
   const [coordinates, setCoordinates] = useState(null);
   const [postcode, setPostcode] = useState(null);
   const [region, setRegion] = useState(null);
+  const [suburb, setSuburb] = useState(null);
   const [titleImage, setTitleImage] = useState(null);
   const [slideshowImages, setSlideshowImages] = useState([]);
   const [fileUploadFiles, setFileUploadFiles] = useState([]);
+  const [editableBy, setEditableBy] = useState([]);
+  const [commissionData, setCommissionData] = useState({});
 
   //attributes
   const [bedrooms, setBedrooms] = useState("");
@@ -73,6 +78,7 @@ const Create = () => {
   const handlePostcodeRegionChange = (newPostcodeRegion) => {
     setPostcode(newPostcodeRegion.postcode);
     setRegion(newPostcodeRegion.region);
+    setSuburb(newPostcodeRegion.suburb);
   };
 
   const handleBedroomsChange = (e) => {
@@ -175,6 +181,7 @@ const Create = () => {
           streetAddress: listingLocation,
           region: region,
           postcode: postcode,
+          suburb: suburb,
           coordinates: [{ longitude: coordinates.longitude, latitude: coordinates.latitude }],
           project: selectedProject,
           landSize: landSize,
@@ -182,6 +189,8 @@ const Create = () => {
           bathrooms: bathrooms.value,
           carSpaces: carSpaces.value,
           devloper: developer,
+          editableBy,
+          listingCommission: [commissionData]
         };
 
         if (titleImageId) listingData.titleImage = titleImageId;
@@ -532,7 +541,7 @@ const Create = () => {
         <Col>
           <Row>
             <Col style={{ background: 'linear-gradient(90deg, #c5e6e0, white)', borderRadius: '13px', margin: '15px 15px 0px 15px', borderBottomLeftRadius: '4px' }}>
-              <p className="text-uppercase mt-2" style={{ fontWeight: 'bold', fontFamily: "'Roboto', sans-serif;" }}>Attributes</p>
+              <p className="text-uppercase mt-2" style={{ fontWeight: 'bold', fontFamily: "'Roboto', sans-serif" }}>Attributes</p>
             </Col>
           </Row>
           <div style={{
@@ -549,13 +558,13 @@ const Create = () => {
                 <Row className='col-auto col-sm-auto col-md-auto' style={{ marginTop: '10px', marginBottom: '10px' }}>
                   <Col className='col-auto col-xl-auto d-sm-flex d-xl-flex align-items-sm-center align-items-xl-center'><i className="fa fa-arrows-alt" style={{ color: 'rgb(255,255,255)', fontSize: '20px', marginRight: '5px' }}></i><strong style={{ fontFamily: "'Roboto', sans-serif" }}>Land Size</strong></Col>
                   <Col>
-                    <div class="input-group col-auto col-sm-auto col-md-auto">
-                      <input class="form-control" type="text" value={landSize} onChange={handleLandSizeChange} error={errors.landSize} pattern="[0-9]*\.?[0-9]*" name="landSize" placeholder="Enter Land Size" />
-                      <div class="input-group-append"><span class="input-group-text">m&sup2;</span></div>
+                    <div className="input-group col-auto col-sm-auto col-md-auto">
+                      <input className="form-control" type="text" value={landSize} onChange={handleLandSizeChange} error={errors.landSize} pattern="[0-9]*\.?[0-9]*" name="landSize" placeholder="Enter Land Size" />
+                      <div className="input-group-append"><span className="input-group-text">m&sup2;</span></div>
                     </div>
-                    {/* <div class="input-group input-group-sm">
-                      <div class="input-group-prepend d-inline-block"><span class="input-group-text" style={{ width: '80px' }}>Width</span></div><input class="form-control" type="text" value={landSize.width} onChange={handleLandSizeChange} error={errors.landSizeWidth} pattern="[0-9]*\.?[0-9]*" name="landSizeWidth" />
-                      <div class="input-group-append"><span class="input-group-text">m</span></div>
+                    {/* <div className="input-group input-group-sm">
+                      <div className="input-group-prepend d-inline-block"><span className="input-group-text" style={{ width: '80px' }}>Width</span></div><input className="form-control" type="text" value={landSize.width} onChange={handleLandSizeChange} error={errors.landSizeWidth} pattern="[0-9]*\.?[0-9]*" name="landSizeWidth" />
+                      <div className="input-group-append"><span className="input-group-text">m</span></div>
                     </div> */}
 
                   </Col>
@@ -649,6 +658,64 @@ const Create = () => {
         <Col>
           <Row>
             <Col className="d-xl-flex align-items-xl-center" style={{ background: 'linear-gradient(90deg, #c5e6e0, white)', borderRadius: '13px', margin: '15px 15px 0px 15px', borderBottomLeftRadius: '3px' }}>
+              <p className="text-uppercase mt-2" style={{ fontWeight: 'bold', fontFamily: "'Roboto', sans-serif" }}>Editable By</p>
+            </Col>
+          </Row>
+          <div style={{
+            background: '#fff',
+            boxShadow: '0px 0px 15px rgba(0,0,0,0.1)',
+            border: `${errors.editableBy ? '1px solid #f44336' : '1px solid #e0e0e0'}`,
+            borderRadius: '15px',
+            borderTopLeftRadius: '4px',
+            borderTopRightRadius: '4px',
+            padding: '15px'
+          }}>
+            <Row>
+              <Col>
+                <SelectListingMembers
+                  user={developer}
+                  onSubmitEditableBy={setEditableBy}
+                  setErrors={setErrors}
+                  error={errors.editableBy}
+                />
+              </Col>
+            </Row>
+          </div>
+        </Col>
+      </Row>
+      <Row className="d-xl-flex justify-content-xl-center" style={{ marginTop: '15px' }}>
+        <Col>
+          <Row>
+            <Col className="d-xl-flex align-items-xl-center" style={{ background: 'linear-gradient(90deg, #c5e6e0, white)', borderRadius: '13px', margin: '15px 15px 0px 15px', borderBottomLeftRadius: '3px' }}>
+              <p className="text-uppercase mt-2" style={{ fontWeight: 'bold', fontFamily: "'Roboto', sans-serif" }}>Commission</p>
+            </Col>
+          </Row>
+
+          <div style={{
+            background: '#fff',
+            boxShadow: '0px 0px 15px rgba(0,0,0,0.1)',
+            border: `${errors.listingCommission ? '1px solid #f44336' : '1px solid #e0e0e0'}`,
+            borderRadius: '15px',
+            borderTopLeftRadius: '4px',
+            borderTopRightRadius: '4px',
+            padding: '15px'
+          }}>
+            <Row>
+              <Col>
+                <ListingCommission
+                  onCommissionChange={setCommissionData}
+                  setErrors={setErrors}
+                  error={errors.listingCommission}
+                />
+              </Col>
+            </Row>
+          </div>
+        </Col>
+      </Row>
+      <Row className="d-xl-flex justify-content-xl-center" style={{ marginTop: '15px' }}>
+        <Col>
+          <Row>
+            <Col className="d-xl-flex align-items-xl-center" style={{ background: 'linear-gradient(90deg, #c5e6e0, white)', borderRadius: '13px', margin: '15px 15px 0px 15px', borderBottomLeftRadius: '3px' }}>
               <p className="text-uppercase mt-2" style={{ fontWeight: 'bold', fontFamily: "'Roboto', sans-serif" }}>Include Listing in Project</p>
             </Col>
           </Row>
@@ -678,8 +745,8 @@ const Create = () => {
             padding: '10px',
             marginTop: '3px'
           }}>
-            {errors.listingStatus && (
-              <div className="text-danger small">
+            {errors.listingLocation && (
+              <div className="text-danger small mb-1">
                 {errors.listingLocation}
               </div>
             )}
