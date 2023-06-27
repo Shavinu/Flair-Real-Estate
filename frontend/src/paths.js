@@ -285,7 +285,7 @@ export const api = {
     deleteMany: '/api/users/delete-many',
     requestChange:'api/users/request-change',
     verifyRequest:'api/users/verify-request/:userId/:token/:company',
-    deleteToken:'api/users/deleteToken',
+    deleteToken:'api/users/delete-token',
   },
   groups: {
     list: '/api/groups/getGroups',
