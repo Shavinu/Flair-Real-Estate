@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Group, Input, Label } from '../../Components/Form';
 import * as AuthServices from '../../Services/AuthService';
 import utils from '../../Utils';
-import Toast from '../../Components/Toast';
 import { Alert, Button } from '../../Components';
 
 const Login = () => {
@@ -126,7 +125,6 @@ const Login = () => {
                       className='mx-2'
                       type='success'
                       message={message}
-                      // icon={<i className='feather icon-info mr-1 align-middle'></i>}
                     />
                   )}
                   <div className='card-content'>

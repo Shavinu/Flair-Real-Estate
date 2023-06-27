@@ -45,12 +45,12 @@ const register = async (req, res, next) => {
     }).save();
     const subject = 'Verify Email';
     const url = `${process.env.REACT_APP_PUBLIC_URL}/auth/verify/${user._id}/${token.token}`;
-    const html = `<p>Verify your email address to cocmplete the signup process and login into your account.</p><p>This link
+    const html = `<p>Verify your email address to complete the signup process and login into your account.</p><p>This link
         <b>expires in 1 hour.</b></p><p>Press <a href=${url}>here</a> to proceed.</p>`;
 
     await sendEmail(process.env.MOD_EMAIL, user.email, subject, html);
 
-    res.status(201).send({
+    res.status(401).send({
       message:
         'An Email has been sent to your address. Please verify your account',
     });
@@ -107,6 +107,7 @@ const login = async (req, res, next) => {
       throw createError.Unauthorized('Email or password is incorrect');
 
     if (!user.verified) {
+
       let token = await Token.findOne({ userId: user._id });
       if (!token) {
         token = await new Token({
@@ -115,13 +116,13 @@ const login = async (req, res, next) => {
         }).save();
         const subject = 'Verify Email';
         const url = `${process.env.REACT_APP_PUBLIC_URL}/auth/verify/${user._id}/${token.token}`;
-        const html = `<p>Verify your email address to cocmplete the signup process and login into your account.</p><p>This link
+        const html = `<p>Verify your email address to complete the signup process and login into your account.</p><p>This link
             <b>expire in 1 hour.</b></p><p>Press <a href=${url}>here</a> to proceed.</p>`;
 
         await sendEmail(process.env.MOD_EMAIL, user.email, subject, html);
       }
       return res
-        .status(201)
+        .status(401)
         .send({
           message: 'An Email sent to your address. Please verify your account',
         });

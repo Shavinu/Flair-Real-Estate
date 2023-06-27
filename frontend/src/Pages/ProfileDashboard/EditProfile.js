@@ -15,7 +15,6 @@ import { Group, Input, Label, Select } from '../../Components/Form';
 import * as AuthServices from '../../Services/AuthService';
 import utils from '../../Utils';
 import Toast from '../../Components/Toast';
-import moment from 'moment';
 import * as GroupService from '../../Services/GroupService';
 
 function convertToBase64(file) {
@@ -35,7 +34,6 @@ function convertToBase64(file) {
 const EditProfile = ({ page }) => {
   const [user, setUser] = useState();
   const [image, setImage] = useState({ avatar: '' });
-  const [url, setUrl] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -115,7 +113,6 @@ const EditProfile = ({ page }) => {
   };
 
   var hideModal = (modalName) => {
-    console.log('here1');
     window.jQuery('#' + modalName).modal('hide');
   };
 
@@ -126,37 +123,31 @@ const EditProfile = ({ page }) => {
     if (!firstName) {
       errors = { ...errors, firstName: 'Please provide your first name' };
       isValid = false;
-      console.log('at fname');
     }
 
     if (!lastName) {
       errors = { ...errors, lastName: 'Please provide your last name' };
       isValid = false;
-      console.log('at lname');
     }
 
     if (!phoneNo) {
       errors = { ...errors, phoneNo: 'Please provide your phone number' };
       isValid = false;
-      console.log('at phone');
     }
 
     if (phoneNo && !utils.string.isValidMobile(phoneNo)) {
       errors = { ...errors, phoneNo: 'Please provide a valid phone number' };
       isValid = false;
-      console.log('at phone2');
     }
 
     if (mobileNo && !utils.string.isValidMobile(mobileNo)) {
       errors = { ...errors, mobileNo: 'Please provide a valid mobile number' };
       isValid = false;
-      console.log('at mobile');
     }
 
     if (!jobType) {
       errors = { ...errors, jobType: 'Please provide a job title' };
       isValid = false;
-      console.log('at job');
     }
 
     setErrors(errors);
@@ -217,7 +208,7 @@ const EditProfile = ({ page }) => {
   };
 
   const validatePassword = (e) => {
-    setIsLoading(true);
+    // setIsLoading(true);
     e.preventDefault();
     if (!isCurrPasswordValid()) {
       setIsLoading(false);
@@ -244,7 +235,6 @@ const EditProfile = ({ page }) => {
   };
 
   const changePassword = (e) => {
-    setIsLoading(true);
     e.preventDefault();
     if (!isNewPasswordValid()) {
       setIsLoading(false);
@@ -276,7 +266,6 @@ const EditProfile = ({ page }) => {
   };
 
   const changeEmail = (e) => {
-    setIsLoading(true);
     e.preventDefault();
     if (!isNewEmailValid()) {
       setIsLoading(false);
@@ -307,7 +296,6 @@ const EditProfile = ({ page }) => {
   };
 
   const verifyCompany = (e) => {
-    setIsLoading(true);
     e.preventDefault();
 
     UserService.requestChange({
@@ -338,7 +326,6 @@ const EditProfile = ({ page }) => {
     e.preventDefault();
     if (!isValid()) {
       setIsLoading(false);
-      console.log('not valid');
       errorShake();
       return;
     }
@@ -468,14 +455,18 @@ const EditProfile = ({ page }) => {
                   sm={12}
                   md={6}>
                   <Group>
-                    <label htmlFor='email'>Email</label>
+                    <Label for='email'>Email</Label>
                     <span
                       className='float-right'
                       name='email'
                       data-backdrop='true'
                       data-target='#email_change_modal'
                       data-toggle='modal'
-                      onClick={() => setModalStep(1)}
+                      onClick={() => {
+                        setModalStep(1)
+                        setAlertMessage()
+                        setMessage()
+                      }}
                       style={{ cursor: 'pointer' }}>
                       <i>
                         <u>Change</u>
@@ -495,7 +486,11 @@ const EditProfile = ({ page }) => {
                       data-backdrop='true'
                       data-target='#password_change_modal'
                       data-toggle='modal'
-                      onClick={() => setModalStep(1)}
+                      onClick={() => {
+                        setModalStep(1)
+                        setAlertMessage()
+                        setMessage()
+                      }}
                       style={{ cursor: 'pointer' }}>
                       <i>
                         <u>Change</u>
@@ -656,7 +651,11 @@ const EditProfile = ({ page }) => {
                       data-backdrop='true'
                       data-target='#company_change_modal'
                       data-toggle='modal'
-                      onClick={() => setModalStep(1)}
+                      onClick={() => {
+                        setModalStep(1)
+                        setAlertMessage()
+                        setMessage()
+                      }}
                       style={{ cursor: 'pointer' }}>
                       <i>
                         <u>Request change</u>
@@ -798,6 +797,16 @@ const EditProfile = ({ page }) => {
               md={8}>
               <Group>
                 <p>Please enter your password to access this</p>
+                {alertMessage && (
+                  <Alert
+                    className='mx-2'
+                    type='danger'
+                    message={alertMessage}
+                    icon={
+                      <i className='feather icon-info mr-1 align-middle'></i>
+                    }
+                  />
+                )}
                 <Label>
                   Password:
                   <Input

@@ -3,8 +3,6 @@ import './Login.css';
 import { useState, useEffect } from 'react';
 import { Group, Input, Label } from '../../Components/Form';
 import * as AuthServices from '../../Services/AuthService';
-import utils from '../../Utils';
-import Toast from '../../Components/Toast';
 import { Alert, Button } from '../../Components';
 
 const ResetPassword = () => {

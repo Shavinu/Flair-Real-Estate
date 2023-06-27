@@ -9,8 +9,8 @@ module.exports = async (from ,to, subject, html) => {
       port: Number(process.env.AUTH_EMAIL_PORT),
       secure: Boolean(process.env.AUTH_SECURE),
       auth: {
-        user: process.env.AUTH_EMAIL,
-        pass: process.env.AUTH_PASS,
+        user: process.env.MOD_EMAIL,
+        pass: process.env.MOD_PASS,
       },
       tls: {
         ciphers: 'SSLv3',

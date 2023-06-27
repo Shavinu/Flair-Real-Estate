@@ -105,7 +105,6 @@ const ForgotPassword = () => {
                       className='mx-2'
                       type='success'
                       message={message}
-                      // icon={<i className='feather icon-info mr-1 align-middle'></i>}
                     />
                   )}
                   <div className='card-content'>

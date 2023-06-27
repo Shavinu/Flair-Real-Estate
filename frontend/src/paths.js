@@ -38,7 +38,7 @@ export const views = [
     name: 'Request Change',
     action: '/users/request-change/:userId/:token/:company',
     icon: 'feather icon-user',
-    element: <Users.RequestChange />,
+    element: <Dashboard.RequestChange />,
     isRoute: true,
   },
   {
@@ -272,7 +272,6 @@ export const api = {
     login: '/api/auth/login',
     register: '/api/auth/register',
     verifyLicence: '/api/auth/verify-licence/:accType/:licence',
-    verifyMobile: 'api/auth/verify-mobile/:code/:number',
     verifyEmail: 'api/auth/verify/:userId/:token',
     forgotPassword: 'api/auth/forgot-password',
     resetPassword: 'api/auth/reset-password/:userId/:token',

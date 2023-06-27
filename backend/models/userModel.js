@@ -25,17 +25,17 @@ const userSchema = new Schema(
     },
     mobileNo: {
       type: String,
-      required: false,
+      // required: false,
     },
     phoneNo: {
       type: String,
-      required: true,
+      // required: true,
     },
     email: {
       type: String,
       lowercase: true,
       unique: true,
-      required: [true,],
+      required: true,
       validate: [],
     },
     verified: {
@@ -49,7 +49,7 @@ const userSchema = new Schema(
     },
     jobType: {
       type: String,
-      required: true,
+      // required: true,
     },
     licence: {
       type: String,
@@ -58,7 +58,6 @@ const userSchema = new Schema(
     },
     verifiedLicence: {
       type: Boolean,
-      required: true,
       default: false,
     },
     group: {
@@ -67,6 +66,7 @@ const userSchema = new Schema(
     },
     company: {
       type: String,
+      required: true,
     },
     addressLine1: {
       type: String,
