@@ -1,10 +1,9 @@
 import { Link, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import * as UserService from '../../../Services/UserService';
-import { Alert, Button } from '../../../Components';
+import * as UserService from '../../Services/UserService';
+import { Alert, Button } from '../../Components';
 
 const RequestChange = () => {
-
   const [alertMessage, setAlertMessage] = useState('');
   const [message, setMessage] = useState('');
   const [validUrl, setValidUrl] = useState(false);
@@ -15,28 +14,26 @@ const RequestChange = () => {
   useEffect(() => {
     const verifyRequestUrl = async () => {
       try {
-
         UserService.verifyRequest(param.userId, param.token, param.company)
-        .then((response) => {
-          if (response?.error) {
-            setAlertMessage(response.error.message);
-            setMessage();
+          .then((response) => {
+            if (response?.error) {
+              setAlertMessage(response.error.message);
+              setMessage();
+              return;
+            } else {
+              setValidUrl(true);
+            }
+          })
+          .catch((error) => {
+            console.log(error);
             return;
-          } else{
-            setValidUrl(true);
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-          return;
-        });
-
+          });
       } catch (error) {
         setValidUrl(false);
       }
-    }
-    verifyRequestUrl()
-  }, [param])
+    };
+    verifyRequestUrl();
+  }, [param]);
 
   const errorShake = () => {
     window.jQuery('button[type=submit]').addClass('animated headShake bg-red');
@@ -46,13 +43,15 @@ const RequestChange = () => {
       .on(
         'webkitAnimationEnd oanimationend msAnimationEnd animationend',
         function (e) {
-          window.jQuery('button[type=submit]').delay(200).removeClass('animated headShake bg-red');
+          window
+            .jQuery('button[type=submit]')
+            .delay(200)
+            .removeClass('animated headShake bg-red');
         }
       );
   };
 
   const deleteToken = () => {
-
     const body = {
       userId: param.userId,
       token: param.token,
@@ -60,12 +59,13 @@ const RequestChange = () => {
     };
 
     UserService.deleteToken(body)
-    .then((response) => {
-      console.log("Token deleted successfully")
-    }).catch((error) => {
-      console.log(error);
-    })
-  }
+      .then((response) => {
+        console.log('Token deleted successfully');
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const onSubmit = (e) => {
     setIsLoading(true);
@@ -77,7 +77,7 @@ const RequestChange = () => {
 
     UserService.updateUser(param.userId, body)
       .then((response) => {
-        setMessage("User's company has been successfully updated")
+        setMessage("User's company has been successfully updated");
         setAlertMessage();
         setChosen(true);
         deleteToken();
@@ -125,34 +125,32 @@ const RequestChange = () => {
                   {!chosen && (
                     <div className='card-content'>
                       <div className='card-body pt-0'>
-                      {validUrl && (
-                        <div>
-                          <p className='px-2'>
-                            Approve Company Change?
-                          </p>
-                          <form
-                          onSubmit={onSubmit}
-                          className='pt-1'>
-                          <Button
-                            type='submit'
-                            className='btn btn-primary waves-effect waves-light mr-75'
-                            onClick={onSubmit}
-                            isLoading={isLoading}>
-                            Approve
-                          </Button>
-                          <Link
-                            className='btn waves-effect waves-light mr-75'
-                            onClick={() => {
-                              setChosen(true);
-                              setMessage('Request has been denied');
-                              setAlertMessage();
-                              deleteToken();
-                              }}>
-                            Deny
-                          </Link>
-                        </form>
-                        </div>
-                      )}
+                        {validUrl && (
+                          <div>
+                            <p className='px-2'>Approve Company Change?</p>
+                            <form
+                              onSubmit={onSubmit}
+                              className='pt-1'>
+                              <Button
+                                type='submit'
+                                className='btn btn-primary waves-effect waves-light mr-75'
+                                onClick={onSubmit}
+                                isLoading={isLoading}>
+                                Approve
+                              </Button>
+                              <Link
+                                className='btn waves-effect waves-light mr-75'
+                                onClick={() => {
+                                  setChosen(true);
+                                  setMessage('Request has been denied');
+                                  setAlertMessage();
+                                  deleteToken();
+                                }}>
+                                Deny
+                              </Link>
+                            </form>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}

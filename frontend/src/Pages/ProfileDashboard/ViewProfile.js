@@ -43,7 +43,6 @@ const ViewProfile = () => {
       setMobileNo(response.mobileNo);
       setPhoneNo(response.phoneNo);
       setAccType(response.accType);
-      console.log(response.jobType)
       if(response.jobType === 'incharge'){
         setJobType('Licence Incharge (Class 1 only)');
       } else if (response.jobType === 'agent'){

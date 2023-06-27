@@ -1,11 +1,5 @@
-import List from "./List"
-import Create from "./Create"
-import Edit from "./Edit"
-import RequestChange from "./RequestChange"
+import List from './List';
+import Create from './Create';
+import Edit from './Edit';
 
-export {
-  List,
-  Create,
-  Edit,
-  RequestChange,
-}
+export { List, Create, Edit };
