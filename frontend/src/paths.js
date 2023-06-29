@@ -304,6 +304,7 @@ export const api = {
     getAllByLabel: '/api/files/label/:label',
     getByParentId: '/api/files/parent/{{id}}',
     getByType: '/api/files/type/:type',
+    getByProjectId: '/api/files/projectId/{{id}}',
   },
   projects: {
     create: '/api/projects/',
