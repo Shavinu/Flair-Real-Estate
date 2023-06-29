@@ -3,6 +3,7 @@ import Admin from './Layouts/Admin';
 import Auth from './Layouts/Auth';
 import { views, AuthViews } from './paths';
 
+
 //get all paths which are defined in paths.js file
 export const getPaths = (r, parentIndex = 0) => {
   let rs = [];
@@ -51,6 +52,12 @@ const RenderRouters = () => {
       <Route element={<Auth />}>
         {getRoutes(AuthViews)}
       </Route>
+      {/* <Route
+        path={`${process.env.REACT_APP_API_URL}/api/auth/verify/:userId/:token`}
+        element={<Verified />}
+      >
+        {getRoutes(AuthViews)}
+      </Route> */}
       <Route element={<Admin />}>
         {getRoutes(views)}
       </Route>

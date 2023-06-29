@@ -72,11 +72,6 @@ const Edit = () => {
       );
   };
 
-
-  // const onChangeBirthday = (value: any) => {
-  //   setBirthday(moment(value).toISOString());
-  // }
-
   const isValid = () => {
     let isValid = true;
     let errors = {}
@@ -134,6 +129,10 @@ const Edit = () => {
       return
     }
 
+    const onCancel = (e) => {
+
+    }
+
     const body = {
       firstName: firstName,
       lastName: lastName,
@@ -147,10 +146,6 @@ const Edit = () => {
       country: country,
       postcode: postcode,
     }
-
-    // if (birthday) {
-    //   body.birthday = birthday
-    // }
 
     if (group) {
       body.group = group
@@ -190,12 +185,22 @@ const Edit = () => {
         { name: "Users", link: "/users" },
         { name: "Edit", active: true },
       ]}
-      options={<Button className="btn btn-primary waves-effect waves-light"
+      options={
+      <div className='col-12 d-flex mt-1 px-0'>
+      <Link
+        type='reset'
+        className='btn waves-effect waves-light mr-75'
+        to={`/users`}>
+        Cancel
+      </Link>
+      <Button
+        type='submit'
+        className='btn btn-primary waves-effect waves-light mr-75'
         onClick={onSubmit}
-        isLoading={isLoading}
-      >
+        isLoading={isLoading}>
         Save
-      </Button>}
+      </Button>
+    </div>}
     />
     <Row>
       <Col sm={12} lg={8}>

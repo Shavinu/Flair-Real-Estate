@@ -19,8 +19,9 @@ const RegisterGen = () => {
               <div className='row m-0'>
                 <div className='col-lg-6 d-lg-block d-none text-center align-self-center pl-0 pr-3 py-0'>
                   <img
-                    src={`${process.env.REACT_APP_PUBLIC_URL}/assets/images/pages/register.jpg`}
+                    src={`${process.env.REACT_APP_PUBLIC_URL}/assets/images/logo/logo.png`}
                     alt='branding logo'
+                    width='80%'
                   />
                 </div>
                 <div className='col-lg-6 col-12 p-0'>

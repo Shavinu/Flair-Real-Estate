@@ -13,6 +13,7 @@ import * as UserService from '../../../Services/UserService';
 import * as GroupService from '../../../Services/GroupService';
 import { Group, Input, Label, Select } from '../../../Components/Form';
 import utils from '../../../Utils';
+import * as AuthServices from '../../../Services/AuthService';
 import Toast from '../../../Components/Toast';
 import moment from 'moment';
 
@@ -28,6 +29,7 @@ const Create = () => {
   const [jobType, setJobType] = useState('');
   const [company, setCompany] = useState('');
   const [licence, setLicence] = useState('');
+  const [verifiedLicence, setVerifiedLicence] = useState('');
   const [addressLine1, setAddressLine1] = useState('');
   const [addressLine2, setAddressLine2] = useState('');
   const [city, setCity] = useState('');
@@ -38,6 +40,7 @@ const Create = () => {
   const [group, setGroup] = useState('');
 
   const [errors, setErrors] = useState();
+  const [alertMessage, setAlertMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -125,42 +128,72 @@ const Create = () => {
       return;
     }
 
-    const body = {
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-      phoneNo: phoneNo,
-      accType: accType,
-      company: company,
-      addressLine1: addressLine1,
-      addressLine2: addressLine2,
-      city: city,
-      country: country,
-      postcode: postcode,
-      password: password,
-    };
-
-    // if (birthday) {
-    //   body.birthday = birthday
-    // }
-
-    if (group) {
-      body.group = group;
-    }
-
-    UserService.createUser(body)
+    AuthServices.verifyLicence(accType, licence)
       .then((response) => {
-        Toast('User has been created successfully!', 'success');
-        setErrors();
-        setTimeout(() => {
-          navigate(`/users/${response._id}`);
-        }, 500);
+        if (response?.error) {
+          setAlertMessage(response.error.message);
+          // Toast('Licence verification failed!', 'warning');
+          setIsLoading(false);
+          errorShake();
+          return;
+        }
+
+        if (response?.message === 'Licence is valid') {
+          setAlertMessage();
+          // Toast('Licence verified!', 'success');
+          setVerifiedLicence(true);
+
+          const body = {
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            password: password,
+            mobileNo: mobileNo,
+            phoneNo: phoneNo,
+            addressLine1: addressLine1,
+            addressLine2: addressLine2,
+            city: city,
+            country: country,
+            postcode: postcode,
+            accType: accType,
+            jobType: jobType,
+            company: company,
+            licence: licence,
+            group: group,
+          };
+
+          if (group) {
+            body.group = group;
+          }
+
+          UserService.createUser(body)
+            .then((response) => {
+              Toast('User has been created successfully!', 'success');
+              setErrors();
+              setTimeout(() => {
+                navigate(`/users/${response._id}`);
+              }, 500);
+            })
+            .catch(() => {
+              // Toast('Failed to create user!', 'danger');
+              errorShake();
+            })
+            .finally(() => setIsLoading(false));
+        } else {
+          setAlertMessage(response.data.message);
+          Toast('Licence verification failed!', 'warning');
+          errorShake();
+          setIsLoading(false);
+          return;
+        }
       })
-      .catch(() => {
-        // Toast('Failed to create user!', 'danger');
+      .catch((error) => {
+        setAlertMessage('An error occurred while verifying the licence.');
+        Toast('Licence verification failed!', 'warning');
         errorShake();
-      })
-      .finally(() => setIsLoading(false));
+        setIsLoading(false);
+        return;
+      });
   };
 
   const onCancel = (e) => {};
@@ -180,17 +213,17 @@ const Create = () => {
         ]}
         options={
           <div>
-            <Button
+            <Link
               type='reset'
               className='btn waves-effect waves-light mr-75'
-              onClick={onCancel}>
+              to={`/users`}>
               Cancel
-            </Button>
+            </Link>
             <Button
               className='btn btn-primary waves-effect waves-light'
               onClick={onSubmit}
               isLoading={isLoading}>
-              Save
+              Create
             </Button>
           </div>
         }
