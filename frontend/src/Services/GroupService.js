@@ -18,7 +18,9 @@ export const getAvailableUsers = () => {
 }
 
 export const getGroupDetailById = (id) => {
-  return utils.fetch.httpGet(utils.url.replaceId(api.groups.detail, id));
+  const url = api.groups.detail.replace('{{id}}', id);
+  return utils.fetch.httpGet(url);
+  // return utils.fetch.httpGet(utils.url.replaceId(api.groups.detail, id));
 }
 
 export const createGroup = (body) => {
