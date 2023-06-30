@@ -8,6 +8,7 @@ import * as Dashboard from "./Pages/ProfileDashboard"
 import * as File from "./Pages/File"
 // import Listing from "./Pages/Project/Test"
 import * as Listing from "./Pages/Listing"
+import * as AboutContent from "./Pages/Admin/Managment/AboutContent"
 import * as About from "./Pages/Contact/About"
 import * as ContactForm from "./Pages/Contact/ContactForm"
 import * as BuyersArticles from './Pages/Resources/BuyersArticles';
@@ -20,6 +21,13 @@ export const views = [
     action: '/',
     icon: 'feather icon-home',
     element: <Home />
+  },
+  {
+    name: 'About Content',
+    action: '/AboutContent',
+    icon: 'feather icon-about',
+    element: <AboutContent.default />,
+    isRoute: true,
   },
   {
     name: 'About',

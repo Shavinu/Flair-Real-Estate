@@ -7,21 +7,10 @@ import Form from '../../Components/Calculator/From'
 const MortgageCal = () => {
     return (
         <>
-            <Sidebar />
-            <Navbar />
 
-            <Container>
-                <Row >
-                </Row>
-                <Row style={{ marginTop: "5rem" }}>
-                    <Col>
-                    </Col>
-                    <Col xs={9}>
-                        <h1>Mortgage Calculator</h1>
-                        <Form />
-                    </Col>
-                </Row>
-            </Container>
+            <h1>Mortgage Calculator</h1>
+            <Form />
+
         </>
     );
 };
