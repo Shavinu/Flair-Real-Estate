@@ -193,7 +193,7 @@ const updatePassword = async (req, res, next) => {
 
     // check if user exists
     const user = await User.findOne({ _id: validatedResult.userId });
-    if (!user) throw createError.UnprocessableEntity('Uer does not exist');
+    if (!user) throw createError.UnprocessableEntity('User does not exist');
 
     const token = await Token.findOne({
       userId: user._id,

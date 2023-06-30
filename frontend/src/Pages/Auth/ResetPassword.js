@@ -64,7 +64,7 @@ const ResetPassword = () => {
     }
 
     if(!isValidPassword(password)){
-      errors = { ...errors, password: 'Password does not follow password requirements'}
+      errors = { ...errors, password: 'Password does not follow password requirements'};
       isValid = false;
     }
 
@@ -94,7 +94,7 @@ const ResetPassword = () => {
       errorShake();
       return;
     }
-
+    console.log("here")
     AuthServices.updatePassword({
       userId: param.userId,
       token: param.token,
