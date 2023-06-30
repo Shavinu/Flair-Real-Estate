@@ -3,26 +3,22 @@ import { Link, useParams } from 'react-router-dom';
 import { Button, Card, Col, ContentHeader, Row } from '../../Components';
 import CardBody from '../../Components/Card/CardBody';
 import * as UserService from '../../Services/UserService';
-import { Group, Input, Label, Select } from '../../Components/Form';
-import utils from '../../Utils';
-import Toast from '../../Components/Toast';
-import moment from 'moment';
-import EditProfile from './EditProfile';
+import { Group, Label, Select } from '../../Components/Form';
 import * as GroupService from '../../Services/GroupService';
 
 const ViewProfile = () => {
-  const [page, setPage] = useState(1);
   const [user, setUser] = useState();
-  const [firstName, setFirstName] = useState();
-  const [lastName, setLastName] = useState();
-  const [email, setEmail] = useState();
-  const [mobileNo, setMobileNo] = useState();
-  const [phoneNo, setPhoneNo] = useState();
-  const [accType, setAccType] = useState();
-  const [jobType, setJobType] = useState();
+  const [image, setImage] = useState({avatar: ""});
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [mobileNo, setMobileNo] = useState('');
+  const [phoneNo, setPhoneNo] = useState('');
+  const [accType, setAccType] = useState('');
+  const [jobType, setJobType] = useState('');
   const [licence, setLicence] = useState();
-  const [verificationStatus, setVerificationStatus] = useState();
-  const [company, setCompany] = useState();
+  const [verificationStatus, setVerificationStatus] = useState('');
+  const [company, setCompany] = useState('');
   const [addressLine1, setAddressLine1] = useState();
   const [addressLine2, setAddressLine2] = useState();
   const [city, setCity] = useState();
@@ -40,13 +36,20 @@ const ViewProfile = () => {
   const getUserDetailById = (id) => {
     UserService.getUserDetailById(id).then((response) => {
       setUser(response);
+      response.avatar && setImage({avatar: response.avatar});
       setFirstName(response.firstName);
       setLastName(response.lastName);
       setEmail(response.email);
       setMobileNo(response.mobileNo);
       setPhoneNo(response.phoneNo);
       setAccType(response.accType);
-      setJobType(response.jobType);
+      if(response.jobType === 'incharge'){
+        setJobType('Licence Incharge (Class 1 only)');
+      } else if (response.jobType === 'agent'){
+        setJobType('Licence Real Estate Agent (Class 1 or Class 2)')
+      } else if (response.jobType === 'assistant'){
+        setJobType('Assistant Agent')
+      }
       setLicence(response.licence);
       response.verifiedLicence
         ? setVerificationStatus('Verified')
@@ -57,7 +60,7 @@ const ViewProfile = () => {
       setCity(response.city);
       setCountry(response.country);
       setPostcode(response.postcode);
-      getGroupDetailById(response.group);
+      response.group && getGroupDetailById(response.group);
     });
   };
 
@@ -66,10 +69,6 @@ const ViewProfile = () => {
   }, [id]);
 
   return (
-    // <>
-    //   {page === 2 ? (
-    //     <EditProfile page={setPage} />
-    //   ) : (
         <>
           <ContentHeader
             headerTitle='My Profile'
@@ -78,13 +77,6 @@ const ViewProfile = () => {
               { name: 'Profile', active: true },
             ]}
             options={
-              // <Link
-              //   className='btn btn-primary waves-effect waves-light'
-              //   onClick={() => {
-              //     setPage(2);
-              //   }}>
-              //   Edit Profile
-              // </Link>
               <Link
                 className='btn btn-primary waves-effect waves-light'
                 to={`/profile/edit/${id}`}>
@@ -100,13 +92,15 @@ const ViewProfile = () => {
                 <CardBody>
                   <div className='media mb-2'>
                     <div className='mr-2 my-25'>
+
                       <img
-                        src={`${process.env.REACT_APP_PUBLIC_URL}/assets/images/default/avatar.jpg`}
-                        alt='avatar'
-                        className='users-avatar-shadow rounded'
-                        height='90'
-                        width='90'
-                      />
+                      src={
+                        image.avatar || `${process.env.REACT_APP_PUBLIC_URL}/assets/images/avatar.jpg`
+                      }
+                      alt=''
+                      height='90'
+                      width='90'
+                    />
                     </div>
                     <div className='media-body mt-50'>
                       <h4 className='media-heading'>
@@ -118,7 +112,7 @@ const ViewProfile = () => {
                           md={6}>
                           <Group>
                             <Label htmlFor='email'>Email</Label>
-                            <span name='email'>{email}</span>
+                            <p name='email'>{email}</p>
                           </Group>
                         </Col>
                         <Col
@@ -126,7 +120,7 @@ const ViewProfile = () => {
                           md={6}>
                           <Group>
                             <Label htmlFor='mobile'>Mobile</Label>
-                            <span name='mobile'>{mobileNo}</span>
+                            <p name='mobile'>{mobileNo}</p>
                           </Group>
                         </Col>
                         <Col
@@ -134,7 +128,7 @@ const ViewProfile = () => {
                           md={6}>
                           <Group>
                             <Label htmlFor='phone'>Phone</Label>
-                            <span name='phone'>{phoneNo}</span>
+                            <p name='phone'>{phoneNo}</p>
                           </Group>
                         </Col>
                       </Row>
@@ -152,15 +146,15 @@ const ViewProfile = () => {
                       md={6}>
                       <Group>
                         <Label htmlFor='address1'>Address line 1</Label>
-                        <span name='address1'>{addressLine1}</span>
+                        <p name='address1'>{addressLine1}</p>
                       </Group>
                       <Group>
                         <Label htmlFor='address2'>Address line 2</Label>
-                        <span name='address2'>{addressLine2}</span>
+                        <p name='address2'>{addressLine2}</p>
                       </Group>
                       <Group>
                         <Label htmlFor='city'>City</Label>
-                        <span name='city'>{city}</span>
+                        <p name='city'>{city}</p>
                       </Group>
                     </Col>
                     <Col
@@ -168,11 +162,11 @@ const ViewProfile = () => {
                       md={6}>
                       <Group>
                         <Label htmlFor='code'>Post Code</Label>
-                        <span name='code'>{postcode}</span>
+                        <p name='code'>{postcode}</p>
                       </Group>
                       <Group>
                         <Label htmlFor='country'>Country</Label>
-                        <span name='country'>{country}</span>
+                        <p name='country'>{country}</p>
                       </Group>
                     </Col>
                   </Row>
@@ -187,36 +181,36 @@ const ViewProfile = () => {
                   <Row>
                     <Col>
                       <Group>
-                        <Label htmlFor='acc'>Role</Label>
-                        <div name='acc'>{accType}</div>
+                        <Label for='acc'>Role</Label>
+                        <p name='acc'>{accType}</p>
                       </Group>
                       <Group>
-                        <Label htmlFor='job'>Job Title</Label>
-                        <div name='job'>{jobType}</div>
+                        <Label for='job'>Job Title</Label>
+                        <p name='job'>{jobType}</p>
                       </Group>
                       <Group>
-                        <Label htmlFor='comapny'>Company</Label>
-                        <div name='comapny'>{company}</div>
+                        <Label for='company'>Company</Label>
+                        <p name='company'>{company}</p>
                       </Group>
                       <Group>
-                        <Label htmlFor='licence'>Licence Number</Label>
-                        <div name='licence'>{licence}</div>
+                        <Label for='licence'>Licence Number</Label>
+                        <p name='licence'>{licence}</p>
                       </Group>
                       <Group>
-                        <Label htmlFor='licenceVerify'>
+                        <Label for='licenceVerify'>
                           Licence Verification Status
                         </Label>
-                        <div name='licenceVerify'>{verificationStatus}</div>
+                        <p name='licenceVerify'>{verificationStatus}</p>
                       </Group>
                       <Group>
-                        <Label htmlFor=''>Group</Label>
-                        <div name='group'>
+                        <Label for=''>Group</Label>
+                        <p name='group'>
                           {group ? (
-                            <div>{group}</div>
+                            <p>{group}</p>
                           ) : (
-                            <div>You are not in any group</div>
+                            <p>You are not in any group</p>
                           )}
-                        </div>
+                        </p>
                       </Group>
                     </Col>
                   </Row>
@@ -225,8 +219,6 @@ const ViewProfile = () => {
             </Col>
           </Row>
         </>
-    //   )}
-    // </>
   );
 };
 

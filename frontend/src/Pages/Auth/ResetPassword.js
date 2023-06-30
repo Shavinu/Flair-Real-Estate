@@ -1,37 +1,70 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import './Login.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Group, Input, Label } from '../../Components/Form';
 import * as AuthServices from '../../Services/AuthService';
-import utils from '../../Utils';
 import { Alert, Button } from '../../Components';
+import { isValidPassword } from '../../Utils/string'
 
-const Login = () => {
-  const [email, setEmail] = useState('');
+const ResetPassword = () => {
+  const [validUrl, setValidUrl] = useState();
   const [password, setPassword] = useState('');
+  const [passwordConfirmation, setPasswordConfirmation] = useState('');
   const [errors, setErrors] = useState();
   const [alertMessage, setAlertMessage] = useState('');
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [updated, setUpdated] = useState(false);
+  const param = useParams();
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    const resetPasswordUrl = async () => {
+      try {
+        AuthServices.resetPassword(param.userId, param.token)
+        .then((response) => {
+          if (response?.error) {
+            setAlertMessage(response.error.message);
+            setMessage();
+            return;
+          } else{
+            setValidUrl(true);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          return;
+        });
+
+      } catch (error) {
+        console.log(error);
+        setValidUrl(false);
+      }
+    }
+    resetPasswordUrl()
+  }, [param])
+
 
   const isValid = () => {
     let isValid = true;
     let errors = {};
 
-    if (!email) {
-      errors = { ...errors, email: 'Please provide email address' };
-      isValid = false;
-    }
-
-    if (email && !utils.string.isValidEmail(email)) {
-      errors = { ...errors, email: 'Please provide a valid email address' };
-      isValid = false;
-    }
-
     if (!password) {
       errors = { ...errors, password: 'Please provide a password' };
+      isValid = false;
+    }
+
+    if (!passwordConfirmation) {
+      errors = { ...errors, passwordConfirmation: 'Please confirm password' };
+      isValid = false;
+    }
+
+    if (passwordConfirmation && passwordConfirmation !== password) {
+      errors = { ...errors, passwordConfirmation: 'Passwords do not match' };
+      isValid = false;
+    }
+
+    if(!isValidPassword(password)){
+      errors = { ...errors, password: 'Password does not follow password requirements'}
       isValid = false;
     }
 
@@ -62,27 +95,25 @@ const Login = () => {
       return;
     }
 
-    AuthServices.login({
-      email: email,
+    AuthServices.updatePassword({
+      userId: param.userId,
+      token: param.token,
       password: password,
     })
       .then((response) => {
         setAlertMessage();
-        setMessage();
-        navigate('/');
+        setMessage(response.message)
+        setUpdated(true);
       })
       .catch((response) => {
         if (
           response.response?.data?.error &&
           response.response?.data?.error.message
         ) {
-          setAlertMessage(response.response.data.error.message);
+          setAlertMessage(response.response?.data?.error.message);
           setMessage();
-        } else {
-          setMessage(response.response?.data?.message);
-          setAlertMessage();
+          errorShake();
         }
-        errorShake();
       })
       .finally(() => setIsLoading(false));
   };
@@ -93,23 +124,13 @@ const Login = () => {
         <div className='col-xl-8 col-11 d-flex justify-content-center'>
           <div className='card bg-authentication rounded-0 mb-0'>
             <div className='row m-0'>
-              <div className='col-lg-6 d-lg-block d-none text-center align-self-center px-1 py-0'>
-                <img
-                  src={`${process.env.REACT_APP_PUBLIC_URL}/assets/images/logo/logo.png`}
-                  width='80%'
-                  alt='Flair Real Estate logo'
-                />
-              </div>
-              <div className='col-lg-6 col-12 p-0'>
+              <div className='p-0'>
                 <div className='card rounded-0 mb-0 px-2'>
                   <div className='card-header pb-1'>
                     <div className='card-title'>
-                      <h4 className='mb-0'>Login</h4>
+                      <h4 className='mb-0'>Reset Password</h4>
                     </div>
                   </div>
-                  <p className='px-2'>
-                    Welcome back, please login to your account.
-                  </p>
                   {alertMessage && (
                     <Alert
                       className='mx-2'
@@ -127,77 +148,70 @@ const Login = () => {
                       message={message}
                     />
                   )}
+                  {updated ? (
+                      <Link
+                        to='/auth/login'
+                        className='centre'>
+                        Sign In
+                      </Link>
+                  ) : (
                   <div className='card-content'>
                     <div className='card-body pt-0'>
-                      <form
+                    {validUrl && (
+                      <div>
+                        <p className='px-2'>
+                          Enter your new password
+                        </p>
+                        <p>
+                          Paswords must be at least 8 characters long and have:
+                          <ul>
+                            <li>at least <b>one uppercase letter</b></li>
+                            <li>at least <b>one lowercase letter</b></li>
+                            <li>at least <b>one digit</b></li>
+                            <li>at least <b>one special character</b></li>
+                          </ul>
+                        </p>
+                        <form
                         onSubmit={onSubmit}
                         className='pt-1'>
-                        <Group
-                          className='form-label-group'
-                          hasIconLeft>
-                          <Input
-                            name='email'
-                            value={email}
-                            icon='feather icon-user'
-                            placeholder='Email'
-                            onChange={(e) => {
-                              setEmail(e.target.value);
-                            }}
-                            error={errors?.email}
-                          />
-                          <Label for='email'>Email</Label>
-                        </Group>
-
-                        <Group
-                          className='form-label-group'
-                          hasIconLeft>
+                        <Group className='form-label-group'>
                           <Input
                             type='password'
                             name='password'
-                            placeholder='Password'
-                            icon='feather icon-lock'
                             value={password}
-                            onChange={(e) => {
-                              setPassword(e.target.value);
-                            }}
+                            placeholder='Password'
+                            onChange={(e) => setPassword(e.target.value)}
                             error={errors?.password}
                           />
                           <Label for='password'>Password</Label>
                         </Group>
-
-                        <div className='form-group d-flex justify-content-between align-items-center'>
-                          <div className='text-left'>
-                            <fieldset className='checkbox'>
-                              <div className='vs-checkbox-con vs-checkbox-primary'>
-                                <input type='checkbox' />
-                                <span className='vs-checkbox'>
-                                  <span className='vs-checkbox--check'>
-                                    <i className='vs-icon feather icon-check'></i>
-                                  </span>
-                                </span>
-                                <span className=''>Remember me</span>
-                              </div>
-                            </fieldset>
-                          </div>
-                          <div className='text-right'>
-                            <Link
-                              to='/auth/forgot-password'
-                              className='card-link'>
-                              Forgot Password?
-                            </Link>
-                          </div>
-                        </div>
+                        <Group className='form-label-group'>
+                          <Input
+                            type='password'
+                            name='password_confirmation'
+                            value={passwordConfirmation}
+                            placeholder='Confirm Password'
+                            onChange={(e) =>
+                              setPasswordConfirmation(e.target.value)
+                            }
+                            error={errors?.passwordConfirmation}
+                          />
+                          <Label for='password_confirmation'>Confirm Password</Label>
+                        </Group>
                         <Button
                           className='btn btn-primary float-right btn-inline'
                           type='submit'
                           isLoading={isLoading}
                           onClick={onSubmit}>
-                          Login
+                          Submit
                         </Button>
                       </form>
+                      </div>
+                    )}
                     </div>
                   </div>
-                  <p>
+                  )}
+                  <p className='m-75'>
                     Not a member?{' '}
                     <span>
                       <Link
@@ -217,4 +231,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ResetPassword;

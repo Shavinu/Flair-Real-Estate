@@ -1,12 +1,12 @@
-import { Suspense, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Group, Input, Label, Select } from '../../Components/Form';
 import utils from '../../Utils';
 import * as AuthServices from '../../Services/AuthService';
 import Toast from '../../Components/Toast';
 import { Alert, Button, Card } from '../../Components';
-import RegisterGen from './RegisterGen';
 import CardBody from '../../Components/Card/CardBody';
+import { isValidPassword } from '../../Utils/string';
 
 
 const Register = ({ type, page }) => {
@@ -23,9 +23,9 @@ const Register = ({ type, page }) => {
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
 
   const [alertMessage, setAlertMessage] = useState('');
+  const [message, setMessage] = useState('');
   const [errors, setErrors] = useState();
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
 
   const isValid = () => {
     let isValid = true;
@@ -81,7 +81,12 @@ const Register = ({ type, page }) => {
     }
 
     if (passwordConfirmation && passwordConfirmation !== password) {
-      errors = { ...errors, passwordConfirmation: 'Password does not match' };
+      errors = { ...errors, passwordConfirmation: 'Passwords do not match' };
+      isValid = false;
+    }
+
+    if(!isValidPassword(password)){
+      errors = { ...errors, password: 'Password does not follow password requirements'}
       isValid = false;
     }
 
@@ -120,7 +125,6 @@ const Register = ({ type, page }) => {
       .then((response) => {
         if (response?.error) {
           setAlertMessage(response.error.message);
-          // Toast('Licence verification failed!', 'warning');
           setIsLoading(false);
           errorShake();
           return;
@@ -128,7 +132,6 @@ const Register = ({ type, page }) => {
 
         if (response?.message === 'Licence is valid') {
           setAlertMessage();
-          // Toast('Licence verified!', 'success');
           setVerifiedLicence(true);
 
           AuthServices.register({
@@ -143,32 +146,38 @@ const Register = ({ type, page }) => {
             licence: licence,
             verifiedLicence: verifiedLicence,
             accType: type,
+            verified: false,
           })
             .then((response) => {
-              setAlertMessage();
-              Toast('Registered successfully!', 'success');
-              navigate('/');
+              if (response?.message) {
+                setAlertMessage();
+                setMessage(response.message);
+              }
             })
             .catch((response) => {
               if (
                 response.response.data?.error &&
                 response.response.data?.error.message
               ) {
+                setMessage();
                 setAlertMessage(response.response.data.error.message);
               }
-              // Toast('Registeration failed!', 'warning');
+              errorShake();
             })
             .finally(() => setIsLoading(false));
         } else {
-          setAlertMessage(response.data.message);
-          Toast('Licence verification failed!', 'warning');
+          console.log(response.data.message);
+          setAlertMessage('Licence verification failed');
+          setMessage();
+          errorShake();
           setIsLoading(false);
           return;
         }
       })
       .catch((error) => {
         setAlertMessage('An error occurred while verifying the licence.');
-        Toast('Licence verification failed!', 'warning');
+        setMessage();
+        errorShake();
         setIsLoading(false);
         return;
       });
@@ -182,8 +191,9 @@ const Register = ({ type, page }) => {
             <div className='row m-0'>
               <div className='col-lg-6 d-lg-block d-none text-center align-self-center pl-0 pr-3 py-0'>
                 <img
-                  src={`${process.env.REACT_APP_PUBLIC_URL}/assets/images/pages/register.jpg`}
+                  src={`${process.env.REACT_APP_PUBLIC_URL}/assets/images/logo/logo.png`}
                   alt='branding logo'
+                  width='80%'
                 />
               </div>
               <div className='col-lg-6 col-12 p-0'>
@@ -202,6 +212,13 @@ const Register = ({ type, page }) => {
                       type='danger'
                       message={alertMessage}
                       icon={<i class='feather icon-info mr-1 align-middle'></i>}
+                    />
+                  )}
+                  {message && (
+                    <Alert
+                      className='mx-2'
+                      type='success'
+                      message={message}
                     />
                   )}
                   <Card>
@@ -291,6 +308,7 @@ const Register = ({ type, page }) => {
                         </Group>
                         {type !== 'builder' && type !== 'developer' && (
                           <Group className='form-label-group'>
+                            <Label htmlFor='job'>Job Title</Label>
                             <Select
                               options={[
                                 {
@@ -307,13 +325,22 @@ const Register = ({ type, page }) => {
                                   label: 'Assistant Agent',
                                 },
                               ]}
+                              name='job'
                               value={jobType}
                               onChange={(value) => setJobType(value)}
                               error={errors?.jobType}
                             />
-                            <Label for='job'>Job Title</Label>
                           </Group>
                         )}
+                        <p>
+                          Paswords must be at least 8 characters long and have:
+                          <ul>
+                            <li>at least <b>one uppercase letter</b></li>
+                            <li>at least <b>one lowercase letter</b></li>
+                            <li>at least <b>one digit</b></li>
+                            <li>at least <b>one special character</b></li>
+                          </ul>
+                        </p>
                         <Group className='form-label-group'>
                           <Input
                             type='password'
@@ -336,7 +363,7 @@ const Register = ({ type, page }) => {
                             }
                             error={errors?.passwordConfirmation}
                           />
-                          <Label for='password'>Password</Label>
+                          <Label for='password_confirmation'>Confirm Password</Label>
                         </Group>
                         <div className='form-group row'>
                           <div className='col-12'>
@@ -350,17 +377,15 @@ const Register = ({ type, page }) => {
                                 </span>
                                 <span className=''>
                                   {' '}
-                                  I accept the terms & conditions.
+                                  I accept the <a href="">terms & conditions</a>.
+                                  {/* the above needs to be implemented. The below Register button should not be
+                                  clickable unless this is ticked. Terms and conditions must link to t&c provided
+                                  by Flair Real Estate*/ }
                                 </span>
                               </div>
                             </fieldset>
                           </div>
                         </div>
-                        {/* <Link
-                          to='/auth/login'
-                          className='btn btn-outline-primary float-left btn-inline mb-50'>
-                          Login
-                        </Link> */}
                         <Button
                           type='submit'
                           className='btn btn-primary float-right btn-inline mb-50'
