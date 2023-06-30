@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Group, Input, Label } from '../../Components/Form';
 import * as AuthServices from '../../Services/AuthService';
 import { Alert, Button } from '../../Components';
+import { isValidPassword } from '../../Utils/string'
 
 const ResetPassword = () => {
   const [validUrl, setValidUrl] = useState();
@@ -62,6 +63,11 @@ const ResetPassword = () => {
       isValid = false;
     }
 
+    if(!isValidPassword(password)){
+      errors = { ...errors, password: 'Password does not follow password requirements'};
+      isValid = false;
+    }
+
     setErrors(errors);
 
     return isValid;
@@ -88,7 +94,7 @@ const ResetPassword = () => {
       errorShake();
       return;
     }
-
+    console.log("here")
     AuthServices.updatePassword({
       userId: param.userId,
       token: param.token,
@@ -140,7 +146,6 @@ const ResetPassword = () => {
                       className='mx-2'
                       type='success'
                       message={message}
-                      // icon={<i class='feather icon-info mr-1 align-middle'></i>}
                     />
                   )}
                   {updated ? (
@@ -156,6 +161,15 @@ const ResetPassword = () => {
                       <div>
                         <p className='px-2'>
                           Enter your new password
+                        </p>
+                        <p>
+                          Paswords must be at least 8 characters long and have:
+                          <ul>
+                            <li>at least <b>one uppercase letter</b></li>
+                            <li>at least <b>one lowercase letter</b></li>
+                            <li>at least <b>one digit</b></li>
+                            <li>at least <b>one special character</b></li>
+                          </ul>
                         </p>
                         <form
                         onSubmit={onSubmit}
@@ -182,7 +196,7 @@ const ResetPassword = () => {
                             }
                             error={errors?.passwordConfirmation}
                           />
-                          <Label for='password'>Password</Label>
+                          <Label for='password_confirmation'>Confirm Password</Label>
                         </Group>
                         <Button
                           className='btn btn-primary float-right btn-inline'

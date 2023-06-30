@@ -6,6 +6,7 @@ import * as AuthServices from '../../Services/AuthService';
 import Toast from '../../Components/Toast';
 import { Alert, Button, Card } from '../../Components';
 import CardBody from '../../Components/Card/CardBody';
+import { isValidPassword } from '../../Utils/string';
 
 
 const Register = ({ type, page }) => {
@@ -81,6 +82,11 @@ const Register = ({ type, page }) => {
 
     if (passwordConfirmation && passwordConfirmation !== password) {
       errors = { ...errors, passwordConfirmation: 'Passwords do not match' };
+      isValid = false;
+    }
+
+    if(!isValidPassword(password)){
+      errors = { ...errors, password: 'Password does not follow password requirements'}
       isValid = false;
     }
 
@@ -326,6 +332,15 @@ const Register = ({ type, page }) => {
                             />
                           </Group>
                         )}
+                        <p>
+                          Paswords must be at least 8 characters long and have:
+                          <ul>
+                            <li>at least <b>one uppercase letter</b></li>
+                            <li>at least <b>one lowercase letter</b></li>
+                            <li>at least <b>one digit</b></li>
+                            <li>at least <b>one special character</b></li>
+                          </ul>
+                        </p>
                         <Group className='form-label-group'>
                           <Input
                             type='password'
@@ -348,7 +363,7 @@ const Register = ({ type, page }) => {
                             }
                             error={errors?.passwordConfirmation}
                           />
-                          <Label for='password'>Password</Label>
+                          <Label for='password_confirmation'>Confirm Password</Label>
                         </Group>
                         <div className='form-group row'>
                           <div className='col-12'>
