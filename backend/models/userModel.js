@@ -53,7 +53,7 @@ const userSchema = new Schema(
     licence: {
       type: String,
       unique: true,
-      // required: true,
+      required: true,
     },
     verifiedLicence: {
       type: Boolean,
