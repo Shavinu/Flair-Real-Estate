@@ -402,7 +402,7 @@ const Create = () => {
             </CardBody>
           </Card>
         </Col >
-        <Col sm={12} lg={12}>
+        {/* <Col sm={12} lg={12}>
           <Card className="border-2 border-primary rounded">
             <CardBody>
               <Group className="text-center">
@@ -429,7 +429,7 @@ const Create = () => {
               <FileManager files={[]} />
             </CardBody>
           </Card>
-        </Col>
+        </Col> */}
       </Row >
     </>
   )

@@ -403,7 +403,7 @@ const ProjectDetails = () => {
           </Col>
         </Row>
       )}
-      {project.projectFiles.length > 0 && (
+      {/* {project.projectFiles.length > 0 && (
         <Row className="mt-5">
           <Col>
             <Card className="rounded mt-1 p-0">
@@ -415,7 +415,7 @@ const ProjectDetails = () => {
             </Card>
           </Col>
         </Row>
-      )}
+      )} */}
       {coordinates && (
         <Row>
           <Col><Card className="rounded mt-1 p-0">
