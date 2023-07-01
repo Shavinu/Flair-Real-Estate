@@ -1,5 +1,5 @@
 import React from 'react';
-import Navbar from '../../Components/Navbar';
+import NavbarUser from '../../Components/NavbarUser';
 import Sidebar from '../../Components/Sidebar';
 import { Container, Row, Col } from 'react-bootstrap';
 import Form from '../../Components/Calculator/From'
@@ -7,15 +7,13 @@ import Form from '../../Components/Calculator/From'
 const MortgageCal = () => {
     return (
         <>
-            <Sidebar />
-            <Navbar />
+            <NavbarUser />
 
             <Container>
                 <Row >
                 </Row>
                 <Row style={{ marginTop: "5rem" }}>
-                    <Col>
-                    </Col>
+                   
                     <Col xs={9}>
                         <h1>Mortgage Calculator</h1>
                         <Form />

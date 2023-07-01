@@ -28,6 +28,7 @@
   }
   
 .hero-text h1 {
+    margin-left: 500px;
     font-size: 3rem;
     font-weight: 800;
     background: #fff;
@@ -36,6 +37,7 @@
   }
   
 .hero-text p {
+    margin-left: 450px;
     color: #f4f4f4;
     font-size: 1.3rem;
     padding: 0.5rem 0 2rem 0;
@@ -57,11 +59,11 @@
   }
   
 .hero-text input[type="search"] {
-    width: 500px;
+    margin-left: 300px;
+    width: 600px;
     height: 40px;
     padding: 6px;
     border: 1px solid #fff;
-    margin-top: 8px;
     font-size: 17px;
     background: transparent;
   }
@@ -72,6 +74,7 @@
   }
   
 .hero-text button {
+    margin-left: 550px;
     position: relative;
     border: 0;
     padding: 0;

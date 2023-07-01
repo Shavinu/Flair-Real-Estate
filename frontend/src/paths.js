@@ -11,6 +11,7 @@ import * as ContactForm from "./Pages/Contact/ContactForm"
 import * as BuyersArticles from './Pages/Resources/BuyersArticles';
 import * as MortgageCal from './Pages/Resources/MortgageCal';
 import * as News from './Pages/Resources/News';
+import * as HomePage from './Pages/Client/Home/HomePage'
 
 export const views = [
   {
@@ -18,6 +19,12 @@ export const views = [
     action: '/',
     icon: 'feather icon-home',
     element: <Home />,
+  },
+  {
+    name: 'HomePage',
+    action: '/Home',
+    icon: 'feather icon-home',
+    element: <HomePage />,
   },
   {
     name: 'About',
