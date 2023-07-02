@@ -63,6 +63,9 @@ const RenderRouters = () => {
       <Route element={<Admin />}>
         {getRoutes(views)}
       </Route>
+      <Route element={<Client />}>
+        {getRoutes(views)}
+      </Route>
       {getRoutes(views)}
     </Routes>
   );
