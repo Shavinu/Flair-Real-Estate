@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FaDollarSign } from "react-icons/fa";
 import FormInputGroup from "./FormInputGroup";
+import "./Form.css";
 
 function Form() {
   const [homeValue, setHomeValue] = useState("");
@@ -73,7 +74,7 @@ function Form() {
         value={loanDuration}
         onInput={(e) => setLoanDuration(e.target.value)}
       />
-      <h4 className="alert alert-info fw-bold">
+      <h4>
         Monthly payment: <FaDollarSign />
         {parseFloat(monthlyPayment.toFixed(2))}
       </h4>
@@ -81,7 +82,6 @@ function Form() {
       <button
         type="submit"
         onClick={calculateMonthlyPayment}
-        className="btn btn-primary btn-lg w-100 center"
       >
         Calculate
       </button>
