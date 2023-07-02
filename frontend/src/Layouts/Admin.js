@@ -20,8 +20,7 @@ const Admin = () => {
       navigate('/auth/login');
       return
     }
-    navigate('/admin'); // Add this line to navigate to the Admin page once authenticated
-  }, [user, navigate]);
+  }, [user]);
 
   return <div id="body" className="vertical-layout vertical-menu-modern 2-column navbar-floating footer-static menu-expanded" data-menu="vertical-menu-modern">
     {/* <!-- fixed-top--> */}
