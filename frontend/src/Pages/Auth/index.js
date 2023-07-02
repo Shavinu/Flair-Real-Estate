@@ -1,15 +1,11 @@
-import Login from './Login';
-import Register from './Register';
-import RegisterGen from './RegisterGen';
-import Verified from './Verified';
-import ForgotPassword from './ForgotPassword';
-import ResetPassword from './ResetPassword';
+import Login from './login';
+import Register from './register';
+import ForgotPassword from './forgot-password';
+import VerifyEmail from './verify-email';
 
 export {
   Login,
   Register,
-  RegisterGen,
-  Verified,
   ForgotPassword,
-  ResetPassword,
-};
+  VerifyEmail,
+}

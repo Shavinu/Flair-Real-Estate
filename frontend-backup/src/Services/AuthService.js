@@ -44,6 +44,7 @@ export const verifyEmail = (userId, token) =>{
     })
     .catch(error => {
       if (error.response && error.response.data && error.response.data.error) {
+      console.error(error);
         return Promise.resolve(error.response.data);
       }
       console.error(error);

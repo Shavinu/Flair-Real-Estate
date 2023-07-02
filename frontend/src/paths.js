@@ -1,298 +1,73 @@
-import Home from './Pages/Admin/Home';
-import * as Users from './Pages/Admin/Users';
-import * as Groups from './Pages/Admin/Groups';
-import * as Project from './Pages/Project';
-import * as Dashboard from './Pages/ProfileDashboard';
-import * as File from './Pages/File';
-import * as Listing from './Pages/Listing';
-import * as Auth from './Pages/Auth'
-import * as About from "./Pages/Contact/About"
-import * as ContactForm from "./Pages/Contact/ContactForm"
-import * as BuyersArticles from './Pages/Resources/BuyersArticles';
-import * as MortgageCal from './Pages/Resources/MortgageCal';
-import * as News from './Pages/Resources/News';
+import { ICONS, SvgColor } from "./components/icons";
+import * as Auth from "./pages/auth";
+import * as Dashboard from "./pages/dashboard";
+
+const ROOTS = {
+  AUTH: '/auth',
+  DASHBOARD: '/dashboard',
+};
+
+export const paths = {
+  auth: {
+    login: `${ROOTS.AUTH}/login`,
+    register: `${ROOTS.AUTH}/register`,
+    forgotPassword: `${ROOTS.AUTH}/forgot-password`
+  },
+  dashboard: {
+    root: `${ROOTS.DASHBOARD}`,
+    one: `${ROOTS.DASHBOARD}/one`,
+    four: `${ROOTS.DASHBOARD}/four`,
+    users: {
+      list: `${ROOTS.DASHBOARD}/users`,
+      create: `${ROOTS.DASHBOARD}/users/create`,
+      edit: `${ROOTS.DASHBOARD}/users/:id`
+    }
+  }
+}
+
+export const api = {
+  auth: {
+    login: '/api/auth/login',
+    forgotPassword: '/api/auth/forgot-password',
+    currentUser: '/api/auth/current-user',
+    verifyEmail: 'api/auth/verify/:userId/:token',
+    verifyLicence: '/api/auth/verify-licence/:accType/:licence',
+  },
+  users: {
+    list: '/api/users',
+    create: '/api/users',
+    edit: '/api/users/{{id}}',
+    delete: '/api/users/{{id}}',
+    deleteMany: '/api/users/delete-many',
+  }
+}
 
 export const views = [
   {
-    name: 'Home',
-    action: '/',
-    icon: 'feather icon-home',
-    element: <Home />,
-  },
-  {
-    name: 'About',
-    action: '/About',
-    icon: 'feather icon-about',
-    element: <About.default />,
-    isRoute: true,
-  },
-  {
-    name: 'Contact Form',
-    action: '/ContactForm',
-    icon: 'feather icon-about',
-    element: <ContactForm.default />,
-    isRoute: true,
-  },
-  {
-    name: 'Buyers Articles',
-    action: '/BuyersArticles',
-    icon: 'feather icon-about',
-    element: <BuyersArticles.default />,
-    isRoute: true,
-  },
-  {
-    name: 'Mortgage Calculator',
-    action: '/MortgageCal',
-    icon: 'feather icon-about',
-    element: <MortgageCal.default />,
-    isRoute: true,
-  },
-  {
-    name: 'News',
-    action: '/News',
-    icon: 'feather icon-about',
-    element: <News.default />,
-    isRoute: true,
+    name: 'Overview',
+    action: paths.dashboard.root,
+    icon: ICONS.analytics,
+    element: <Dashboard.Home />,
   },
   {
     name: 'Users',
-    action: '/users',
-    icon: 'feather icon-user',
-    element: <Users.List />,
-  },
-  {
-    name: 'Create Users',
-    action: '/users/create',
-    icon: 'feather icon-user',
-    element: <Users.Create />,
-    isRoute: true,
-  },
-  {
-    name: 'Edit Users',
-    action: '/users/:id',
-    icon: 'feather icon-user',
-    element: <Users.Edit />,
-    isRoute: true,
-  },
-  {
-    name: 'Request Change',
-    action: '/users/request-change/:userId/:token/:company',
-    icon: 'feather icon-user',
-    element: <Dashboard.RequestChange />,
-    isRoute: true,
-  },
-  {
-    name: 'View Profile',
-    action: '/profile/:id',
-    icon: 'feather icon-user-check',
-    element: <Dashboard.ViewProfile />,
-    isRoute: true,
-  },
-  {
-    name: 'Edit Profile',
-    action: '/profile/edit/:id',
-    icon: 'feather icon-user-check',
-    element: <Dashboard.EditProfile />,
-    isRoute: true,
-  },
-  {
-    name: 'User Groups',
-    action: '/groups',
-    icon: 'feather icon-users',
-    element: <Groups.List />,
-  },
-  {
-    name: 'Create User Group',
-    action: '/groups/create',
-    element: <Groups.Create />,
-    isRoute: true,
-  },
-  {
-    name: 'Edit User Group',
-    action: '/groups/:id',
-    element: <Groups.Edit />,
-    isRoute: true,
-  },
-  {
-    name: 'Projects',
-    icon: 'feather icon-inbox',
+    action: paths.dashboard.users.list,
+    icon: ICONS.user,
     children: [
       {
-        name: 'Create Project',
-        action: '/projects/create',
-        icon: 'feather icon-plus-circle',
-        element: <Project.Create />,
-        isRoute: false,
+        name: 'List',
+        action: paths.dashboard.users.list,
+        element: <Dashboard.Users.List />,
       },
       {
-        name: 'All Projects',
-        action: '/projects',
-        icon: 'feather icon-search',
-        element: <Project.Search />,
-        isRoute: false
+        name: 'Edit',
+        action: paths.dashboard.users.edit,
+        element: <Dashboard.Users.Edit />,
+        isRoute: true
       },
-      {
-        name: 'Your Projects',
-        action: '/projects/your',
-        icon: 'feather icon-layers',
-        element: <Project.List />,
-        isRoute: false
-      }
     ]
   },
-  {
-    name: 'View Project',
-    action: '/projects/:id',
-    icon: 'feather icon-inbox',
-    element: <Project.View />,
-    isRoute: true,
-  },
-  {
-    name: 'Edit Project',
-    action: '/projects/:id/edit',
-    icon: 'feather icon-inbox',
-    element: <Project.Edit />,
-    isRoute: true,
-  },
-  {
-    name: 'Test',
-    action: '/projects/test',
-    icon: 'feather icon-inbox',
-    element: <Project.Test />,
-    isRoute: true,
-  },
-  {
-    name: 'Listings',
-    icon: 'feather icon-list',
-    children: [
-      {
-        name: 'Create Listing',
-        action: '/listings/create',
-        icon: 'feather icon-plus-circle',
-        element: <Listing.Create />,
-        isRoute: false,
-      },
-      {
-        name: 'All Listings',
-        action: '/listings',
-        icon: 'feather icon-search',
-        element: <Listing.Search />,
-        isRoute: false,
-      },
-      {
-        name: 'Your Listings',
-        action: '/listings/your',
-        icon: 'feather icon-layers',
-        element: <Listing.List />,
-        isRoute: false,
-      },
-    ],
-  },
-  {
-    name: 'View Listing',
-    action: '/listings/:id',
-    icon: 'feather icon-inbox',
-    element: <Listing.View />,
-    isRoute: true
-  },
-  {
-    name: 'Edit Listing',
-    action: '/listings/:id/edit',
-    icon: 'feather icon-inbox',
-    element: <Listing.Edit />,
-    isRoute: true
-  },
-  // {
-  //   name: 'Edit Listing',
-  //   action: '/listings/:id/edit',
-  //   icon: 'feather icon-inbox',
-  //   element: <Listing.Edit />,
-  //   isRoute: true
-  // },
-  {
-    name: 'Test',
-    action: '/listings/test',
-    icon: 'feather icon-inbox',
-    element: <Listing.Test />,
-    isRoute: true,
-  },
-  {
-    name: 'File Upload',
-    action: '/files/upload',
-    icon: 'feather icon-inbox',
-    element: <File.Upload />,
-    isRoute: true,
-  },
-  {
-    name: 'File Browser',
-    action: '/files/browser',
-    icon: 'feather icon-inbox',
-    element: <File.Browser />,
-    isRoute: true,
-  },
-
-
-  // {
-  //   name: 'Menu',
-  //   icon: 'feather icon-menu',
-  //   children: [
-  //     {
-  //       name: 'Second Level',
-  //       action: '/second-level',
-  //       element: <Dashboard />
-  //     },
-  //     {
-  //       name: 'Second Level',
-  //       action: '/second-level2',
-  //       element: <Dashboard />
-  //     }
-  //   ],
-  // }
-  // {
-  //   name: 'Products',
-  //   isRoute: false,
-  //   icon: "fa fa-fw fa-hdd-o",
-  //   children: [
-  //     {
-  //       name: 'Stock In',
-  //       action: '/',
-  //       element: <StockIn.List />,
-  //       isRoute: false,
-  //     },
-  //     {
-  //       name: 'Product List',
-  //       action: '/products',
-  //       element: <Products.List />,
-  //       isRoute: false,
-  //     },
-  //     {
-  //       name: 'Create New Product',
-  //       action: '/products/create',
-  //       element: <Products.Create />,
-  //       isRoute: true,
-  //     },
-  //     {
-  //       name: 'Edit Product',
-  //       action: '/products/:id',
-  //       element: <Products.Edit />,
-  //       isRoute: true,
-  //     },
-  //   ],
-  // },
 ];
-
-// export const pages = [
-//   {
-//     name:'View Profile',
-//     action: '/profile/view',
-//     element: <Dashboard.ViewProfile />
-//   },
-//   {
-//     name: 'Edit Profile',
-//     action: '/:id/profile/edit',
-//     element: <Dashboard.EditProfile />
-//   }
-// ]
 
 export const AuthViews = [
   {
@@ -303,96 +78,21 @@ export const AuthViews = [
   {
     name: 'Register',
     action: '/auth/register',
-    element: <Auth.RegisterGen />,
+    element: <Auth.Register />,
   },
   {
     name: 'Verify Email',
     action: `/auth/verify/:userId/:token`,
-    element: <Auth.Verified />,
+    element: <Auth.VerifyEmail />,
   },
   {
     name: "Forgot",
     action: '/auth/forgot-password',
     element: <Auth.ForgotPassword />,
   },
-  {
-    name: "Reset",
-    action: '/auth/reset-password/:userId/:token',
-    element: <Auth.ResetPassword />,
-  },
+  // {
+  //   name: "Reset",
+  //   action: '/auth/reset-password/:userId/:token',
+  //   element: <Auth.ResetPassword />,
+  // },
 ];
-
-export const api = {
-  auth: {
-    login: '/api/auth/login',
-    register: '/api/auth/register',
-    verifyLicence: '/api/auth/verify-licence/:accType/:licence',
-    verifyEmail: 'api/auth/verify/:userId/:token',
-    forgotPassword: 'api/auth/forgot-password',
-    resetPassword: 'api/auth/reset-password/:userId/:token',
-    updatePassword: 'api/auth/update-password',
-  },
-  users: {
-    list: '/api/users',
-    create: '/api/users/create',
-    edit: '/api/users/{{id}}',
-    delete: '/api/users/{{id}}',
-    deleteMany: '/api/users/delete-many',
-    requestChange: 'api/users/request-change',
-    verifyRequest: 'api/users/verify-request/:userId/:token/:company',
-    deleteToken: 'api/users/delete-token',
-  },
-  groups: {
-    list: '/api/groups/getGroups',
-    create: '/api/groups/createGroup',
-    detail: '/api/groups/getGroup/{{id}}',
-    update: '/api/groups/updateGroup',
-    deleteMany: '/api/groups/deleteManyGroups',
-    users: '/api/groups/getUsersInGroup',
-    subGroups: '/api/groups/subGroups',
-    availableUsers: '/api/groups/getAvailableUsers',
-    addUserToGroup: '/api/groups/addUserToGroup',
-    removeUserFromGroup: '/api/groups/deleteUserFromGroup',
-    removeManyUsersFromGroup: '/api/groups/removeManyUsersFromGroup',
-  },
-  files: {
-    uploadSingle: '/api/files/uploadSingle',
-    uploadMultiple: '/api/files/uploadMultiple',
-    search: '/api/files/search',
-    updateSingle: '/api/files/update/{{id}}',
-    updateMultiple: '/api/files/update',
-    deleteSingle: '/api/files/delete/{{id}}',
-    deleteMany: '/api/files/delete',
-    stream: '/api/files/stream/{{id}}',
-    download: '/api/files/download/{{id}}',
-    getById: '/api/files/file/{{id}}',
-    getAllByUser: '/api/files/user/{{id}}',
-    getAllByFileName: '/api/files/filename/:filename',
-    getAllByLabel: '/api/files/label/:label',
-    getByParentId: '/api/files/parent/{{id}}',
-    getByType: '/api/files/type/:type',
-    getByProjectId: '/api/files/projectId/{{id}}',
-  },
-  projects: {
-    create: '/api/projects/',
-    search: '/api/search/projects_search',
-    get: '/api/projects/{{id}}',
-    getAll: '/api/projects/',
-    update: '/api/projects/{{id}}',
-    delete: '/api/projects/{{id}}',
-    getProjectOwners: '/api/search/projectOwners',
-    getProjectByOwner: '/api/projects/owner/{{Id}}',
-    addMembers: '/api/projects/{{id}}/add-members/',
-    removeMembers: '/api/projects/{{id}}/remove-members/',
-  },
-  listings: {
-    create: '/api/listings/create',
-    search: '/api/search/listings_search',
-    get: '/api/listings/{{id}}',
-    getAll: '/api/listings',
-    getDevelopers: '/api/search/developers',
-    update: '/api/listings/{{id}}',
-    delete: '/api/listings/{{id}}',
-    getByDeveloper: '/api/listings/developer/{{id}}',
-  },
-};

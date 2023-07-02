@@ -1,425 +1,382 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Group, Input, Label, Select } from '../../Components/Form';
-import utils from '../../Utils';
-import * as AuthServices from '../../Services/AuthService';
-import Toast from '../../Components/Toast';
-import { Alert, Button, Card } from '../../Components';
-import CardBody from '../../Components/Card/CardBody';
-import { isValidPassword } from '../../Utils/string';
+import { Helmet } from "react-helmet-async"
+import { PROJECT_NAME } from "../../config-global"
+import { Alert, Autocomplete, Button, Grid, Link, Stack, TextField, Typography } from "@mui/material"
+import { useEffect, useState } from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { RouterLink } from "../../components";
+import { paths } from "../../paths";
+import { KeyboardArrowLeftRounded } from "@mui/icons-material";
+import { LoadingButton } from "@mui/lab";
+import AuthService from "../../services/auth-service";
 
-
-const Register = ({ type, page }) => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [company, setCompany] = useState('');
-  const [jobType, setJobType] = useState('');
-  const [licence, setLicence] = useState('');
-  const [verifiedLicence, setVerifiedLicence] = useState('');
-  const [mobileNo, setMobileNo] = useState('');
-  const [phoneNo, setPhoneNo] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordConfirmation, setPasswordConfirmation] = useState('');
-
+const Register = () => {
+  const [type, setType] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
-  const [message, setMessage] = useState('');
-  const [errors, setErrors] = useState();
-  const [isLoading, setIsLoading] = useState(false);
 
-  const isValid = () => {
-    let isValid = true;
-    let errors = {};
-    if (!firstName) {
-      errors = { ...errors, firstName: 'Please provide first name' };
-      isValid = false;
-    }
+  const formik = useFormik({
+    initialValues: {
+      firstName: '',
+      lastName: '',
+      phoneNo: '',
+      email: '',
+      company: '',
+      license: '',
+      jobTitle: '',
+      password: '',
+      passwordConfirmation: '',
+      accType: type
+    },
+    validationSchema: Yup.object({
+      accType: Yup
+        .string()
+        .required('Please select an account type'),
+      firstName: Yup
+        .string()
+        .max(255)
+        .required('First Name is required'),
+      lastName: Yup
+        .string()
+        .max(255)
+        .required('Last Name is required'),
+      email: Yup
+        .string()
+        .email('Must be a valid email')
+        .max(255)
+        .required('Email is required'),
+      phoneNo: Yup
+        .string()
+        .required('Phone Number is required'),
+      company: Yup
+        .string()
+        .required('Company is required'),
+      license: Yup
+        .string()
+        .required('License is required'),
+      jobTitle: Yup
+        .object()
+        .required('Job Title is required'),
+      password: Yup
+        .string()
+        .max(255)
+        .min(8)
+        .required('Password is required')
+        .test("isValidPass", "Password is not valid", (value: any, context: any) => {
+          const hasUpperCase = /[A-Z]/.test(value);
+          const hasNumber = /[0-9]/.test(value);
+          const hasLowerCase = /[a-z]/.test(value);
+          let validConditions = 0;
+          const numberOfMustBeValidConditions = 3;
+          const conditions = [hasUpperCase, hasLowerCase, hasNumber];
+          conditions.forEach(condition => (condition ? validConditions++ : null));
+          if (validConditions >= numberOfMustBeValidConditions) {
+            return true;
+          }
+          return false;
+        })
+        .matches(
+          /^.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?].*$/,
+          'Need one special character',
+        ),
+      passwordConfirmation: Yup
+        .string()
+        .oneOf([Yup.ref('password'), null], 'Passwords must match')
+        .required('Passwords must match'),
+    }),
+    onSubmit: async (values) => {
+      let data = { ...values, jobTitle: values.jobTitle.value };
+      setIsSubmitting(true);
 
-    if (!lastName) {
-      errors = { ...errors, lastName: 'Please provide last name' };
-      isValid = false;
-    }
+      await AuthService.verifyLicence(data.accType, data.license)
+        .then((response) => {
+          if (response?.error) {
+            setAlertMessage(response.error.message);
+            setIsSubmitting(false);
+            return;
+          }
 
-    if (!phoneNo) {
-      errors = { ...errors, phoneNo: 'Please provide phone number' };
-      isValid = false;
-    }
+          if (response?.message === 'Licence is valid') {
+            setAlertMessage();
 
-    if (!email) {
-      errors = { ...errors, email: 'Please provide email address' };
-      isValid = false;
-    }
+            data.verifiedLicence = true;
 
-    if (email && !utils.string.isValidEmail(email)) {
-      errors = { ...errors, email: 'Please provide a valid email address' };
-      isValid = false;
-    }
-
-    if (!jobType) {
-      errors = { ...errors, jobType: 'Please provide your job title' };
-      isValid = false;
-    }
-
-    if (!company) {
-      errors = { ...errors, company: 'Please provide your company' };
-      isValid = false;
-    }
-
-    if (!licence) {
-      errors = { ...errors, licence: 'Please provide licence number' };
-      isValid = false;
-    }
-
-    if (!password) {
-      errors = { ...errors, password: 'Please provide a password' };
-      isValid = false;
-    }
-
-    if (!passwordConfirmation) {
-      errors = { ...errors, passwordConfirmation: 'Please confirm password' };
-      isValid = false;
-    }
-
-    if (passwordConfirmation && passwordConfirmation !== password) {
-      errors = { ...errors, passwordConfirmation: 'Passwords do not match' };
-      isValid = false;
-    }
-
-    if(!isValidPassword(password)){
-      errors = { ...errors, password: 'Password does not follow password requirements'}
-      isValid = false;
-    }
-
-    setErrors(errors);
-
-    return isValid;
-  };
-
-  const onReset = (e) => {
-    page(1);
-  };
-
-  const errorShake = () => {
-    window.jQuery('button[type=submit]').addClass('animated headShake bg-red');
-
-    window
-      .jQuery('button[type=submit]')
-      .on(
-        'webkitAnimationEnd oanimationend msAnimationEnd animationend',
-        function (e) {
-          window.jQuery('button[type=submit]').delay(200).removeClass('animated headShake bg-red');
-        }
-      );
-  };
-
-  const onSubmit = (e) => {
-    setIsLoading(true);
-    e.preventDefault();
-    if (!isValid()) {
-      setIsLoading(false);
-      errorShake();
-      return;
-    }
-
-    AuthServices.verifyLicence(type, licence)
-      .then((response) => {
-        if (response?.error) {
-          setAlertMessage(response.error.message);
-          setIsLoading(false);
-          errorShake();
+            AuthService.register(data)
+              .then((response) => {
+                if (response?.message) {
+                  setAlertMessage(response.message);
+                }
+              })
+              .catch((response) => {
+                if (
+                  response.response.data?.error &&
+                  response.response.data?.error.message
+                ) {
+                  setAlertMessage(response.response.data.error.message);
+                }
+              });
+          } else {
+            console.log(response.data.message);
+            setAlertMessage('Licence verification failed');
+            setIsSubmitting(false);
+            return;
+          }
+        })
+        .catch((error) => {
+          setAlertMessage('An error occurred while verifying the licence.');
+          setIsSubmitting(false);
           return;
-        }
+        });
+    }
+  });
 
-        if (response?.message === 'Licence is valid') {
-          setAlertMessage();
-          setVerifiedLicence(true);
-
-          AuthServices.register({
-            firstName: firstName,
-            lastName: lastName,
-            mobileNo: mobileNo,
-            phoneNo: phoneNo,
-            email: email,
-            password: password,
-            company: company,
-            jobType: jobType,
-            licence: licence,
-            verifiedLicence: verifiedLicence,
-            accType: type,
-            verified: false,
-          })
-            .then((response) => {
-              if (response?.message) {
-                setAlertMessage();
-                setMessage(response.message);
-              }
-            })
-            .catch((response) => {
-              if (
-                response.response.data?.error &&
-                response.response.data?.error.message
-              ) {
-                setMessage();
-                setAlertMessage(response.response.data.error.message);
-              }
-              errorShake();
-            })
-            .finally(() => setIsLoading(false));
-        } else {
-          console.log(response.data.message);
-          setAlertMessage('Licence verification failed');
-          setMessage();
-          errorShake();
-          setIsLoading(false);
-          return;
-        }
-      })
-      .catch((error) => {
-        setAlertMessage('An error occurred while verifying the licence.');
-        setMessage();
-        errorShake();
-        setIsLoading(false);
-        return;
-      });
-  };
-
-  return (
+  const selectTypeSection = (
     <>
-      <section className='row flexbox-container'>
-        <div className='col-xl-8 col-10 d-flex justify-content-center'>
-          <div className='card bg-authentication rounded-0 mb-0'>
-            <div className='row m-0'>
-              <div className='col-lg-6 d-lg-block d-none text-center align-self-center pl-0 pr-3 py-0'>
-                <img
-                  src={`${process.env.REACT_APP_PUBLIC_URL}/assets/images/logo/logo.png`}
-                  alt='branding logo'
-                  width='80%'
-                />
-              </div>
-              <div className='col-lg-6 col-12 p-0'>
-                <div className='card rounded-0 mb-0 p-2'>
-                  <div className='card-header pt-50 pb-1'>
-                    <div className='card-title'>
-                      <h4 className='mb-0'>Create Account</h4>
-                    </div>
-                  </div>
-                  <p className='px-2'>
-                    Fill the form below to create a new {type} account.
-                  </p>
-                  {alertMessage && (
-                    <Alert
-                      className='mx-2'
-                      type='danger'
-                      message={alertMessage}
-                      icon={<i class='feather icon-info mr-1 align-middle'></i>}
-                    />
-                  )}
-                  {message && (
-                    <Alert
-                      className='mx-2'
-                      type='success'
-                      message={message}
-                    />
-                  )}
-                  <Card>
-                    <CardBody>
-                      <form onSubmit={onSubmit}>
-                        <Group className='form-label-group'>
-                          <Input
-                            name='first_name'
-                            value={firstName}
-                            placeholder='First Name'
-                            onChange={(e) => setFirstName(e.target.value)}
-                            error={errors?.firstName}
-                          />
-                          <Label for='first_name'>First Name</Label>
-                        </Group>
-                        <Group className='form-label-group'>
-                          <Input
-                            name='last_name'
-                            value={lastName}
-                            placeholder='Last Name'
-                            onChange={(e) => setLastName(e.target.value)}
-                            error={errors?.lastName}
-                          />
-                          <Label for='last_name'>Last Name</Label>
-                        </Group>
-                        <Group className='form-label-group'>
-                          <Input
-                            name='email'
-                            value={email}
-                            placeholder='Email'
-                            onChange={(e) => setEmail(e.target.value)}
-                            error={errors?.email}
-                          />
-                          <Label for='email'>Email</Label>
-                        </Group>
-                        <Group className='form-label-group'>
-                          <Input
-                            name='mobile'
-                            value={mobileNo}
-                            placeholder='Mobile Number'
-                            onChange={(e) => setMobileNo(e.target.value)}
-                            error={errors?.mobileNo}
-                          />
-                          <Label for='mobile'>Mobile Number</Label>
-                        </Group>
-                        <Group className='form-label-group'>
-                          <Input
-                            name='phone'
-                            value={phoneNo}
-                            placeholder='Phone Number'
-                            onChange={(e) => setPhoneNo(e.target.value)}
-                            error={errors?.phoneNo}
-                          />
-                          <Label for='phone'>Phone Number</Label>
-                        </Group>
-                        <Group className='form-label-group'>
-                          <Input
-                            name='company'
-                            value={company}
-                            placeholder='Company'
-                            onChange={(e) => setCompany(e.target.value)}
-                            error={errors?.company}
-                          />
-                          <Label for='company'>Company</Label>
-                        </Group>
-                        <Group className='form-label-group'>
-                          <p>
-                            If you do not have a licence, use your corporate
-                            licence
-                          </p>
-                          <Input
-                            name='license'
-                            value={licence}
-                            placeholder={
-                              type !== 'assistant agent'
-                                ? 'License Number'
-                                : 'Certificate Number'
-                            }
-                            onChange={(e) => setLicence(e.target.value)}
-                            error={errors?.licence}
-                          />
-                          <Label for='license'>
-                            {type !== 'assistant agent'
-                              ? 'License Number'
-                              : 'Certificate Number'}
-                          </Label>
-                        </Group>
-                        {type !== 'builder' && type !== 'developer' && (
-                          <Group className='form-label-group'>
-                            <Label htmlFor='job'>Job Title</Label>
-                            <Select
-                              options={[
-                                {
-                                  value: 'incharge',
-                                  label: 'Licence Incharge (Class 1 only)',
-                                },
-                                {
-                                  value: 'agent',
-                                  label:
-                                    'Licence Real Estate Agent (Class 1 or Class 2)',
-                                },
-                                {
-                                  value: 'assistant',
-                                  label: 'Assistant Agent',
-                                },
-                              ]}
-                              name='job'
-                              value={jobType}
-                              onChange={(value) => setJobType(value)}
-                              error={errors?.jobType}
-                            />
-                          </Group>
-                        )}
-                        <p>
-                          Paswords must be at least 8 characters long and have:
-                          <ul>
-                            <li>at least <b>one uppercase letter</b></li>
-                            <li>at least <b>one lowercase letter</b></li>
-                            <li>at least <b>one digit</b></li>
-                            <li>at least <b>one special character</b></li>
-                          </ul>
-                        </p>
-                        <Group className='form-label-group'>
-                          <Input
-                            type='password'
-                            name='password'
-                            value={password}
-                            placeholder='Password'
-                            onChange={(e) => setPassword(e.target.value)}
-                            error={errors?.password}
-                          />
-                          <Label for='password'>Password</Label>
-                        </Group>
-                        <Group className='form-label-group'>
-                          <Input
-                            type='password'
-                            name='password_confirmation'
-                            value={passwordConfirmation}
-                            placeholder='Confirm Password'
-                            onChange={(e) =>
-                              setPasswordConfirmation(e.target.value)
-                            }
-                            error={errors?.passwordConfirmation}
-                          />
-                          <Label for='password_confirmation'>Confirm Password</Label>
-                        </Group>
-                        <div className='form-group row'>
-                          <div className='col-12'>
-                            <fieldset className='checkbox'>
-                              <div className='vs-checkbox-con vs-checkbox-primary'>
-                                <input type='checkbox' />
-                                <span className='vs-checkbox'>
-                                  <span className='vs-checkbox--check'>
-                                    <i className='vs-icon feather icon-check'></i>
-                                  </span>
-                                </span>
-                                <span className=''>
-                                  {' '}
-                                  I accept the <a href="">terms & conditions</a>.
-                                  {/* the above needs to be implemented. The below Register button should not be
-                                  clickable unless this is ticked. Terms and conditions must link to t&c provided
-                                  by Flair Real Estate*/ }
-                                </span>
-                              </div>
-                            </fieldset>
-                          </div>
-                        </div>
-                        <Button
-                          type='submit'
-                          className='btn btn-primary float-right btn-inline mb-50'
-                          onClick={onSubmit}
-                          isLoading={isLoading}>
-                          Register
-                        </Button>
-                        <Button
-                          type='reset'
-                          className='btn btn-secondary float-left btn-inline ml-50 mr-1'
-                          onClick={onReset}>
-                          Back
-                        </Button>
-                      </form>
-                    </CardBody>
-                    <p>
-                      Already a member?{' '}
-                      <span>
-                        <Link
-                          to='/auth/login'
-                          className=''>
-                          Sign In
-                        </Link>
-                      </span>
-                    </p>
-                  </Card>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </>
-  );
-};
+      <Typography variant="h4">I AM A...</Typography>
 
-export default Register;
+      <Typography variant="body2">
+        Tell us what type of account you would like to create
+      </Typography>
+
+      <Button fullWidth size="large" variant="contained" onClick={() => {
+        setType('agency')
+      }}>
+        Real Estate Agency
+      </Button>
+      <Button fullWidth size="large" variant="contained" onClick={() => {
+        setType('agent')
+      }}>
+        Real Estate Agent
+      </Button>
+      <Button fullWidth size="large" variant="contained" onClick={() => {
+        setType('assistant agent')
+      }}>
+        Assistant Real Estate Agent
+      </Button>
+      <Button fullWidth size="large" variant="contained" onClick={() => {
+        setType('builder')
+      }}>
+        Builder
+      </Button>
+      <Button fullWidth size="large" variant="contained" onClick={() => {
+        setType('developer')
+      }}>
+        Developer
+      </Button>
+    </>
+  )
+
+  const registerFormSection = (
+    <>
+      <Typography variant="h4">Create Account</Typography>
+
+      <Typography variant="body2">
+        Fill the form below to create a new <strong>{type}</strong> account.
+      </Typography>
+
+      <form noValidate onSubmit={formik.handleSubmit}>
+        <Stack spacing={2.5}>
+          {!!alertMessage && <Alert severity="error">{alertMessage}</Alert>}
+          <Button fullWidth size="large" variant="contained" color="inherit" onClick={() => {
+            setType('')
+          }}>
+            Choose another account type
+          </Button>
+
+          <Grid container>
+            <Grid item xs={6} sx={{ pr: 0.5 }}>
+              <TextField
+                error={!!(formik.touched.firstName && formik.errors.firstName)}
+                fullWidth
+                helperText={formik.touched.firstName && formik.errors.firstName}
+                label="First Name"
+                name="firstName"
+                onBlur={formik.handleBlur}
+                onChange={formik.handleChange}
+                type="text"
+                value={formik.values.firstName}
+              />
+            </Grid>
+            <Grid item xs={6} sx={{ pl: 0.5 }}>
+              <TextField
+                error={!!(formik.touched.lastName && formik.errors.lastName)}
+                fullWidth
+                helperText={formik.touched.lastName && formik.errors.lastName}
+                label="Last Name"
+                name="lastName"
+                onBlur={formik.handleBlur}
+                onChange={formik.handleChange}
+                type="text"
+                value={formik.values.lastName}
+              />
+            </Grid>
+          </Grid>
+
+          <TextField
+            error={!!(formik.touched.email && formik.errors.email)}
+            fullWidth
+            helperText={formik.touched.email && formik.errors.email}
+            label="Email Address"
+            name="email"
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            type="email"
+            value={formik.values.email}
+          />
+
+          <TextField
+            error={!!(formik.touched.phoneNo && formik.errors.phoneNo)}
+            fullWidth
+            helperText={formik.touched.phoneNo && formik.errors.phoneNo}
+            label="Phone Number"
+            name="phoneNo"
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            type="text"
+            value={formik.values.phoneNo}
+          />
+
+          <TextField
+            error={!!(formik.touched.company && formik.errors.company)}
+            fullWidth
+            helperText={formik.touched.company && formik.errors.company}
+            label="Company"
+            name="company"
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            type="text"
+            value={formik.values.company}
+          />
+
+          <Typography variant="body2">
+            If you do not have a licence, use your corporate
+            licence
+          </Typography>
+
+          <TextField
+            error={!!(formik.touched.license && formik.errors.license)}
+            fullWidth
+            helperText={formik.touched.license && formik.errors.license}
+            label={type !== 'assistant agent'
+              ? 'License Number'
+              : 'Certificate Number'}
+            name="license"
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            type="text"
+            value={formik.values.license}
+          />
+
+          <Autocomplete
+            value={formik.values.jobTitle}
+            onChange={(e, value) => formik.setFieldValue('jobTitle', value)}
+            options={[
+              {
+                value: 'incharge',
+                label: 'Licence Incharge (Class 1 only)',
+              },
+              {
+                value: 'agent',
+                label:
+                  'Licence Real Estate Agent (Class 1 or Class 2)',
+              },
+              {
+                value: 'assistant',
+                label: 'Assistant Agent',
+              },
+            ]}
+            getOptionLabel={(option) => option.label || ""}
+            isOptionEqualToValue={(option) => !!formik.values.jobTitle && option.value === formik.values.jobTitle}
+            freeSolo
+            name="jobTitle"
+            renderInput={(params) => <TextField {...params}
+              label="Job Title"
+              type="text"
+              error={!!(formik.touched.jobTitle && formik.errors.jobTitle)}
+              helperText={formik.touched.jobTitle && formik.errors.jobTitle} />}
+          />
+
+          <Grid container>
+            <Grid item xs={6} sx={{ pr: 0.5 }}>
+              <TextField
+                error={!!(formik.touched.password && formik.errors.password)}
+                fullWidth
+                helperText={formik.touched.password && formik.errors.password}
+                label="Password"
+                name="password"
+                onBlur={formik.handleBlur}
+                onChange={formik.handleChange}
+                type="password"
+                value={formik.values.password}
+              />
+            </Grid>
+
+            <Grid item xs={6} sx={{ pl: 0.5 }}>
+              <TextField
+                error={!!(formik.touched.passwordConfirmation && formik.errors.passwordConfirmation)}
+                fullWidth
+                helperText={formik.touched.passwordConfirmation && formik.errors.passwordConfirmation}
+                label="Confirm Password"
+                name="passwordConfirmation"
+                onBlur={formik.handleBlur}
+                onChange={formik.handleChange}
+                type="password"
+                value={formik.values.passwordConfirmation}
+              />
+            </Grid>
+          </Grid>
+
+          <Typography variant="body2">
+            Paswords must be at least 8 characters long and have:
+          </Typography>
+          <ul>
+            <li><Typography variant="body2">at least <b>one uppercase letter</b></Typography></li>
+            <li><Typography variant="body2">at least <b>one lowercase letter</b></Typography></li>
+            <li><Typography variant="body2">at least <b>one digit</b></Typography></li>
+            <li><Typography variant="body2">at least <b>one special character</b></Typography></li>
+          </ul>
+
+          <LoadingButton
+            fullWidth
+            size="large"
+            type="submit"
+            variant="contained"
+            loading={isSubmitting}
+          >
+            Register
+          </LoadingButton>
+        </Stack>
+      </form>
+    </>
+  )
+
+  useEffect(() => {
+    formik.setFieldValue('accType', type);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [type]);
+
+  return <>
+    <Helmet>
+      <title> Register - {PROJECT_NAME}</title>
+    </Helmet>
+
+    <Stack spacing={2} sx={{ my: 'auto' }}>
+      {!type ? selectTypeSection : registerFormSection}
+      <Link
+        component={RouterLink}
+        href={paths.auth.login}
+        color="inherit"
+        variant="subtitle2"
+        sx={{
+          alignItems: 'center',
+          display: 'inline-flex',
+        }}
+      >
+        <KeyboardArrowLeftRounded />
+        Return to sign in
+      </Link>
+    </Stack>
+  </>
+}
+
+export default Register

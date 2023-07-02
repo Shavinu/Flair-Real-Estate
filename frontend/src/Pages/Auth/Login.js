@@ -1,220 +1,120 @@
-import { Link, useNavigate } from 'react-router-dom';
-import './Login.css';
-import { useState } from 'react';
-import { Group, Input, Label } from '../../Components/Form';
-import * as AuthServices from '../../Services/AuthService';
-import utils from '../../Utils';
-import { Alert, Button } from '../../Components';
+import { LoadingButton } from '@mui/lab';
+import { Alert, Box, Link, Stack, TextField, Typography } from '@mui/material';
+import { useFormik } from 'formik';
+import { useContext, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
+import * as Yup from 'yup';
+import { RouterLink } from '../../components';
+import { PROJECT_NAME } from '../../config-global';
+import { useRouter, useSearchParams } from '../../hooks/routes';
+import { paths } from '../../paths';
+import { AuthContext } from '../../providers/auth/auth-context';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState();
-  const [alertMessage, setAlertMessage] = useState('');
-  const [message, setMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const { login } = useContext(AuthContext);
 
-  const navigate = useNavigate();
+  const router = useRouter();
 
-  const isValid = () => {
-    let isValid = true;
-    let errors = {};
+  const searchParams = useSearchParams();
 
-    if (!email) {
-      errors = { ...errors, email: 'Please provide email address' };
-      isValid = false;
+  const returnTo = searchParams.get('returnTo');
+
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const formik = useFormik({
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    validationSchema: Yup.object({
+      email: Yup
+        .string()
+        .email('Must be a valid email')
+        .max(255)
+        .required('Email is required'),
+      password: Yup
+        .string()
+        .max(255)
+        .required('Password is required')
+    }),
+    onSubmit: async (values) => {
+      setIsSubmitting(true);
+      try {
+        await login(values.email, values.password);
+        router.push(returnTo || paths.dashboard.root);
+      } catch (err) {
+        setErrorMsg(err?.response?.data?.message);
+      }
+      setIsSubmitting(false);
     }
+  });
 
-    if (email && !utils.string.isValidEmail(email)) {
-      errors = { ...errors, email: 'Please provide a valid email address' };
-      isValid = false;
-    }
+  return <>
+    <Helmet>
+      <title> Login - {PROJECT_NAME}</title>
+    </Helmet>
 
-    if (!password) {
-      errors = { ...errors, password: 'Please provide a password' };
-      isValid = false;
-    }
+    <Box sx={{ my: 'auto' }}>
+      <Stack spacing={2} sx={{ mb: 5 }}>
+        <Typography variant="h4">Sign in</Typography>
 
-    setErrors(errors);
+        <Stack direction="row" spacing={0.5}>
+          <Typography variant="body2">Not a member?</Typography>
 
-    return isValid;
-  };
+          <Link component={RouterLink} href={paths.auth.register} variant="subtitle2">
+            Create an account
+          </Link>
+        </Stack>
+      </Stack>
 
-  const errorShake = () => {
-    window.jQuery('button[type=submit]').addClass('animated headShake bg-red');
+      <form noValidate onSubmit={formik.handleSubmit}>
+        <Stack spacing={2.5}>
+          {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>}
 
-    window
-      .jQuery('button[type=submit]')
-      .on(
-        'webkitAnimationEnd oanimationend msAnimationEnd animationend',
-        function (e) {
-          window.jQuery('button[type=submit]').delay(200).removeClass('animated headShake bg-red');
-        }
-      );
-  };
+          <TextField
+            error={!!(formik.touched.email && formik.errors.email)}
+            fullWidth
+            helperText={formik.touched.email && formik.errors.email}
+            label="Email Address"
+            name="email"
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            type="email"
+            value={formik.values.email}
+          />
 
-  const onSubmit = (e) => {
-    setIsLoading(true);
-    e.preventDefault();
-    if (!isValid()) {
-      setIsLoading(false);
-      errorShake();
-      return;
-    }
+          <TextField
+            error={!!(formik.touched.password && formik.errors.password)}
+            fullWidth
+            helperText={formik.touched.password && formik.errors.password}
+            label="Password"
+            name="password"
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            type="password"
+            value={formik.values.password}
+          />
 
-    AuthServices.login({
-      email: email,
-      password: password,
-    })
-      .then((response) => {
-        setAlertMessage();
-        setMessage();
-        navigate('/');
-      })
-      .catch((response) => {
-        if (
-          response.response?.data?.error &&
-          response.response?.data?.error.message
-        ) {
-          setAlertMessage(response.response.data.error.message);
-          setMessage();
-        } else {
-          setMessage(response.response?.data?.message);
-          setAlertMessage();
-        }
-        errorShake();
-      })
-      .finally(() => setIsLoading(false));
-  };
+          <Link component={RouterLink} href="/auth/forgot-password" variant="body2" color="inherit" underline="always" sx={{ alignSelf: 'flex-end' }}>
+            Forgot password?
+          </Link>
 
-  return (
-    <>
-      <section className='row flexbox-container'>
-        <div className='col-xl-8 col-11 d-flex justify-content-center'>
-          <div className='card bg-authentication rounded-0 mb-0'>
-            <div className='row m-0'>
-              <div className='col-lg-6 d-lg-block d-none text-center align-self-center px-1 py-0'>
-                <img
-                  src={`${process.env.REACT_APP_PUBLIC_URL}/assets/images/logo/logo.png`}
-                  width='80%'
-                  alt='Flair Real Estate logo'
-                />
-              </div>
-              <div className='col-lg-6 col-12 p-0'>
-                <div className='card rounded-0 mb-0 px-2'>
-                  <div className='card-header pb-1'>
-                    <div className='card-title'>
-                      <h4 className='mb-0'>Login</h4>
-                    </div>
-                  </div>
-                  <p className='px-2'>
-                    Welcome back, please login to your account.
-                  </p>
-                  {alertMessage && (
-                    <Alert
-                      className='mx-2'
-                      type='danger'
-                      message={alertMessage}
-                      icon={
-                        <i className='feather icon-info mr-1 align-middle'></i>
-                      }
-                    />
-                  )}
-                  {message && (
-                    <Alert
-                      className='mx-2'
-                      type='success'
-                      message={message}
-                    />
-                  )}
-                  <div className='card-content'>
-                    <div className='card-body pt-0'>
-                      <form
-                        onSubmit={onSubmit}
-                        className='pt-1'>
-                        <Group
-                          className='form-label-group'
-                          hasIconLeft>
-                          <Input
-                            name='email'
-                            value={email}
-                            icon='feather icon-user'
-                            placeholder='Email'
-                            onChange={(e) => {
-                              setEmail(e.target.value);
-                            }}
-                            error={errors?.email}
-                          />
-                          <Label for='email'>Email</Label>
-                        </Group>
+          <LoadingButton
+            fullWidth
+            color="primary"
+            size="large"
+            type="submit"
+            variant="contained"
+            loading={isSubmitting}
+          >
+            Login
+          </LoadingButton>
+        </Stack>
+      </form>
+    </Box>
+  </>
+}
 
-                        <Group
-                          className='form-label-group'
-                          hasIconLeft>
-                          <Input
-                            type='password'
-                            name='password'
-                            placeholder='Password'
-                            icon='feather icon-lock'
-                            value={password}
-                            onChange={(e) => {
-                              setPassword(e.target.value);
-                            }}
-                            error={errors?.password}
-                          />
-                          <Label for='password'>Password</Label>
-                        </Group>
-
-                        <div className='form-group d-flex justify-content-between align-items-center'>
-                          <div className='text-left'>
-                            <fieldset className='checkbox'>
-                              <div className='vs-checkbox-con vs-checkbox-primary'>
-                                <input type='checkbox' />
-                                <span className='vs-checkbox'>
-                                  <span className='vs-checkbox--check'>
-                                    <i className='vs-icon feather icon-check'></i>
-                                  </span>
-                                </span>
-                                <span className=''>Remember me</span>
-                              </div>
-                            </fieldset>
-                          </div>
-                          <div className='text-right'>
-                            <Link
-                              to='/auth/forgot-password'
-                              className='card-link'>
-                              Forgot Password?
-                            </Link>
-                          </div>
-                        </div>
-                        <Button
-                          className='btn btn-primary float-right btn-inline'
-                          type='submit'
-                          isLoading={isLoading}
-                          onClick={onSubmit}>
-                          Login
-                        </Button>
-                      </form>
-                    </div>
-                  </div>
-                  <p>
-                    Not a member?{' '}
-                    <span>
-                      <Link
-                        to='/auth/register'
-                        className=''>
-                        Register Now
-                      </Link>
-                    </span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </>
-  );
-};
-
-export default Login;
+export default Login

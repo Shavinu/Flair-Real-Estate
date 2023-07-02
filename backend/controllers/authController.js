@@ -156,7 +156,7 @@ const forgotPassword = async (req, res, next) => {
       const html = `<p>Reset your password using the following link.</p><p>This link
         <b>expires in 1 hour.</b></p><p>Press <a href=${url}>here</a> to proceed.</p>`;
 
-      await sendEmail(process.env.MOD_EMAIL,user.email, subject, html);
+      await sendEmail(process.env.MOD_EMAIL, user.email, subject, html);
     }
     return res
       .status(201)
@@ -286,7 +286,7 @@ const logout = async (req, res, next) => {
   try {
     const { accessToken } = req.body;
     if (!accessToken) throw createError.Unauthorized();
-  } catch (error) {}
+  } catch (error) { }
 };
 
 module.exports = {

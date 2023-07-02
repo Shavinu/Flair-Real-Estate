@@ -1,7 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
-import Admin from './Layouts/Admin';
-import Auth from './Layouts/Auth';
+
 import { views, AuthViews } from './paths';
+import { AuthLayout, DashboardLayout } from "./layouts";
 
 
 //get all paths which are defined in paths.js file
@@ -49,19 +49,12 @@ export const getRoutes = (r, parentIndex = 0) => {
 const RenderRouters = () => {
   return (
     <Routes>
-      <Route element={<Auth />}>
+      <Route element={<AuthLayout />}>
         {getRoutes(AuthViews)}
       </Route>
-      {/* <Route
-        path={`${process.env.REACT_APP_API_URL}/api/auth/verify/:userId/:token`}
-        element={<Verified />}
-      >
-        {getRoutes(AuthViews)}
-      </Route> */}
-      <Route element={<Admin />}>
+      <Route element={<DashboardLayout />}>
         {getRoutes(views)}
       </Route>
-      {getRoutes(views)}
     </Routes>
   );
 };

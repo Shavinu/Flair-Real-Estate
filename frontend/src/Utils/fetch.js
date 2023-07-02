@@ -1,7 +1,8 @@
 import axios from "axios";
+import { HOST_URL } from "../config-global";
 
-const http = axios.create({
-  baseURL: process.env.REACT_APP_API_URL,
+export const http = axios.create({
+  baseURL: HOST_URL,
   headers: {
     'X-Requested-With': 'XMLHttpRequest',
     'Accept': 'application/json',

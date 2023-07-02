@@ -1,3 +1,5 @@
+import moment from "moment"
+
 export const slice = (string, limit = 200) => {
   return string.length > limit
     ? string.slice(0, limit) + '...'
@@ -5,7 +7,7 @@ export const slice = (string, limit = 200) => {
 }
 
 export const isValidEmail = (email) => {
-  const regex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+  const regex = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
 
   return regex.test(email);
 }
@@ -22,4 +24,8 @@ export const isValidMobile = (mobile) =>{
 export const isValidPassword = (password) => {
   const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-=_+{}[\]|\\;:'",.<>/?]).{8,}$/;
   return regex.test(password);
+}
+
+export const dateFormat = (date) => {
+  return moment(date).format('YYYY-MM-DD [at] h:mm A z');
 }
