@@ -18,6 +18,8 @@ import MortCal from './Pages/Client/Resources/MortCal';
 import BuyProcess from './Pages/Client/Resources/BuyProcess';
 import PropNews from './Pages/Client/Resources/PropNews';
 import Contact from './Pages/Client/Contact/Contact';
+import ListingPage from './Pages/Client/Listing/ListingPage';
+
 
 export const views = [
   {
@@ -37,6 +39,13 @@ export const views = [
     action: '/About',
     icon: 'feather icon-about',
     element: <About.default />,
+    isRoute: true,
+  },
+  {
+    name: 'ListingPage',
+    action: '/ListingPage',
+    icon: 'feather icon-about',
+    element: <ListingPage />,
     isRoute: true,
   },
   {

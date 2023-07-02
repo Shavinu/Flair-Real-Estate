@@ -41,23 +41,23 @@ const NavbarUser = () => {
                   <i className="fa-solid fa-house-user"></i>Home</Link>
                 </li>
                 <div className="dropdown">
-                  <Link className="nav-links" to='/listings'>
+                  <Link className="nav-links" to='/ListingPage'>
                   <i className='fa-solid fa-list'></i>NSW Listings</Link>
                   <div className="dropdown-options">
-                    <a href="#">Sydney North West</a>
-                    <a href="#">Sydney South West</a>
-                    <a href="#">Newcastle</a>
-                    <a href="#">Central Coast</a>
-                    <a href="#">Wollongong</a>
+                    <a className="nav-links2" href="#">Sydney North West</a>
+                    <a className="nav-links2" href="#">Sydney South West</a>
+                    <a className="nav-links2" href="#">Newcastle</a>
+                    <a className="nav-links2" href="#">Central Coast</a>
+                    <a className="nav-links2" href="#">Wollongong</a>
                   </div>
                 </div>
                 <div className='dropdown'>
                   <Link className='nav-links' to='/ResourcesPage'>
                   <i className='fa-solid fa-address-book'></i>Resources</Link>
                   <div className='dropdown-options'>
-                    <Link to='/MortCal'>Mortgage Calculator</Link>
-                    <Link to='/BuyProcess'>Articles</Link>
-                    <Link to='/PropNews'>Property News</Link>
+                    <Link className="nav-links2" to='/MortCal'>Mortgage Calculator</Link>
+                    <Link className="nav-links2" to='/BuyProcess'>Articles</Link>
+                    <Link className="nav-links2" to='/PropNews'>Property News</Link>
                   </div>
                 </div>
                 <li className="button">

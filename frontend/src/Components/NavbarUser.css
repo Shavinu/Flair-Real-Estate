@@ -53,6 +53,26 @@
   transition: all 0.2s ease-in-out;
 }
 
+.nav-links2 {
+  text-decoration: none;
+  color: #222;
+  font-size: 1rem;
+  font-weight: 400;
+  padding: 0.5rem 0.5rem;
+  white-space: nowrap;
+}
+
+.nav-links2 i {
+  padding-right: 10px;
+}
+
+.nav-links2:hover {
+  background-color: #01959a;
+  color: #fff;
+  border-radius: 4px;
+  transition: all 0.2s ease-in-out;
+}
+
 .NavbarItems button {
   height: 50px;
   width: 120px;
@@ -78,6 +98,8 @@
 .menu-icons {
   display: none;
 }
+
+
 
 @media screen and (max-width: 850px) {
   .NavbarItems {

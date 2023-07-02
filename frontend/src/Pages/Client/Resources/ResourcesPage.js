@@ -8,25 +8,23 @@ const ResourcesPage = () => {
   return (
     <div className="resources-page">
       <h1>Resources</h1>
-      <div className="contents grid5 mtop">
+      <div className="contents grid3 mtop">
           <div className="box">
             <Link className="links" to='/MortCal'>
-              <div className="icon-box">
               <i className="fa-solid fa-calculator"></i>
-              </div>
-              <p>Mortgage Calculator</p>
+              Mortgage Calculator
             </Link>
+            </div>
+            <div className="box">
             <Link className="links" to='/BuyProcess'>
-              <div className="icon-box">
               <i className="fa-solid fa-a"></i>
-              </div>
-              <p>Articles</p>
+              Articles
             </Link>
+            </div>
+            <div className="box">
             <Link className="links" to='/PropNews'>
-              <div className="icon-box">
               <i className="fa-solid fa-newspaper"></i>
-              </div>
-              <p>Property News</p>
+              Property News
             </Link>
           </div>
         
