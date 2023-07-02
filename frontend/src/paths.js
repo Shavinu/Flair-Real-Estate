@@ -11,6 +11,15 @@ import * as ContactForm from "./Pages/Contact/ContactForm"
 import * as BuyersArticles from './Pages/Resources/BuyersArticles';
 import * as MortgageCal from './Pages/Resources/MortgageCal';
 import * as News from './Pages/Resources/News';
+import HomePage from './Pages/Client/Home/HomePage';
+import AboutUs from './Pages/Client/About/AboutUs';
+import ResourcesPage from './Pages/Client/Resources/ResourcesPage';
+import MortCal from './Pages/Client/Resources/MortCal';
+import BuyProcess from './Pages/Client/Resources/BuyProcess';
+import PropNews from './Pages/Client/Resources/PropNews';
+import Contact from './Pages/Client/Contact/Contact';
+import ListingPage from './Pages/Client/Listing/ListingPage';
+
 
 export const views = [
   {
@@ -20,10 +29,65 @@ export const views = [
     element: <Home />,
   },
   {
+    name: 'HomePage',
+    action: '/HomePage',
+    icon: 'feather icon-home',
+    element: <HomePage />,
+  },
+  {
     name: 'About',
     action: '/About',
     icon: 'feather icon-about',
     element: <About.default />,
+    isRoute: true,
+  },
+  {
+    name: 'ListingPage',
+    action: '/ListingPage',
+    icon: 'feather icon-about',
+    element: <ListingPage />,
+    isRoute: true,
+  },
+  {
+    name: 'AboutUs',
+    action: '/AboutUs',
+    icon: 'feather icon-about',
+    element: <AboutUs />,
+    isRoute: true,
+  },
+  {
+    name: 'Resources',
+    action: '/ResourcesPage',
+    icon: 'feather icon-about',
+    element: <ResourcesPage />,
+    isRoute: true,
+  },
+  {
+    name: 'MortCal',
+    action: '/MortCal',
+    icon: 'feather icon-about',
+    element: <MortCal />,
+    isRoute: true,
+  },
+  {
+    name: 'BuyProcess',
+    action: '/BuyProcess',
+    icon: 'feather icon-about',
+    element: <BuyProcess />,
+    isRoute: true,
+  },
+  {
+    name: 'PropNews',
+    action: '/PropNews',
+    icon: 'feather icon-about',
+    element: <PropNews />,
+    isRoute: true,
+  },
+  {
+    name: 'Contact',
+    action: '/Contact',
+    icon: 'feather icon-about',
+    element: <Contact />,
     isRoute: true,
   },
   {
