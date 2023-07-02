@@ -4,6 +4,8 @@ import { getUserDetailById } from '../Services/UserService';
 import * as AuthServices from '../Services/AuthService';
 import './Navbar.css';
 import { views } from "../paths"
+import "./NavbarUser.css";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const NavbarUser = () => {
   const [user, setUser] = useState();
@@ -31,29 +33,23 @@ const NavbarUser = () => {
       console.error(error);
     }
   }, []);
-
   return <>
-    <nav className="header-navbar navbar-expand-lg navbar navbar-with-menu fixed-top navbar-light navbar-shadow">
-      <div className="navbar-wrapper">
-        <div className="navbar-container content">
-          <div className="navbar-collapse" id="navbar-mobile">
-            <div className="mr-auto float-left bookmark-wrapper d-flex align-items-center">
-              <ul className="nav navbar-nav">
-                <li className="nav-item mobile-menu d-xl-none mr-auto"><a className="nav-link nav-menu-main menu-toggle hidden-xs" href="#"><i className="ficon feather icon-menu"></i></a></li>
-              </ul>
-              <ul className="nav navbar-nav bookmark-icons">
-                <li className="nav-item d-none d-lg-block">
+    <nav className="NavbarItems">
+        <h1 className="navbar-logo">Real Estate</h1>
+       
+          
+              <ul className="nav-menu">
+                <li className="button">
+                  <Link className="nav-links" to={'/'}>
+                  <i className='fa-solid fa-house-chimney'></i>Home</Link>
                 </li>
-              </ul>
-              <ul className="navbar-nav">
-                <li className="nav-item">
-                  <Link className="nav-link btn" to={'/'}>Home</Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link btn" to='/listings' >Search</Link>
+                <li className="button">
+                  <Link className="nav-links" to='/listings'>
+                  <i className='feather icon-power'></i>Search</Link>
                 </li>
                 <div className="dropdown">
-                  <Link className="nav-link btn" to='/listings'>NSW Listings</Link>
+                  <Link className="nav-links" to='/listings'>
+                  <i className='fa-solid fa-list'></i>NSW Listings</Link>
                   <div className="dropdown-options">
                     <a href="#">Sydney North West</a>
                     <a href="#">Sydney South West</a>
@@ -63,32 +59,33 @@ const NavbarUser = () => {
                   </div>
                 </div>
                 <div className='dropdown'>
-                  <Link className='nav-link btn'>Resources</Link>
+                  <Link className='nav-links'>
+                  <i className='fa-solid fa-address-book'></i>Resources</Link>
                   <div className='dropdown-options'>
                     <Link to='/MortgageCal'>Mortgage Calculator</Link>
                     <Link to='/BuyersArticles'>Articles</Link>
                     <Link to='/News'>Property News</Link>
                   </div>
                 </div>
-                <li className="nav-item">
-                  <Link className="nav-link btn" to={'/About'}>About</Link>
+                <li className="button">
+                  <Link className="nav-links" to={'/About'}>
+                  <i className='fa-solid fa-house-chimney'></i>About Us</Link>
                 </li>
-                <li className="nav-item">
-                  <Link className="nav-link btn" to={'/ContactForm'}>Contact Us</Link>
+                <li className="button">
+                  <Link className="nav-links" to={'/ContactForm'}>
+                  <i className='fa-solid fa-address-book'></i>Contact Us</Link>
                 </li>
-                <li className='nav-item'>
+                <li className='button'>
                   <Link
-                    className='dropdown-item'
-                    to='#'
+                    className='nav-links'
                     onClick={onLogin}>
                     <i className='feather icon-power'></i> Log In
                   </Link>
                 </li>
               </ul>
-            </div>
-          </div>
-        </div>
-      </div>
+
+
+   
     </nav>
   </>
 };
