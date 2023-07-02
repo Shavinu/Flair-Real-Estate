@@ -35,8 +35,6 @@ const NavbarUser = () => {
   return <>
     <nav className="NavbarItems">
         <h1 className="navbar-logo">Real Estate</h1>
-       
-          
               <ul className="nav-menu">
                 <li className="button">
                   <Link className="nav-links" to={'/HomePage'}>
@@ -67,7 +65,7 @@ const NavbarUser = () => {
                   <i className='fa-solid fa-address-card'></i>About Us</Link>
                 </li>
                 <li className="button">
-                  <Link className="nav-links" to={'/ContactForm'}>
+                  <Link className="nav-links" to={'/Contact'}>
                   <i className='fa-solid fa-address-book'></i>Contact Us</Link>
                 </li>
                 <li className='button'>

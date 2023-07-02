@@ -29,7 +29,7 @@ const Footer = () => {
           <a href="/MortCal">Mortgage Calculator</a>
           <a href="/BuyProcess">Articles</a>
           <a href="/PropNews">Property</a>
-          <a href="/ContactForm">Contact Us</a>
+          <a href="/Contact">Contact Us</a>
         </div>
         <div>
           <h4>Contact Details</h4>
