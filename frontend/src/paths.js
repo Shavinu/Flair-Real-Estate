@@ -402,9 +402,9 @@ export const api = {
     edit: '/api/users/{{id}}',
     delete: '/api/users/{{id}}',
     deleteMany: '/api/users/delete-many',
-    requestChange:'api/users/request-change',
-    verifyRequest:'api/users/verify-request/:userId/:token/:company',
-    deleteToken:'api/users/deleteToken',
+    requestChange: 'api/users/request-change',
+    verifyRequest: 'api/users/verify-request/:userId/:token/:company',
+    deleteToken: 'api/users/delete-token',
   },
   groups: {
     list: '/api/groups/getGroups',
@@ -435,6 +435,7 @@ export const api = {
     getAllByLabel: '/api/files/label/:label',
     getByParentId: '/api/files/parent/{{id}}',
     getByType: '/api/files/type/:type',
+    getByProjectId: '/api/files/projectId/{{id}}',
   },
   projects: {
     create: '/api/projects/',

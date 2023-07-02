@@ -79,6 +79,9 @@ const Navbar = () => {
                     <Link to='/ContactForm'>
                       <a>Contact</a>
                     </Link>
+                    <Link to='/AboutContent'>
+                      <a>edit</a>
+                    </Link>
                   </div>
                 </div>
                 <li className='nav-item'>

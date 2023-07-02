@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom"
 import { views } from "../paths"
 import React, { useEffect, useState } from "react"
 import utils from "../Utils"
+import "./Sidebar.css";
 
 const ChildrenMenu = ({ route, currentPath }) => {
   const [isOpen, setIsOpen] = useState(false);

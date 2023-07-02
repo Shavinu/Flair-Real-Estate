@@ -89,3 +89,6 @@ export const getFilesByType = (type) => {
   const url = api.files.getByType.replace(':type', type);
   return utils.fetch.httpGet(url);
 };
+export const getFilesByProjectId = (id) => {
+  return utils.fetch.httpGet(utils.url.replaceId(api.files.getByProjectId, id));
+};

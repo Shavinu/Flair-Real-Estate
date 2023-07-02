@@ -47,7 +47,7 @@ router.post("/request-change", requestChange)
 router.get('/verify-request/:userId/:token/:company', verifyRequest)
 
 // delete token
-router.post('/deleteToken', deleteToken);
+router.post('/delete-token', deleteToken);
 
 
 module.exports = router;

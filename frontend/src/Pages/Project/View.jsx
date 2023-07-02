@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useParams } from "react-router-dom";
 import { Container, Row, Col, Card, ListGroup, Carousel, Badge, Button, ButtonGroup, Table } from "react-bootstrap";
 import { FaSort, FaSortUp, FaSortDown, FaBed, FaExpandArrowsAlt, FaCar, FaBath } from 'react-icons/fa';
 import _, { set } from 'lodash';
@@ -33,9 +33,20 @@ const ProjectDetails = () => {
   const [listings, setListings] = useState([]);
   const [sortKey, setSortKey] = useState('type');
   const [sortOrder, setSortOrder] = useState('asc');
+  const [projectFiles, setProjectFiles] = useState([]);
   // const [coordinates, setCoordinates] = useState(null);
   // const [coordinates2, setCoordinates2] = useState(null);
-  const navigate = useNavigate();
+  const { id } = useParams();
+
+
+  const fetchProjectFiles = async () => {
+    try {
+      const fetchedProjectFiles = await FileService.getFilesByProjectId(id);
+      setProjectFiles(fetchedProjectFiles);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
     // Fetch project details
@@ -88,7 +99,8 @@ const ProjectDetails = () => {
     };
 
     fetchProject();
-  }, []);
+    fetchProjectFiles();
+  }, [id]);
 
   useEffect(() => {
     if (project) {
@@ -391,19 +403,19 @@ const ProjectDetails = () => {
           </Col>
         </Row>
       )}
-      {project.projectFiles.length > 0 && (
+      {/* {project.projectFiles.length > 0 && (
         <Row className="mt-5">
           <Col>
             <Card className="rounded mt-1 p-0">
               <Card.Subtitle className="text-white bg-dark p-1 mt-0 mb-0" style={{ background: 'linear-gradient(to right, rgba(102, 126, 234, 0.5), rgba(118, 75, 162, 0.5))' }}> Project Files: </Card.Subtitle>
 
               <CardBody>
-                <FileManager files={project.projectFiles} />
+                <FileManager files={projectFiles} />
               </CardBody>
             </Card>
           </Col>
         </Row>
-      )}
+      )} */}
       {coordinates && (
         <Row>
           <Col><Card className="rounded mt-1 p-0">

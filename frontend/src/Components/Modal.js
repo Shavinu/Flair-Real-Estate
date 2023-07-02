@@ -56,7 +56,14 @@ const Modal: React.FunctionComponent<ModalProps> = (props) => {
           </div>
 
           <div className="modal-body">
-            {children}
+            {children}  
+          </div>
+          <div className="modal-footer">
+            <button type="button" className="btn btn-flat-secondary" data-dismiss="modal" onClick={onCloseModal}><i className="fa fa-times"></i> Close</button>
+
+            {onSubmit && <button type="button" className="btn btn-flat-success" onClick={onSubmit}>
+              <i className="fa fa-check"></i> {submitText ?? 'Submit'}
+            </button>}
           </div>
         </div>
       </div>

@@ -37,6 +37,8 @@ const EditProject = () => {
   const [projectStatus, setProjectStatus] = useState();
   const [projectPriceRange, setProjectPriceRange] = useState();
   const [projectDescription, setProjectDescription] = useState();
+  const [projectFiles, setProjectFiles] = useState([]);
+  const [userGroup, setUserGroup] = useState();
   const [editableBy, setEditableBy] = useState();
   const [commissionData, setCommissionData] = useState();
   const [projectLocation, setProjectLocation] = useState();
@@ -411,7 +413,7 @@ const EditProject = () => {
                     resize: vertical;
                     overflow-y: scroll;
                     }
-                    
+
                     .ql-container {
                       resize: vertical;
                       overflow-y: scroll;

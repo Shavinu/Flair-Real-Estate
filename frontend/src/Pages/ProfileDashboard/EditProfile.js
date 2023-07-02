@@ -16,6 +16,7 @@ import * as AuthServices from '../../Services/AuthService';
 import utils from '../../Utils';
 import Toast from '../../Components/Toast';
 import * as GroupService from '../../Services/GroupService';
+import { isValidPassword } from '../../Utils/string'
 
 function convertToBase64(file) {
   return new Promise((resolve, reject) => {
@@ -185,6 +186,11 @@ const EditProfile = ({ page }) => {
       isValid = false;
     }
 
+    if(!isValidPassword(newPassword)){
+      errors = { ...errors, newPassword: 'Password does not follow password requirements'}
+      isValid = false;
+    }
+
     setErrors(errors);
     return isValid;
   };
@@ -238,7 +244,6 @@ const EditProfile = ({ page }) => {
     e.preventDefault();
     if (!isNewPasswordValid()) {
       setIsLoading(false);
-      errorShake();
       return;
     }
 
@@ -755,6 +760,15 @@ const EditProfile = ({ page }) => {
                     message={message}
                   />
                 )}
+                <p>
+                  Paswords must be at least 8 characters long and have:
+                  <ul>
+                    <li>at least <b>one uppercase letter</b></li>
+                    <li>at least <b>one lowercase letter</b></li>
+                    <li>at least <b>one digit</b></li>
+                    <li>at least <b>one special character</b></li>
+                  </ul>
+                </p>
                 <Label>
                   New Password:
                   <Input

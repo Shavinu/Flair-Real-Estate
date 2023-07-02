@@ -11,6 +11,7 @@ const uploadSingle = async (req, res, next) => {
     const displayOnTop = req.body.displayOnTop === 'true';
     const parentId = req.body.parentId;
     const type = req.body.type;
+    const projectId = req.body.projectId;
 
     if (!file) {
       return res.status(400).json({ error: 'No file provided' });
@@ -27,6 +28,7 @@ const uploadSingle = async (req, res, next) => {
         displayOnTop: displayOnTop,
         parentId: parentId,
         type: type,
+        projectId: projectId,
       },
       contentType: file.mimetype,
     });
@@ -48,6 +50,7 @@ const uploadSingle = async (req, res, next) => {
             displayOnTop: displayOnTop,
             parentId: parentId,
             type: type,
+            projectId: projectId,
           },
         },
       });
@@ -68,6 +71,7 @@ const uploadMultiple = async (req, res, next) => {
     const displayOnTops = req.body.displayOnTops.map(display => display === 'true');
     const parentIds = req.body.parentIds;
     const types = req.body.types;
+    const projectIds = req.body.projectIds;
 
     if (!files || files.length === 0) {
       return res.status(400).json({ error: 'No files provided' });
@@ -79,7 +83,7 @@ const uploadMultiple = async (req, res, next) => {
 
     let uploadedFiles = [];
 
-    const uploadFile = (file, userId, label, displayOnTop, parentId, type) => {
+    const uploadFile = (file, userId, label, displayOnTop, parentId, type, projectId) => {
       return new Promise((resolve, reject) => {
         const uploadStream = bucket.openUploadStreamWithId(
           new mongoose.Types.ObjectId(),
@@ -91,6 +95,7 @@ const uploadMultiple = async (req, res, next) => {
               displayOnTop: displayOnTop,
               parentId: parentId,
               type: type,
+              projectId: projectId,
             },
             contentType: file.mimetype,
           }
@@ -111,6 +116,7 @@ const uploadMultiple = async (req, res, next) => {
               createdBy: userId,
               label: label,
               displayOnTop: displayOnTop,
+              projectId: projectId,
             },
           });
           resolve();
@@ -121,7 +127,7 @@ const uploadMultiple = async (req, res, next) => {
     };
 
     const uploadPromises = files.map((file, index) =>
-      uploadFile(file, userIds[index], labels[index], displayOnTops[index], parentIds[index], types[index])
+      uploadFile(file, userIds[index], labels[index], displayOnTops[index], parentIds[index], types[index], projectIds[index])
     );
 
     await Promise.all(uploadPromises);
@@ -507,6 +513,27 @@ const getFilesByType = async (req, res, next) => {
   }
 };
 
+// get all files
+const getFilesByProjectId = async (req, res, next) => {
+  try {
+    const { projectId } = req.params;
+
+    const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
+      bucketName: 'uploads',
+    });
+
+    const files = await bucket.find({ 'metadata.projectId': projectId }).toArray();
+
+    if (!files || files.length === 0) {
+      return res.status(201).json({ message: "No files found of the provided projectId", status: 201 });
+    }
+
+    res.status(200).json({ files });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
 // delete file from database provided with fileId
 const deleteFile = async (req, res, next) => {
   try {
@@ -587,4 +614,5 @@ module.exports = {
   deleteFiles,
   getFilesByParentId,
   getFilesByType,
+  getFilesByProjectId,
 };

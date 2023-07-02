@@ -5,21 +5,22 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 const {
-    uploadSingle,
-    uploadMultiple,
-    updateFile,
-    updateFiles,
-    searchFiles,
-    streamFile,
-    downloadFile,
-    getFileById,
-    getAllFilesByUser,
-    getAllFilesByName,
-    getAllFilesByLabel,
-    deleteFile,
-    deleteFiles,
-    getFilesByParentId,
-    getFilesByType,
+  uploadSingle,
+  uploadMultiple,
+  updateFile,
+  updateFiles,
+  searchFiles,
+  streamFile,
+  downloadFile,
+  getFileById,
+  getAllFilesByUser,
+  getAllFilesByName,
+  getAllFilesByLabel,
+  deleteFile,
+  deleteFiles,
+  getFilesByParentId,
+  getFilesByType,
+  getFilesByProjectId,
 } = require('../controllers/fileController');
 
 // Upload a single file
@@ -85,5 +86,9 @@ router.get('/parent/:parentId', getFilesByParentId);
 // Get all files of a specific type
 // Request params: type
 router.get('/type/:type', getFilesByType);
+
+// Get all files of a specific type
+// Request params: type
+router.get('/projectId/:projectId', getFilesByProjectId);
 
 module.exports = router;

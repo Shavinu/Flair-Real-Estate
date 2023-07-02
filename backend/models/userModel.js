@@ -25,11 +25,11 @@ const userSchema = new Schema(
     },
     mobileNo: {
       type: String,
-      // required: false,
+      required: false,
     },
     phoneNo: {
       type: String,
-      // required: true,
+      required: true,
     },
     email: {
       type: String,
@@ -49,7 +49,6 @@ const userSchema = new Schema(
     },
     jobType: {
       type: String,
-      // required: true,
     },
     licence: {
       type: String,
@@ -59,6 +58,7 @@ const userSchema = new Schema(
     verifiedLicence: {
       type: Boolean,
       default: false,
+      required: true,
     },
     group: {
       type: Schema.Types.ObjectId,

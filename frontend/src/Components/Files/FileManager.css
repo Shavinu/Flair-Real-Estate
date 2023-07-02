@@ -13,10 +13,12 @@
 
 .file-manager .file-manager-sidebar .list-group .list-group-item {
   border: 0;
+  user-select: none;
+  padding-left: 10px;
 }
 
 .file-manager .file-manager-sidebar .list-group .list-group-item:hover {
-  background-color: #fff;
+  /* background-color: #fff; */
   cursor: pointer;
 }
 
@@ -24,8 +26,19 @@
   user-select: none;
 }
 
-.file-manager .file-manager-item:hover {
+.file-manager .file-manager-item .card {
+  margin-bottom: 1rem;
+  min-width: 100px;
+}
+
+.file-manager .file-manager-item .card:hover {
   background-color: #eee;
   border: #eee;
   cursor: pointer;
+}
+
+.file-manager .custom-control-label::before {
+  top: 25px;
+  left: -15px;
+  z-index: 1;
 }
