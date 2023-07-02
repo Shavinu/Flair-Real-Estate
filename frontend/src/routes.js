@@ -2,7 +2,6 @@ import { Route, Routes } from 'react-router-dom';
 import Admin from './Layouts/Admin';
 import Auth from './Layouts/Auth';
 import { views, AuthViews } from './paths';
-import Client from './Layouts/Client';
 
 
 //get all paths which are defined in paths.js file
@@ -50,9 +49,6 @@ export const getRoutes = (r, parentIndex = 0) => {
 const RenderRouters = () => {
   return (
     <Routes>
-      <Route element={<Client />}>
-        {getRoutes(views)}
-      </Route>
       <Route element={<Auth />}>
         {getRoutes(AuthViews)}
       </Route>

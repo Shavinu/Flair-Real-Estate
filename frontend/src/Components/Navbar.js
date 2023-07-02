@@ -65,15 +65,15 @@ const Navbar = () => {
                 <div className='dropdown'>
                   <Link className='nav-link btn'>Resources</Link>
                   <div className='dropdown-options'>
-                    <Link to='/MortCal'>Mortgage Calculator</Link>
-                    <Link to='/BuyProcess'>Articles</Link>
-                    <Link to='/PropNews'>Property News</Link>
+                    <Link to='/MortgageCal'>Mortgage Calculator</Link>
+                    <Link to='/BuyersArticles'>Articles</Link>
+                    <Link to='/News'>Property News</Link>
                   </div>
                 </div>
                 <div className='dropdown'>
                   <button className='nav-link btn'>About Us</button>
                   <div className='dropdown-options'>
-                    <Link to='/AboutUs'>
+                    <Link to='/About'>
                       <a>About</a>
                     </Link>
                     <Link to='/ContactForm'>
