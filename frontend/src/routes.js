@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import Admin from './Layouts/Admin';
 import Auth from './Layouts/Auth';
+import Client from './Layouts/Client';
 import { views, AuthViews } from './paths';
 
 
@@ -49,6 +50,7 @@ export const getRoutes = (r, parentIndex = 0) => {
 const RenderRouters = () => {
   return (
     <Routes>
+      
       <Route element={<Auth />}>
         {getRoutes(AuthViews)}
       </Route>
