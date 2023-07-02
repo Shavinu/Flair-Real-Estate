@@ -9,16 +9,28 @@ const ResourcesPage = () => {
     <div className="resources-page">
       <h1>Resources</h1>
       <div className="contents grid5 mtop">
-        {ResourceItems.map((item, index) => (
-          <div className="box" key={index}>
-            <Link className="links" to={item.url}>
+          <div className="box">
+            <Link className="links" to='/MortCal'>
               <div className="icon-box">
-              <i className={item.icon}></i>
+              <i className="fa-solid fa-calculator"></i>
               </div>
-              <p>{item.name}</p>
+              <p>Mortgage Calculator</p>
+            </Link>
+            <Link className="links" to='/BuyProcess'>
+              <div className="icon-box">
+              <i className="fa-solid fa-a"></i>
+              </div>
+              <p>Articles</p>
+            </Link>
+            <Link className="links" to='/PropNews'>
+              <div className="icon-box">
+              <i className="fa-solid fa-newspaper"></i>
+              </div>
+              <p>Property News</p>
             </Link>
           </div>
-        ))}
+        
+        
       </div>
     </div>
   );

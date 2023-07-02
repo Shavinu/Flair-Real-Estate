@@ -8,10 +8,12 @@ import * as Listing from './Pages/Listing';
 import * as Auth from './Pages/Auth'
 import * as About from "./Pages/Contact/About"
 import * as ContactForm from "./Pages/Contact/ContactForm"
-import * as BuyersArticles from './Pages/Resources/BuyersArticles';
-import * as MortgageCal from './Pages/Resources/MortgageCal';
-import * as News from './Pages/Resources/News';
-import * as HomePage from './Pages/Client/Home/HomePage'
+import HomePage from './Pages/Client/Home/HomePage';
+import AboutUs from './Pages/Client/About/AboutUs';
+import ResourcesPage from './Pages/Client/Resources/ResourcesPage';
+import MortCal from './Pages/Client/Resources/MortCal';
+import BuyProcess from './Pages/Client/Resources/BuyProcess';
+import PropNews from './Pages/Client/Resources/PropNews';
 
 export const views = [
   {
@@ -22,7 +24,7 @@ export const views = [
   },
   {
     name: 'HomePage',
-    action: '/Home',
+    action: '/HomePage',
     icon: 'feather icon-home',
     element: <HomePage />,
   },
@@ -34,31 +36,45 @@ export const views = [
     isRoute: true,
   },
   {
+    name: 'AboutUs',
+    action: '/AboutUs',
+    icon: 'feather icon-about',
+    element: <AboutUs />,
+    isRoute: true,
+  },
+  {
+    name: 'Resources',
+    action: '/ResourcesPage',
+    icon: 'feather icon-about',
+    element: <ResourcesPage />,
+    isRoute: true,
+  },
+  {
+    name: 'MortCal',
+    action: '/MortCal',
+    icon: 'feather icon-about',
+    element: <MortCal />,
+    isRoute: true,
+  },
+  {
+    name: 'BuyProcess',
+    action: '/BuyProcess',
+    icon: 'feather icon-about',
+    element: <BuyProcess />,
+    isRoute: true,
+  },
+  {
+    name: 'PropNews',
+    action: '/PropNews',
+    icon: 'feather icon-about',
+    element: <PropNews />,
+    isRoute: true,
+  },
+  {
     name: 'Contact Form',
     action: '/ContactForm',
     icon: 'feather icon-about',
     element: <ContactForm.default />,
-    isRoute: true,
-  },
-  {
-    name: 'Buyers Articles',
-    action: '/BuyersArticles',
-    icon: 'feather icon-about',
-    element: <BuyersArticles.default />,
-    isRoute: true,
-  },
-  {
-    name: 'Mortgage Calculator',
-    action: '/MortgageCal',
-    icon: 'feather icon-about',
-    element: <MortgageCal.default />,
-    isRoute: true,
-  },
-  {
-    name: 'News',
-    action: '/News',
-    icon: 'feather icon-about',
-    element: <News.default />,
     isRoute: true,
   },
   {

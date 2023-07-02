@@ -23,12 +23,12 @@ const Footer = () => {
       <div className="footer-bottom">
         <div>
           <h4>Links</h4>
-          <a href="/">Home</a>
-          <a href="/about">About Us</a>
+          <a href="/HomePage">Home</a>
+          <a href="/AboutUs">About Us</a>
           <a href="/listings">NSW Listing</a>
-          <a href="/MortgageCal">Mortgage Calculator</a>
-          <a href="/BuyersArticles">Articles</a>
-          <a href="/News">Property</a>
+          <a href="/MortCal">Mortgage Calculator</a>
+          <a href="/BuyProcess">Articles</a>
+          <a href="/PropNews">Property</a>
           <a href="/ContactForm">Contact Us</a>
         </div>
         <div>

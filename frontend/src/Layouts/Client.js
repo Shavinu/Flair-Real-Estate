@@ -38,17 +38,11 @@ const Client = () => {
     {/* <!-- END Navigation--> */}
 
     {/* <!-- BEGIN Content--> */}
-    <div className="app-content content">
-      <div className="content-wrapper">
-        <Outlet />
-      </div>
-    </div>
+    <Outlet />
     {/* <!-- END Content--> */}
 
     {/* <!-- START FOOTER LIGHT--> */}
-    <footer className="footer footer-static footer-light">
-        <Footer />
-    </footer>
+    <Footer />
     {/* <!-- END FOOTER LIGHT--> */}
 
   </div>

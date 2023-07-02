@@ -2,10 +2,9 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, NavLink } from 'react-router-dom';
 import { getUserDetailById } from '../Services/UserService';
 import * as AuthServices from '../Services/AuthService';
-import './Navbar.css';
 import { views } from "../paths"
 import "./NavbarUser.css";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 
 const NavbarUser = () => {
   const [user, setUser] = useState();
@@ -40,12 +39,8 @@ const NavbarUser = () => {
           
               <ul className="nav-menu">
                 <li className="button">
-                  <Link className="nav-links" to={'/'}>
-                  <i className='fa-solid fa-house-chimney'></i>Home</Link>
-                </li>
-                <li className="button">
-                  <Link className="nav-links" to='/listings'>
-                  <i className='feather icon-power'></i>Search</Link>
+                  <Link className="nav-links" to={'/HomePage'}>
+                  <i className="fa-solid fa-house-user"></i>Home</Link>
                 </li>
                 <div className="dropdown">
                   <Link className="nav-links" to='/listings'>
@@ -59,17 +54,17 @@ const NavbarUser = () => {
                   </div>
                 </div>
                 <div className='dropdown'>
-                  <Link className='nav-links'>
+                  <Link className='nav-links' to='/ResourcesPage'>
                   <i className='fa-solid fa-address-book'></i>Resources</Link>
                   <div className='dropdown-options'>
-                    <Link to='/MortgageCal'>Mortgage Calculator</Link>
-                    <Link to='/BuyersArticles'>Articles</Link>
-                    <Link to='/News'>Property News</Link>
+                    <Link to='/MortCal'>Mortgage Calculator</Link>
+                    <Link to='/BuyProcess'>Articles</Link>
+                    <Link to='/PropNews'>Property News</Link>
                   </div>
                 </div>
                 <li className="button">
-                  <Link className="nav-links" to={'/About'}>
-                  <i className='fa-solid fa-house-chimney'></i>About Us</Link>
+                  <Link className="nav-links" to={'/AboutUs'}>
+                  <i className='fa-solid fa-address-card'></i>About Us</Link>
                 </li>
                 <li className="button">
                   <Link className="nav-links" to={'/ContactForm'}>
