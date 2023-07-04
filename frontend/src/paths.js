@@ -30,65 +30,10 @@ export const views = [
     element: <Home />,
   },
   {
-    name: 'HomePage',
-    action: '/HomePage',
-    icon: 'feather icon-home',
-    element: <HomePage />,
-  },
-  {
     name: 'About',
     action: '/About',
     icon: 'feather icon-about',
     element: <About.default />,
-    isRoute: true,
-  },
-  {
-    name: 'ListingPage',
-    action: '/ListingPage',
-    icon: 'feather icon-about',
-    element: <ListingPage />,
-    isRoute: true,
-  },
-  {
-    name: 'AboutUs',
-    action: '/AboutUs',
-    icon: 'feather icon-about',
-    element: <AboutUs />,
-    isRoute: true,
-  },
-  {
-    name: 'Resources',
-    action: '/ResourcesPage',
-    icon: 'feather icon-about',
-    element: <ResourcesPage />,
-    isRoute: true,
-  },
-  {
-    name: 'MortCal',
-    action: '/MortCal',
-    icon: 'feather icon-about',
-    element: <MortCal />,
-    isRoute: true,
-  },
-  {
-    name: 'BuyProcess',
-    action: '/BuyProcess',
-    icon: 'feather icon-about',
-    element: <BuyProcess />,
-    isRoute: true,
-  },
-  {
-    name: 'PropNews',
-    action: '/PropNews',
-    icon: 'feather icon-about',
-    element: <PropNews />,
-    isRoute: true,
-  },
-  {
-    name: 'Contact',
-    action: '/Contact',
-    icon: 'feather icon-about',
-    element: <Contact />,
     isRoute: true,
   },
   {
@@ -393,6 +338,64 @@ export const AuthViews = [
     element: <Auth.ResetPassword />,
   },
 ];
+
+export const ClientViews = [
+  {
+    name: 'HomePage',
+    action: '/HomePage',
+    icon: 'feather icon-home',
+    element: <HomePage />,
+  },
+  {
+    name: 'ListingPage',
+    action: '/ListingPage',
+    icon: 'feather icon-home',
+    element: <ListingPage />,
+  },
+  {
+    name: 'AboutUs',
+    action: '/AboutUs',
+    icon: 'feather icon-about',
+    element: <AboutUs />,
+    isRoute: true,
+  },
+  {
+    name: 'Resources',
+    action: '/ResourcesPage',
+    icon: 'feather icon-about',
+    element: <ResourcesPage />,
+    isRoute: true,
+  },
+  {
+    name: 'MortCal',
+    action: '/MortCal',
+    icon: 'feather icon-about',
+    element: <MortCal />,
+    isRoute: true,
+  },
+  {
+    name: 'BuyProcess',
+    action: '/BuyProcess',
+    icon: 'feather icon-about',
+    element: <BuyProcess />,
+    isRoute: true,
+  },
+  {
+    name: 'PropNews',
+    action: '/PropNews',
+    icon: 'feather icon-about',
+    element: <PropNews />,
+    isRoute: true,
+  },
+  {
+    name: 'Contact',
+    action: '/Contact',
+    icon: 'feather icon-about',
+    element: <Contact />,
+    isRoute: true,
+  },
+  
+]
 
 export const api = {
   auth: {

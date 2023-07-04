@@ -2,7 +2,7 @@ import { Route, Routes } from 'react-router-dom';
 import Admin from './Layouts/Admin';
 import Auth from './Layouts/Auth';
 import Client from './Layouts/Client';
-import { views, AuthViews } from './paths';
+import { views, AuthViews, ClientViews } from './paths';
 
 
 //get all paths which are defined in paths.js file
@@ -50,7 +50,9 @@ export const getRoutes = (r, parentIndex = 0) => {
 const RenderRouters = () => {
   return (
     <Routes>
-      
+      <Route element={<Client />}>
+        {getRoutes(ClientViews)}
+      </Route>
       <Route element={<Auth />}>
         {getRoutes(AuthViews)}
       </Route>
@@ -63,9 +65,7 @@ const RenderRouters = () => {
       <Route element={<Admin />}>
         {getRoutes(views)}
       </Route>
-      <Route element={<Client />}>
-        {getRoutes(views)}
-      </Route>
+    
       {getRoutes(views)}
     </Routes>
   );

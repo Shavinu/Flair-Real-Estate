@@ -17,7 +17,7 @@ const Client = () => {
           localStorage.removeItem('user');
           navigate('/client/home/homepage');
         } else {
-          navigate('/auth'); // Add this line to navigate to the Authentication page if user is already logged in
+          navigate('/'); // Add this line to navigate to the Authentication page if user is already logged in
         }
       }
     }, [user, navigate]);
