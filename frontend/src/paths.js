@@ -19,6 +19,7 @@ import BuyProcess from './Pages/Client/Resources/BuyProcess';
 import PropNews from './Pages/Client/Resources/PropNews';
 import Contact from './Pages/Client/Contact/Contact';
 import ListingPage from './Pages/Client/Listing/ListingPage';
+import AboutContent from './Pages/Admin/Managment/AboutContent';
 
 
 export const views = [
@@ -116,6 +117,13 @@ export const views = [
     action: '/News',
     icon: 'feather icon-about',
     element: <News.default />,
+    isRoute: true,
+  },
+  {
+    name: 'CMS',
+    action: '/AboutContent',
+    icon: 'feather icon-about',
+    element: <AboutContent />,
     isRoute: true,
   },
   {
