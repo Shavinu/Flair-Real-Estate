@@ -394,7 +394,7 @@ export const ClientViews = [
     element: <Contact />,
     isRoute: true,
   },
-  
+
 ]
 
 export const api = {
@@ -470,4 +470,11 @@ export const api = {
     delete: '/api/listings/{{id}}',
     getByDeveloper: '/api/listings/developer/{{id}}',
   },
+  cms: {
+    getAll: '/api/cms',
+    get: '/api/cms/{{id}}',
+    create: '/api/cms/create',
+    update: '/api/cms/{{id}}',
+    delete: '/api/cms/{{id}}'
+  }
 };
