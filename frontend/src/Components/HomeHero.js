@@ -10,8 +10,8 @@ function HomeHero(props) {
           <h1>{props.title}</h1>
           <p>{props.text}</p>
           <form class="search" action="">
-            <Link to='/listings'><button type="submit">
-                  Search</button></Link>
+            <input type="search" placeholder="Search here..." required></input>
+            <button type="submit">Search</button>
           </form>
           <a className={props.btnClass} href={props.url}>
             {props.buttonText}
