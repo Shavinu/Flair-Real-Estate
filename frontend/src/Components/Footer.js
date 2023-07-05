@@ -25,7 +25,7 @@ const Footer = () => {
           <h4>Links</h4>
           <a href="/HomePage">Home</a>
           <a href="/AboutUs">About Us</a>
-          <a href="/listings">NSW Listing</a>
+          <a href="/ListingPage">NSW Listing</a>
           <a href="/MortCal">Mortgage Calculator</a>
           <a href="/BuyProcess">Articles</a>
           <a href="/PropNews">Property</a>

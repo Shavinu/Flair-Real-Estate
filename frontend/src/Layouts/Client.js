@@ -15,7 +15,7 @@ const Client = () => {
         const userData = JSON.parse(user);
         if (moment().isAfter(moment(userData.expired_at))) {
           localStorage.removeItem('user');
-          navigate('/client/home/homepage');
+          navigate('/HomePage');
         } else {
           navigate('/'); // Add this line to navigate to the Authentication page if user is already logged in
         }
