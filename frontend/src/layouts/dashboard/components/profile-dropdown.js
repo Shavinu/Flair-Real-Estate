@@ -17,7 +17,7 @@ const ProfileDropdown = () => {
     try {
       await logout();
       dropdown.onClose();
-      router.replace('/');
+      router.replace('/auth/login');
     } catch (error) {
       console.error(error);
     }

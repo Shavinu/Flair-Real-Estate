@@ -6,7 +6,7 @@ const login = (credentials) => {
 }
 
 const getCurrentUser = (token) => {
-  return utils.fetch.httpGet(api.auth.currentUser)
+  return utils.fetch.httpPost(api.auth.currentUser)
 }
 
 const forgotPassword = (body) => {

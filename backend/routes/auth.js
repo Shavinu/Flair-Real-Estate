@@ -26,7 +26,7 @@ router.get('/verify-licence/:accType/:licence', verifyLicenceNumber)
 
 router.post('/login', login);
 
-router.get('/current-user', verifyAccessToken, getCurrentUser);
+router.post('/current-user', verifyAccessToken, getCurrentUser);
 
 router.post('/refresh-token', async (req, res, next) => {
   res.send('This is refresh-token route');
