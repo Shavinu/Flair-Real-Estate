@@ -10,14 +10,14 @@ const Admin = () => {
 
   useEffect(() => {
     if (!user) {
-      navigate('/auth/login');
+      navigate('/HomePage');
       return;
     }
 
     const userData = JSON.parse(user);
     if (moment().isAfter(moment(userData.expired_at))) {
       localStorage.removeItem('user');
-      navigate('/auth/login');
+      navigate('/HomePage');
       return
     }
   }, [user]);
