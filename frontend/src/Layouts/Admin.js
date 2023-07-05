@@ -39,8 +39,8 @@ const Admin = () => {
     {/* <!-- END Content--> */}
 
     {/* <!-- START FOOTER LIGHT--> */}
-    <footer className="footer footer-static footer-light">
-    </footer>
+    {/* <footer className="footer footer-static footer-light"> */}
+    {/* </footer> */}
     {/* <!-- END FOOTER LIGHT--> */}
 
   </div>
