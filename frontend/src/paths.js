@@ -19,6 +19,7 @@ import BuyProcess from './Pages/Client/Resources/BuyProcess';
 import PropNews from './Pages/Client/Resources/PropNews';
 import Contact from './Pages/Client/Contact/Contact';
 import ListingPage from './Pages/Client/Listing/ListingPage';
+import AboutContent from './Pages/Admin/Managment/AboutContent';
 
 
 export const views = [
@@ -61,6 +62,13 @@ export const views = [
     action: '/News',
     icon: 'feather icon-about',
     element: <News.default />,
+    isRoute: true,
+  },
+  {
+    name: 'CMS',
+    action: '/AboutContent',
+    icon: 'feather icon-about',
+    element: <AboutContent />,
     isRoute: true,
   },
   {
@@ -386,7 +394,7 @@ export const ClientViews = [
     element: <Contact />,
     isRoute: true,
   },
-  
+
 ]
 
 export const api = {
@@ -462,4 +470,11 @@ export const api = {
     delete: '/api/listings/{{id}}',
     getByDeveloper: '/api/listings/developer/{{id}}',
   },
+  cms: {
+    getAll: '/api/cms',
+    get: '/api/cms/{{id}}',
+    create: '/api/cms/create',
+    update: '/api/cms/{{id}}',
+    delete: '/api/cms/{{id}}'
+  }
 };

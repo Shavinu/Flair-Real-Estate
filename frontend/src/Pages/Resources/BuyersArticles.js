@@ -1,12 +1,13 @@
 import React from 'react';
+import PDFViewer from '../../Components/PDFViewer/PDFViewer';
 
-import { Container, Row, Col } from 'react-bootstrap';
+
 
 const BuyersArticles = () => {
     return (
         <>
 
-            <h1>Buyers Articles</h1>
+            <iframe src='https://drive.google.com/file/d/1q-ovBwu9z65k-_AvrGIjd1pq1nXoITKp/preview' width={"980px"} height={"500px"} />
 
         </>
     );

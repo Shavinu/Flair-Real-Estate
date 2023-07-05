@@ -6,7 +6,7 @@ const News = () => {
     return (
         <>
 
-            <TabView />
+            <iframe src='https://drive.google.com/file/d/1S4vU3_X1GD2bCefG-IkoiGpK6KrP11pY/preview' width={"980px"} height={"500px"} />
 
 
         </>

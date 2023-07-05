@@ -4,10 +4,14 @@ import Group from '../Form/Group'
 import { Card, CardBody, Button } from '../../Components';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import Toast from '../Toast';
 
 const AboutCms = () => {
     const form = useRef();
     const fileInput = useRef();
+
+
+
     return (
         <>
             <h1>Edit About page</h1>
@@ -33,7 +37,7 @@ const AboutCms = () => {
                                     <ReactQuill
                                         //value={listingDescription}
                                         //onChange={handleListingDescriptionChange}
-                                        placeholder="Enter Listing Description"
+                                        placeholder="Enter a Description"
                                     />
                                 </Group>
                             </Col>
