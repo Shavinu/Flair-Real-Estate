@@ -20,15 +20,39 @@ import PropNews from './Pages/Client/Resources/PropNews';
 import Contact from './Pages/Client/Contact/Contact';
 import ListingPage from './Pages/Client/Listing/ListingPage';
 import AboutContent from './Pages/Admin/Managment/AboutContent';
+import ProjectDetail from './Pages/Client/Listing/ProjectDetail';
+import ListingDetail from './Pages/Client/Listing/ListingDetail';
 
+export const ROOTS = {
+  AUTH: '/auth',
+  DASHBOARD: '/dashboard',
+  CLIENT: '/',
+}
+
+export const paths = {
+  auth: {
+    root: ROOTS.AUTH,
+    login: `${ROOTS.AUTH}/login`,
+    register: `${ROOTS.AUTH}/register`,
+    forgotPassword: `${ROOTS.AUTH}/forgot-password`,
+    resetPassword: `${ROOTS.AUTH}/reset-password/:userId/:token`,
+    verifyEmail: `${ROOTS.AUTH}/verify/:userId/:token`,
+  },
+  dashboard: {
+    root: ROOTS.DASHBOARD,
+    users: {
+      list: `${ROOTS.DASHBOARD}/users`,
+    }
+  },
+}
 
 export const views = [
-  {
-    name: 'Home',
-    action: '/',
-    icon: 'feather icon-home',
-    element: <Home />,
-  },
+  // {
+  //   name: 'Home',
+  //   action: '/',
+  //   icon: 'feather icon-home',
+  //   element: <Home />,
+  // },
   {
     name: 'About',
     action: '/About',
@@ -298,19 +322,6 @@ export const views = [
   // },
 ];
 
-// export const pages = [
-//   {
-//     name:'View Profile',
-//     action: '/profile/view',
-//     element: <Dashboard.ViewProfile />
-//   },
-//   {
-//     name: 'Edit Profile',
-//     action: '/:id/profile/edit',
-//     element: <Dashboard.EditProfile />
-//   }
-// ]
-
 export const AuthViews = [
   {
     name: 'Login',
@@ -342,7 +353,7 @@ export const AuthViews = [
 export const ClientViews = [
   {
     name: 'HomePage',
-    action: '/HomePage',
+    action: '/',
     icon: 'feather icon-home',
     element: <HomePage />,
   },
@@ -351,6 +362,18 @@ export const ClientViews = [
     action: '/ListingPage',
     icon: 'feather icon-home',
     element: <ListingPage />,
+  },
+  {
+    name: 'ListingDetail',
+    action: '/ListingDetail/:id',
+    icon: 'feather icon-home',
+    element: <ListingDetail />,
+  },
+  {
+    name: 'ProjectDetail',
+    action: '/ProjectDetail/:id',
+    icon: 'feather icon-home',
+    element: <ProjectDetail />,
   },
   {
     name: 'AboutUs',

@@ -165,7 +165,7 @@ const SearchComponent = ({ onSearch, all = true }) => {
 
   const handleCommissionPercentChange = (e) => {
     let val = e.target.value;
-    if ((val === '' || !isNaN(val)) && val.match(/^\d{0,}(\.\d{0,2})?$/) && val <= 100) 
+    if ((val === '' || !isNaN(val)) && val.match(/^\d{0,}(\.\d{0,2})?$/) && val <= 100)
     {
       setSearch({
         ...search,
@@ -334,7 +334,7 @@ const SearchComponent = ({ onSearch, all = true }) => {
                       onAddressChange={(address) => {
                         setLocationName(address);
                         setSearch((prevSearch) => (
-                            {   ...prevSearch, 
+                            {   ...prevSearch,
                                 projectLocation: {
                                     ...prevSearch.projectLocation,
                                     locationName: address
@@ -345,7 +345,7 @@ const SearchComponent = ({ onSearch, all = true }) => {
                       onSuburbChange={(sub) => {
                         setSuburb(sub);
                         setSearch((prevSearch) => (
-                            { ...prevSearch, 
+                            { ...prevSearch,
                                 projectLocation: {
                                     ...prevSearch.projectLocation,
                                     suburb: sub
@@ -356,7 +356,7 @@ const SearchComponent = ({ onSearch, all = true }) => {
                       onPostcodeChange={(code) => {
                         setPostcode(code);
                         setSearch((prevSearch) => (
-                            { ...prevSearch, 
+                            { ...prevSearch,
                                 projectLocation: {
                                     ...prevSearch.projectLocation,
                                     postcode: code
@@ -367,7 +367,7 @@ const SearchComponent = ({ onSearch, all = true }) => {
                       onRegionChange={(reg) => {
                         setRegion(reg);
                         setSearch((prevSearch) => (
-                            { ...prevSearch, 
+                            { ...prevSearch,
                                 projectLocation: {
                                     ...prevSearch.projectLocation,
                                     region: reg
@@ -379,7 +379,7 @@ const SearchComponent = ({ onSearch, all = true }) => {
                     />
                   </Row>
                   <Row className="my-1">
-                    <Col xs={12} md={12}> 
+                    <Col xs={12} md={12}>
                       <p style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#333' }}>Project Commission</p>
                     </Col>
                     <Col xs={12} sm={6} md={3}>
@@ -412,13 +412,13 @@ const SearchComponent = ({ onSearch, all = true }) => {
                     <p style={{ fontSize: '0.8rem', fontWeight: 'bold', color: '#333', margin: '0' }}>Commission Type</p>
                     <Select
                       value={
-                        search.projectCommission.type !== (null || '') 
-                          ? { 
-                              value: search.projectCommission.type, 
+                        search.projectCommission.type !== (null || '')
+                          ? {
+                              value: search.projectCommission.type,
                               label: search.projectCommission.type === 'fixed' ? 'Fixed' : 'Percentage'
                             }
-                          : { 
-                              value: '', label: 'Any' 
+                          : {
+                              value: '', label: 'Any'
                             }
                       }
                       options={projectCommissionTypes}
