@@ -37,7 +37,7 @@ function Form() {
   }
 
   return (
-    <form onSubmit={(e) => e.preventDefault()}>
+    <form className='form-container' onSubmit={(e) => e.preventDefault()}>
       <FormInputGroup
         text="Home Value "
         icon={<FaDollarSign />}
@@ -73,7 +73,7 @@ function Form() {
         value={loanDuration}
         onInput={(e) => setLoanDuration(e.target.value)}
       />
-      <h4 className="alert alert-info fw-bold">
+      <h4>
         Monthly payment: <FaDollarSign />
         {parseFloat(monthlyPayment.toFixed(2))}
       </h4>
@@ -81,7 +81,7 @@ function Form() {
       <button
         type="submit"
         onClick={calculateMonthlyPayment}
-        className="btn btn-primary btn-lg w-100 center"
+        className="form-button"
       >
         Calculate
       </button>

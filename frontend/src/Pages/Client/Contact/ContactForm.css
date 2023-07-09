@@ -11,6 +11,11 @@
     margin: auto;
   }
   
+  .form-container h1 {
+    text-align: center;
+    padding-bottom: 1rem;
+  }
+
   .form-container input {
     height: 3rem;
     padding: 0 1rem;

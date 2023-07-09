@@ -1,0 +1,24 @@
+form-button {
+  height: 40px;
+  width: 120px;
+  padding: 0.5rem 0.5rem;
+  white-space: nowrap;
+  border-radius: 0.3rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+.form button {
+  align-self: center;
+}
+
+.form input {
+  height: 3rem;
+  padding: 0 1rem;
+  margin-bottom: 2rem;
+  border-radius: 0.3rem;
+  border: 1px solid #250e0e;
+}

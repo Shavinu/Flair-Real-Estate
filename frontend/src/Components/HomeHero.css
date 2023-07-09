@@ -10,6 +10,7 @@
   position: relative;
 }
 
+
 .hero-mid h1 {
   padding-top: 4rem !important;
 }
@@ -19,6 +20,26 @@
   height: 100%;
   object-fit: cover;
 }
+
+.villain {
+  width: 100%;
+  height: 50vh;
+  position: relative;
+}
+
+.villain-mid {
+  width: 100%;
+  height: 50vh;
+  position: relative;
+}
+
+
+.villain img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 
 .hero-text {
   position: absolute;
