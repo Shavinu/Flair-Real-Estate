@@ -1,11 +1,12 @@
 import { ButtonGroup, Card, Col, Container, Form, Row, Stack } from "react-bootstrap";
-import HomeHero from "../../../Components/HomeHero";
+
 import "./ListingPage.css";
 import * as ProjectService from "../../../Services/ProjectService";
 import * as FileService from "../../../Services/FileService";
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Group, Label, Select } from "../../../Components/Form";
+import HomeHeroWithSearch from "../../../Components/HomeHeroWithSearch";
 
 const ListingPage = () => {
   const [properties, setProperties] = useState([]);
@@ -41,6 +42,15 @@ const ListingPage = () => {
 
   return (
     <>
+      <HomeHeroWithSearch
+        cName="hero"
+        heroImg="https://www.gannett-cdn.com/presto/2021/06/21/PNAS/1a51b257-cf34-4d30-a2b3-297589a51dab-Bold_Colors-10.JPG?crop=2611,1469,x1,y226&width=1600&height=800&format=pjpg&auto=webp"
+        title="Real Estate"
+        text="Choose Your New Estate with Real Estate."
+        btnClass="hide"
+        url="/"
+      />
+
       <div className="listing-container">
         <Container className="p-5">
           <Form.Group as={Row} className="mb-3 col-5" controlId="formPlaintextEmail">
