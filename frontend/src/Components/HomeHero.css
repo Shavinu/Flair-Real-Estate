@@ -38,6 +38,7 @@
 }
 
 .hero-text p {
+  margin-left: 450px;
   color: #f4f4f4;
   font-size: 1.3rem;
   padding: 0.5rem 0 2rem 0;
@@ -92,9 +93,6 @@
   background: #fff;
   color: #444;
 }
-
-
-
 
 .hero-text button:active {
   box-shadow: 0px 0px 12px 0px rgba(225, 225, 225, 1);
