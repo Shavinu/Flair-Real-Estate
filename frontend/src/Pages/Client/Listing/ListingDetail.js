@@ -134,14 +134,6 @@ const ListingDetail = () => {
 
   return (
     <>
-      <HomeHero
-        cName="hero"
-        heroImg="https://www.gannett-cdn.com/presto/2021/06/21/PNAS/1a51b257-cf34-4d30-a2b3-297589a51dab-Bold_Colors-10.JPG?crop=2611,1469,x1,y226&width=1600&height=800&format=pjpg&auto=webp"
-        title="Real Estate"
-        text="Choose Your New Estate with Real Estate."
-        btnClass="hide"
-        url="/"
-      />
       <Container className="p-5">
         <Stack direction="horizontal" gap={3} className="pb-3">
           <h2>{listing?.listingName}</h2>
