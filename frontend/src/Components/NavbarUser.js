@@ -19,6 +19,13 @@ const NavbarUser = () => {
     }, 100);
   };
 
+  const onLogout = () => {
+    AuthServices.logout();
+    setTimeout(() => {
+      navigate('/');
+    }, 100);
+  };
+
   useEffect(() => {
     let user = localStorage.getItem('user');
     if (user) {
@@ -44,10 +51,6 @@ const NavbarUser = () => {
           <Link className="nav-links" to={'/'}>
             <i className="fa-solid fa-house-user"></i>Home</Link>
         </li>
-        {authenticated && <li className="button">
-          <Link className="nav-links" to={'/users'}>
-            <i className="fa-solid fa-table-columns"></i>Dashboard</Link>
-        </li>}
         <div className="dropdown">
           <Link className="nav-links" to='/ListingPage'>
             <i className='fa-solid fa-list'></i>NSW Listings</Link>
@@ -76,13 +79,70 @@ const NavbarUser = () => {
           <Link className="nav-links" to={'/Contact'}>
             <i className='fa-solid fa-address-book'></i>Contact Us</Link>
         </li>
-        <li className='button'>
-          <Link
+
+        {authenticated &&  <ul className='nav-links'>
+              <li className='dropdown'>
+                <a
+                  className='nav-links2'
+                  href='#'
+                  data-toggle='dropdown'>     
+                  <span>
+                    <img
+                      className='round'
+                      src={`${process.env.REACT_APP_PUBLIC_URL}/assets/images/default/avatar.jpg`}
+                      alt='avatar'
+                      height='25'
+                      width='25'
+                    />
+                  </span>           
+                  <span className='nav-username'>
+                    {name || user?.email}
+                  </span>
+                </a>
+                <div className='dropdown-options'>
+                  <a
+                    className='nav-links2'
+                    href={`/profile/${user?._id}`}>
+                    <i className='feather icon-user'></i> Profile
+                  </a>
+                  <a
+                    className='nav-links2'
+                    href='#'>
+                    <i className='feather icon-mail'></i> My Inbox
+                  </a>
+                  <a
+                    className='nav-links2'
+                    href='#'>
+                    <i className='feather icon-check-square'></i> Task
+                  </a>
+                  <a
+                    className='nav-links2'
+                    href='#'>
+                    <i className='feather icon-message-square'></i> Chats
+                  </a>
+                  <Link className="nav-links2" to={'/users'}>
+                    <i className="fa-solid fa-table-columns"></i>Dashboard</Link>
+                  <Link
+                    className='nav-links2'
+                    to='#'
+                    onClick={onLogout}>
+                    <i className='feather icon-power'></i> Logout
+                  </Link>
+                </div>
+              </li>
+            </ul>
+        }
+                  
+                 
+
+
+        {!authenticated && <li className="button">
+        <Link
             className='nav-links'
             onClick={onLogin}>
             <i className='feather icon-power'></i> Log In
           </Link>
-        </li>
+        </li>}
       </ul>
 
 
