@@ -4,7 +4,7 @@ const userSchema = Joi.object({
   accType: Joi.string().required(),
   jobType: Joi.string().optional(),
   licence: Joi.string() .required(),
-  verifiedLicence: Joi.bool(),
+  verifiedLicence: Joi.bool().required(),
   email: Joi.string().email().required(),
   verified: Joi.boolean().required(),
   password: Joi.string().required(),

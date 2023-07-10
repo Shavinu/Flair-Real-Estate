@@ -15,7 +15,7 @@ const Register = ({ type, page }) => {
   const [company, setCompany] = useState('');
   const [jobType, setJobType] = useState('');
   const [licence, setLicence] = useState('');
-  const [verifiedLicence, setVerifiedLicence] = useState('');
+  const [verifiedLicence, setVerifiedLicence] = useState(false);
   const [mobileNo, setMobileNo] = useState('');
   const [phoneNo, setPhoneNo] = useState('');
   const [password, setPassword] = useState('');

@@ -58,6 +58,7 @@ const userSchema = new Schema(
     verifiedLicence: {
       type: Boolean,
       default: false,
+      required: true,
     },
     group: {
       type: Schema.Types.ObjectId,
