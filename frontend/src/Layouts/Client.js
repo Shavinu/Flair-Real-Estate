@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import moment from "moment";
 
 const Client = () => {
+  
   return <div id="body" >
     {/* <!-- fixed-top--> */}
     <NavbarUser />

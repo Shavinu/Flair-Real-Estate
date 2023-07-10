@@ -13,7 +13,7 @@ const Navbar = () => {
   const onLogout = () => {
     AuthServices.logout();
     setTimeout(() => {
-      navigate('/HomePage');
+      navigate('/');
     }, 100);
   };
 
