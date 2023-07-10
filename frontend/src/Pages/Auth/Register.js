@@ -8,7 +8,6 @@ import { Alert, Button, Card } from '../../Components';
 import CardBody from '../../Components/Card/CardBody';
 import { isValidPassword } from '../../Utils/string';
 
-
 const Register = ({ type, page }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -85,8 +84,11 @@ const Register = ({ type, page }) => {
       isValid = false;
     }
 
-    if(!isValidPassword(password)){
-      errors = { ...errors, password: 'Password does not follow password requirements'}
+    if (!isValidPassword(password)) {
+      errors = {
+        ...errors,
+        password: 'Password does not follow password requirements',
+      };
       isValid = false;
     }
 
@@ -107,7 +109,10 @@ const Register = ({ type, page }) => {
       .on(
         'webkitAnimationEnd oanimationend msAnimationEnd animationend',
         function (e) {
-          window.jQuery('button[type=submit]').delay(200).removeClass('animated headShake bg-red');
+          window
+            .jQuery('button[type=submit]')
+            .delay(200)
+            .removeClass('animated headShake bg-red');
         }
       );
   };
@@ -151,6 +156,7 @@ const Register = ({ type, page }) => {
             .then((response) => {
               if (response?.message) {
                 setAlertMessage();
+                Toast(response.message);
                 setMessage(response.message);
               }
             })
@@ -335,10 +341,18 @@ const Register = ({ type, page }) => {
                         <p>
                           Paswords must be at least 8 characters long and have:
                           <ul>
-                            <li>at least <b>one uppercase letter</b></li>
-                            <li>at least <b>one lowercase letter</b></li>
-                            <li>at least <b>one digit</b></li>
-                            <li>at least <b>one special character</b></li>
+                            <li>
+                              at least <b>one uppercase letter</b>
+                            </li>
+                            <li>
+                              at least <b>one lowercase letter</b>
+                            </li>
+                            <li>
+                              at least <b>one digit</b>
+                            </li>
+                            <li>
+                              at least <b>one special character</b>
+                            </li>
                           </ul>
                         </p>
                         <Group className='form-label-group'>
@@ -363,7 +377,9 @@ const Register = ({ type, page }) => {
                             }
                             error={errors?.passwordConfirmation}
                           />
-                          <Label for='password_confirmation'>Confirm Password</Label>
+                          <Label for='password_confirmation'>
+                            Confirm Password
+                          </Label>
                         </Group>
                         <div className='form-group row'>
                           <div className='col-12'>
@@ -377,10 +393,11 @@ const Register = ({ type, page }) => {
                                 </span>
                                 <span className=''>
                                   {' '}
-                                  I accept the <a href="">terms & conditions</a>.
+                                  I accept the <a href=''>terms & conditions</a>
+                                  .
                                   {/* the above needs to be implemented. The below Register button should not be
                                   clickable unless this is ticked. Terms and conditions must link to t&c provided
-                                  by Flair Real Estate*/ }
+                                  by Flair Real Estate*/}
                                 </span>
                               </div>
                             </fieldset>
