@@ -156,7 +156,6 @@ const Register = ({ type, page }) => {
             .then((response) => {
               if (response?.message) {
                 setAlertMessage();
-                Toast(response.message);
                 setMessage(response.message);
               }
             })
@@ -167,8 +166,11 @@ const Register = ({ type, page }) => {
               ) {
                 setMessage();
                 setAlertMessage(response.response.data.error.message);
+                errorShake();
+              } else{
+                setMessage(response.response.data.message);
+                Toast(response.response.data.message);
               }
-              errorShake();
             })
             .finally(() => setIsLoading(false));
         } else {
