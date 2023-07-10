@@ -18,7 +18,7 @@ const BuyProcess = () => {
       {/* <!-- END Navigation--> */}
       <div className="resources-page">
         <h1>For buyers</h1>
-        <p> </p>
+        <p><iframe src='https://drive.google.com/file/d/1q-ovBwu9z65k-_AvrGIjd1pq1nXoITKp/preview' width={"980px"} height={"500px"} /> </p>
       </div>
       </>
     );

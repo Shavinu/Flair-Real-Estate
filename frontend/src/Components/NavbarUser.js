@@ -120,6 +120,8 @@ const NavbarUser = () => {
                     href='#'>
                     <i className='feather icon-message-square'></i> Chats
                   </a>
+                  <Link className="nav-links2" to={'/AboutContent'}>
+                    <i className="fa-solid fa-table-columns"></i>Edit Content</Link>
                   <Link className="nav-links2" to={'/users'}>
                     <i className="fa-solid fa-table-columns"></i>Dashboard</Link>
                   <Link

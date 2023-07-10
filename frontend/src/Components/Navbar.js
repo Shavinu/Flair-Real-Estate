@@ -53,7 +53,7 @@ const Navbar = () => {
                   <Link className="nav-link btn" to='/listings' >Search</Link>
                 </li>
                 <div className="dropdown">
-                  <Link className="nav-link btn" to='/listings'>NSW Listings</Link>
+                  <Link className="nav-link btn" to='/ListingPage'>NSW Listings</Link>
                   <div className="dropdown-options">
                     <a href="#">Sydney North West</a>
                     <a href="#">Sydney South West</a>
@@ -63,20 +63,20 @@ const Navbar = () => {
                   </div>
                 </div>
                 <div className='dropdown'>
-                  <Link className='nav-link btn'>Resources</Link>
+                  <Link className='nav-link btn' to='/ResourcesPage'>Resources</Link>
                   <div className='dropdown-options'>
-                    <Link to='/MortgageCal'>Mortgage Calculator</Link>
-                    <Link to='/BuyersArticles'>Articles</Link>
-                    <Link to='/News'>Property News</Link>
+                    <Link to='/MortCal'>Mortgage Calculator</Link>
+                    <Link to='/BuyProcess'>Articles</Link>
+                    <Link to='/PropNews'>Property News</Link>
                   </div>
                 </div>
                 <div className='dropdown'>
                   <button className='nav-link btn'>About Us</button>
                   <div className='dropdown-options'>
-                    <Link to='/About'>
+                    <Link to='/AboutUs'>
                       <a>About</a>
                     </Link>
-                    <Link to='/ContactForm'>
+                    <Link to='/Contact'>
                       <a>Contact</a>
                     </Link>
                     <Link to='/AboutContent'>

@@ -18,7 +18,7 @@ const PropNews = () => {
       {/* <!-- END Navigation--> */}
       <div className="resources-page">
         <h1>Property News</h1>
-        <p> </p>
+        <p><iframe src='https://drive.google.com/file/d/1S4vU3_X1GD2bCefG-IkoiGpK6KrP11pY/preview' width={"980px"} height={"500px"} /> </p>
       </div>
       </>
     );
