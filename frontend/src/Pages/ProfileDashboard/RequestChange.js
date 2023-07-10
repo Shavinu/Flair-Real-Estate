@@ -9,7 +9,16 @@ const RequestChange = () => {
   const [validUrl, setValidUrl] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [chosen, setChosen] = useState(false);
+  const [currentCompany, setCurrentCompany] = useState('');
+  const [userName, setUserName] = useState('');
   const param = useParams();
+
+  const getUserDetailById = (id) => {
+    UserService.getUserDetailById(id).then((response) => {
+      setCurrentCompany(response.company);
+      setUserName(response.firstName + " " + response.lastName)
+    });
+  };
 
   useEffect(() => {
     const verifyRequestUrl = async () => {
@@ -22,6 +31,7 @@ const RequestChange = () => {
               return;
             } else {
               setValidUrl(true);
+              getUserDetailById(param.userId);
             }
           })
           .catch((error) => {
@@ -127,6 +137,7 @@ const RequestChange = () => {
                       <div className='card-body pt-0'>
                         {validUrl && (
                           <div>
+                            <p>User {userName} (ID: {param.userId}) requests to change their company from <b>{currentCompany}</b> to <b>{param.company}</b></p>
                             <p className='px-2'>Approve Company Change?</p>
                             <form
                               onSubmit={onSubmit}
@@ -138,7 +149,7 @@ const RequestChange = () => {
                                 isLoading={isLoading}>
                                 Approve
                               </Button>
-                              <Link
+                              <Button
                                 className='btn waves-effect waves-light mr-75'
                                 onClick={() => {
                                   setChosen(true);
@@ -147,7 +158,7 @@ const RequestChange = () => {
                                   deleteToken();
                                 }}>
                                 Deny
-                              </Link>
+                              </Button>
                             </form>
                           </div>
                         )}
