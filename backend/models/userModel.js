@@ -58,7 +58,6 @@ const userSchema = new Schema(
     verifiedLicence: {
       type: Boolean,
       default: false,
-      required: true,
     },
     group: {
       type: Schema.Types.ObjectId,
@@ -72,7 +71,7 @@ const userSchema = new Schema(
       type: String,
     },
     addressLine2: {
-        type: String,
+      type: String,
     },
     city: {
       type: String,
