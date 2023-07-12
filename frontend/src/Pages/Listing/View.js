@@ -14,6 +14,7 @@ import * as UserService from "../../Services/UserService";
 import { PriceRangeOutput } from "../../Components/Form/PriceRange";
 import CardCarousel from "./Components/ImageCarousel";
 import { useState, useEffect } from "react";
+import "./Layout.css";
 
 const ListingDetails = () => {
   const [listing, setListing] = useState(null);
@@ -130,7 +131,8 @@ const ListingDetails = () => {
   }, [fetchedEditableByWithSubgroups, editorGroup, editor, listing]);
 
   if (!listing) {
-    return <ContentHeader headerTitle="View Listing"
+    return <Container className="content-container">
+    <ContentHeader headerTitle="View Listing"
       breadcrumb={[
         { name: "Home", link: "/" },
         { name: "Listings", link: "/listings" },
@@ -145,10 +147,11 @@ const ListingDetails = () => {
           </ButtonGroup>
         </div>}
     />;
+    </Container>
   }
 
   return (
-    <Container>
+    <Container className="content-container">
       <ContentHeader headerTitle="View Listing"
         breadcrumb={[
           { name: "Home", link: "/" },

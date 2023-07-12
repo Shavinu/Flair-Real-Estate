@@ -4,7 +4,7 @@ import { ContentHeader } from "../../Components";
 import { Link } from "react-router-dom";
 import * as ProjectService from "../../Services/ProjectService";
 import * as FileService from "../../Services/FileService";
-import "./List.css";
+import "./Layout.css";
 import { SearchComponent, PriceRangeInput } from "./Search";
 
 const ProjectsListing = () => {
@@ -67,7 +67,7 @@ const ProjectsListing = () => {
   };
 
   return (
-    <Container className="mt-0">
+    <Container className="content-container">
       <ContentHeader headerTitle="Projects"
         breadcrumb={[
           { name: "Home", link: "/" },

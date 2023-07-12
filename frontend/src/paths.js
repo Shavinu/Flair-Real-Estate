@@ -19,7 +19,7 @@ import BuyProcess from './Pages/Client/Resources/BuyProcess';
 import PropNews from './Pages/Client/Resources/PropNews';
 import Contact from './Pages/Client/Contact/Contact';
 import ListingPage from './Pages/Client/Listing/ListingPage';
-import AboutContent from './Pages/Admin/Managment/AboutContent';
+import AboutContent from './Pages/Admin/Management/AboutContent';
 import ProjectDetail from './Pages/Client/Listing/ProjectDetail';
 import ListingDetail from './Pages/Client/Listing/ListingDetail';
 

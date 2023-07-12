@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { Button, Card, ConfirmModal, ContentHeader, Dropdown } from "../../../Components";
+import { Container, Button, Card, ConfirmModal, ContentHeader, Dropdown } from "../../../Components";
 import CardBody from "../../../Components/Card/CardBody";
 import DataTable from 'react-data-table-component';
 import * as UserService from '../../../Services/UserService';
 import { Link } from "react-router-dom";
 import Toast from "../../../Components/Toast";
 import utils from "../../../Utils";
+import "../Layout.css";
 
 const List = () => {
   const [users, setUsers] = useState([]);
@@ -102,11 +103,8 @@ const List = () => {
   }, []);
 
   return <>
+  <Container className="content-container">
     <ContentHeader headerTitle="User List"
-      breadcrumb={[
-        { name: "Home", link: "/" },
-        { name: "Users", active: true },
-      ]}
       options={<Link className="btn btn-primary waves-effect waves-light" to="/users/create">Add User</Link>}
     />
     <Card>
@@ -132,6 +130,7 @@ const List = () => {
       onSubmit={onConfirmDeleteUsers}
       title={modalTitle}
     />
+    </Container>
   </>
 }
 

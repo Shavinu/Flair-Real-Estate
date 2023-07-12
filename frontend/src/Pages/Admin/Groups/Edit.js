@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom';
 import {
+  Container,
   Button,
   Card,
   CardBody,
@@ -14,6 +15,7 @@ import Toast from '../../../Components/Toast';
 import GroupInformationForm from './Components/GroupInformationForm';
 import GroupMembers from './Components/GroupMembers';
 import SubGroups from './Components/SubGroups';
+import "../Layout.css";
 
 const Edit = () => {
   const [groupDetail, setGroupDetail] = useState();
@@ -135,6 +137,7 @@ const Edit = () => {
 
   return (
     <>
+      <Container className="content-container">
       <ContentHeader
         headerTitle='Edit Group'
         breadcrumb={[
@@ -249,6 +252,7 @@ const Edit = () => {
           </Card>
         </Col>
       </Row>
+      </Container>
     </>
   );
 };

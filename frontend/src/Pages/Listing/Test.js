@@ -8,6 +8,7 @@ import { ImageBrowser, UploadTitle, UploadSlides } from './Components/ImageBrows
 import Select from 'react-select';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import "./Layout.css";
 
 const Listing = () => {
 
@@ -26,7 +27,7 @@ const Listing = () => {
   };
 
   return (
-    <Container>
+    <Container className = "content-container">
       <ContentHeader headerTitle="Create Listing"
         breadcrumb={[
           { name: "Home", link: "/" },

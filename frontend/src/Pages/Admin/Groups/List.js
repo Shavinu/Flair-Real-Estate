@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Button, Card, ConfirmModal, ContentHeader, Dropdown, Modal } from "../../../Components";
+import { Container, Button, Card, ConfirmModal, ContentHeader, Dropdown, Modal } from "../../../Components";
 import CardBody from "../../../Components/Card/CardBody";
 import DataTable from 'react-data-table-component';
 import * as GroupService from '../../../Services/GroupService';
@@ -8,6 +8,7 @@ import Toast from "../../../Components/Toast";
 import utils from "../../../Utils";
 import GroupMembers from "./Components/GroupMembers";
 import ExpandedComponent from "./Components/ExpandedComponent";
+import "../Layout.css";
 
 const List = () => {
   const [groups, setGroups] = useState([]);
@@ -105,6 +106,7 @@ const List = () => {
   }, []);
 
   return <>
+    <Container className="content-container">
     <ContentHeader headerTitle="Group List"
       breadcrumb={[
         { name: "Home", link: "/" },
@@ -153,6 +155,7 @@ const List = () => {
     >
       <GroupMembers group={selectedGroup} />
     </Modal >
+    </Container>
   </>
 }
 

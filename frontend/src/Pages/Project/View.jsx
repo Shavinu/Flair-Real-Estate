@@ -17,6 +17,7 @@ import { PriceRangeOutput } from "../../Components/Form/PriceRange";
 import CardCarousel from "./Components/ImageCarousel";
 import { useState, useEffect } from "react";
 import FileManager from "../../Components/Files/FileManager";
+import "./Layout.css";
 
 const ProjectDetails = () => {
   const [project, setProject] = useState(null);
@@ -175,7 +176,8 @@ const ProjectDetails = () => {
   }], [sortOrder]);
 
   if (!project) {
-    return <ContentHeader headerTitle="View Project"
+    return <Container className="content-container">
+    <ContentHeader headerTitle="View Project"
       breadcrumb={[
         { name: "Home", link: "/" },
         { name: "Projects", link: "/projects" },
@@ -191,10 +193,11 @@ const ProjectDetails = () => {
           </ButtonGroup>
         </div>}
     />;
+    </Container>
   }
   const [minPrice, maxPrice] = project.projectPriceRange;
   return (
-    <Container>
+    <Container className="content-container">
       <ContentHeader headerTitle="View Project"
         breadcrumb={[
           { name: "Home", link: "/" },

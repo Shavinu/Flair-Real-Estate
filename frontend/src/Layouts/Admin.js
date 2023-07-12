@@ -1,5 +1,5 @@
 import { Outlet, useNavigate } from "react-router-dom"
-import Navbar from "../Components/Navbar"
+import NavbarUser from "../Components/NavbarUser"
 import Sidebar from "../Components/Sidebar"
 import { useEffect, useState } from "react";
 import moment from "moment";
@@ -10,21 +10,21 @@ const Admin = () => {
 
   useEffect(() => {
     if (!user) {
-      navigate('/HomePage');
+      navigate('/');
       return;
     }
 
     const userData = JSON.parse(user);
     if (moment().isAfter(moment(userData.expired_at))) {
       localStorage.removeItem('user');
-      navigate('/HomePage');
+      navigate('/');
       return
     }
   }, [user]);
 
   return <div id="body" className="vertical-layout vertical-menu-modern 2-column navbar-floating footer-static menu-expanded" data-menu="vertical-menu-modern">
     {/* <!-- fixed-top--> */}
-    <Navbar />
+    
 
     {/* <!-- BEGIN Navigation--> */}
     <Sidebar homeUrl="/" />
@@ -32,7 +32,7 @@ const Admin = () => {
 
     {/* <!-- BEGIN Content--> */}
     <div className="app-content content">
-      <div className="content-wrapper">
+      <div>
         <Outlet />
       </div>
     </div>

@@ -18,6 +18,7 @@ import { ImageBrowser, UploadTitle, UploadSlides } from './Components/ImageBrows
 import ChooseProject from './Components/ChooseProject';
 import SelectListingMembers from "./Components/MembersSelector";
 import ListingCommission from './Components/CommissionSelector';
+import "./Layout.css";
 
 const Create = () => {
 
@@ -216,7 +217,7 @@ const Create = () => {
 
 
   return (
-    <Container>
+    <Container className="content-container">
       <ContentHeader headerTitle="Create Listing"
         breadcrumb={[
           { name: "Home", link: "/" },

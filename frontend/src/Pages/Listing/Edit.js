@@ -18,6 +18,7 @@ import { EditImageBrowser, UploadTitle, UploadSlides } from './Components/EditIm
 import ChooseProject from './Components/ChooseProject';
 import SelectProjectMembers from "./Components/MembersSelector";
 import ListingCommission from './Components/CommissionSelector';
+import "./Layout.css";
 
 const Edit = () => {
 
@@ -338,7 +339,7 @@ const Edit = () => {
 
   } else if (initialDataSet && !editorAllowed) {
     return (
-      <Container>
+      <Container className="content-container">
         <ContentHeader headerTitle="Edit Listing"
           breadcrumb={[
             { name: "Home", link: "/" },
@@ -356,7 +357,7 @@ const Edit = () => {
     );
   } else if (initialDataSet && editorAllowed) {
     return (
-      <Container>
+      <Container className="content-container">
         <ContentHeader headerTitle="Edit Listing"
           breadcrumb={[
             { name: "Home", link: "/" },
