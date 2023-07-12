@@ -5,6 +5,7 @@ import emailjs from '@emailjs/browser';
 import Toast from '../../../Components/Toast';
 import * as FileService from '../../../Services/FileService'
 import * as CmsService from '../../../Services/CmsService';
+import HomeHero from "../../../Components/HomeHero";
 
 const Contact = () => {
     const [image, setImage] = useState('');
@@ -66,8 +67,18 @@ const Contact = () => {
 
     return (
         <>
+            {/* <!-- BEGIN Navigation--> */}
+            <HomeHero
+                cName="villain"
+                heroImg="https://www.gannett-cdn.com/presto/2021/06/21/PNAS/1a51b257-cf34-4d30-a2b3-297589a51dab-Bold_Colors-10.JPG?crop=2611,1469,x1,y226&width=1600&height=800&format=pjpg&auto=webp"
+                title="Real Estate"
+                text="Choose Your New Estate with Real Estate."
+                btnClass="hide"
+                url="/"
+            />
+            {/* <!-- END Navigation--> */}
             <div className="form-container">
-                <h1>Send a message to us!</h1>
+                <h1>Send us a message!</h1>
                 <form ref={form} onSubmit={sendEmail}>
                     <input placeholder="Name" />
                     <input placeholder="Email" />

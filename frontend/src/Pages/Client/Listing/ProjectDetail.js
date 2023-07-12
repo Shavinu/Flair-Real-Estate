@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
-import HomeHero from "../../../Components/HomeHero";
 import * as ProjectService from "../../../Services/ProjectService";
 import * as ListingService from "../../../Services/ListingService";
 import * as GroupService from "../../../Services/GroupService";
@@ -14,6 +13,7 @@ import { Link } from "react-router-dom";
 import CardCarousel from "../../Project/Components/ImageCarousel";
 import _, { set } from 'lodash';
 import NearbyPOIs from "../../../Components/Maps/getNearbyPOIs";
+import HomeHeroWithSearch from "../../../Components/HomeHeroWithSearch";
 
 const ProjectDetail = () => {
   const [project, setProject] = useState(null);
@@ -179,7 +179,7 @@ const ProjectDetail = () => {
 
   return (
     <>
-      <HomeHero
+      <HomeHeroWithSearch
         cName="hero"
         heroImg="https://www.gannett-cdn.com/presto/2021/06/21/PNAS/1a51b257-cf34-4d30-a2b3-297589a51dab-Bold_Colors-10.JPG?crop=2611,1469,x1,y226&width=1600&height=800&format=pjpg&auto=webp"
         title="Real Estate"

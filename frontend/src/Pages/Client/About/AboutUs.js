@@ -3,6 +3,7 @@ import { React, useState, useEffect } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import * as FileService from '../../../Services/FileService'
 import * as CmsService from '../../../Services/CmsService';
+import HomeHero from "../../../Components/HomeHero";
 
 const AboutUs = () => {
   const [image, setImage] = useState('');
@@ -32,7 +33,17 @@ const AboutUs = () => {
     findPage(page);
   }, [page]);
 
-  return (
+  return (<>
+    {/* <!-- BEGIN Navigation--> */}
+    <HomeHero
+      cName="villain"
+      heroImg="https://www.gannett-cdn.com/presto/2021/06/21/PNAS/1a51b257-cf34-4d30-a2b3-297589a51dab-Bold_Colors-10.JPG?crop=2611,1469,x1,y226&width=1600&height=800&format=pjpg&auto=webp"
+      title="Real Estate"
+      text="Choose Your New Estate with Real Estate."
+      btnClass="hide"
+      url="/"
+    />
+    {/* <!-- END Navigation--> */}
     <>
       <div style={{ margin: "7rem", display: "flex", justifyContent: "center", flexDirection: "column", textAlign: "center" }}>
         <h1>About Us</h1>
@@ -40,6 +51,7 @@ const AboutUs = () => {
         <div style={{ margin: "auto", width: "80%" }} dangerouslySetInnerHTML={{ __html: bodyText }} />
       </div>
     </>
+  </>
 
   );
 }
