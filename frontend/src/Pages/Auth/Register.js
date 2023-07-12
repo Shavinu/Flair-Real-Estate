@@ -137,7 +137,6 @@ const Register = ({ type, page }) => {
 
         if (response?.message === 'Licence is valid') {
           setAlertMessage();
-          setVerifiedLicence(true);
 
           AuthServices.register({
             firstName: firstName,
@@ -149,14 +148,13 @@ const Register = ({ type, page }) => {
             company: company,
             jobType: jobType,
             licence: licence,
-            verifiedLicence: verifiedLicence,
+            verifiedLicence: true,
             accType: type,
             verified: false,
           })
             .then((response) => {
               if (response?.message) {
                 setAlertMessage();
-                Toast(response.message);
                 setMessage(response.message);
               }
             })
@@ -167,8 +165,11 @@ const Register = ({ type, page }) => {
               ) {
                 setMessage();
                 setAlertMessage(response.response.data.error.message);
+                errorShake();
+              } else {
+                setMessage(response.response.data.message);
+                Toast(response.response.data.message);
               }
-              errorShake();
             })
             .finally(() => setIsLoading(false));
         } else {

@@ -1,17 +1,42 @@
-import React from 'react';
+import { React, useState, useEffect } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-//import imageExample from "/images/egImage.jpg"
+import * as FileService from '../../Services/FileService'
+import * as CmsService from '../../Services/CmsService';
 
 const About = () => {
+    const [image, setImage] = useState('');
+    const [bodyText, setBodyText] = useState('');
+    const [imageUrls, setImageUrls] = useState({});
+    const page = "About";
+
+    //get page by name
+    const findPage = (page) => {
+        CmsService.findPage(page)
+            .then((response) => {
+                setImage(response.image);
+                setBodyText(response.textBody);
+                getImageUrl(response.image)
+                console.log(bodyText)
+            })
+    }
+    //get image by ID
+    const getImageUrl = async (imageId) => {
+        if (!imageUrls[imageId]) {
+            const url = await FileService.getImageUrl(imageId);
+            setImageUrls((prevState) => ({ ...prevState, [imageId]: url }));
+        }
+    };
+
+    useEffect(() => {
+        findPage(page);
+    }, [page]);
+
     return (
         <>
 
             <h1>About Us</h1>
-            <img src="/images/3004.png" alt="About Us" />
-            <p>Flair Real Estate pride themselves on their ability to create genuine customer connections and build meaningful rapport through sharing in depth local knowledge and perspectives.</p>
-            <p>Our agency is founded on the belief that we can provide a personalised service which is simply impossible for the big chains to replicate. Why be considered just a number when you are making one of the biggest decisions of your life?</p>
-            <p>With an exceptional track record of achieving record sales and a long list of referrals and repeat customers, we take the time to get to know your situation and priorities. Building unique campaigns that catch the eyes of the widest possible number of potential buyers, we constantly strive to maximise your sales potential.</p>
-            <p>Our ability to enhance and streamline online exposure through embracing technology makes Flair Real Estate one of the most exciting agencies in the area.</p>
+            <img src={imageUrls[image]} alt="About Us" />
+            <p>info: {bodyText}</p>
         </>
     );
 };
