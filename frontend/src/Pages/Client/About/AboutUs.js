@@ -1,25 +1,46 @@
 import "./AboutUs.css";
+import { React, useState, useEffect } from 'react';
+import { Container, Row, Col } from 'react-bootstrap';
+import * as FileService from '../../../Services/FileService'
+import * as CmsService from '../../../Services/CmsService';
 
 const AboutUs = () => {
+  const [image, setImage] = useState('');
+  const [bodyText, setBodyText] = useState('');
+  const [imageUrls, setImageUrls] = useState({});
+  const page = "About";
+
+  //get page by name
+  const findPage = (page) => {
+    CmsService.findPage(page)
+      .then((response) => {
+        setImage(response.image);
+        setBodyText(response.textBody);
+        getImageUrl(response.image)
+        console.log(bodyText)
+      })
+  }
+  //get image by ID
+  const getImageUrl = async (imageId) => {
+    if (!imageUrls[imageId]) {
+      const url = await FileService.getImageUrl(imageId);
+      setImageUrls((prevState) => ({ ...prevState, [imageId]: url }));
+    }
+  };
+
+  useEffect(() => {
+    findPage(page);
+  }, [page]);
+
   return (
-    <div className="about-container">
-      <h1>About Us</h1>
-        <p>Flair Real Estate pride themselves on their ability to create genuine customer connections and build meaningful rapport through sharing in depth local knowledge and perspectives.</p>
-        <p>Our agency is founded on the belief that we can provide a personalised service which is simply impossible for the big chains to replicate. Why be considered just a number when you are making one of the biggest decisions of your life?</p>
-        <p>With an exceptional track record of achieving record sales and a long list of referrals and repeat customers, we take the time to get to know your situation and priorities. Building unique campaigns that catch the eyes of the widest possible number of potential buyers, we constantly strive to maximise your sales potential.</p>
-        <p>Our ability to enhance and streamline online exposure through embracing technology makes Flair Real Estate one of the most exciting agencies in the area.</p>
-      <h2>Our History</h2>
-      <p>Real Estate is a new company.</p>
+    <>
+      <div style={{ margin: "7rem", display: "flex", justifyContent: "center", flexDirection: "column", textAlign: "center" }}>
+        <h1>About Us</h1>
+        <img style={{ padding: "2rem", margin: "auto", width: "99%" }} src={imageUrls[image]} alt="About Us" />
+        <div style={{ margin: "auto", width: "80%" }} dangerouslySetInnerHTML={{ __html: bodyText }} />
+      </div>
+    </>
 
-      <h2>Our Mission</h2>
-      <p>Our mission is</p>
-
-      <h2>Our Vision</h2>
-      <p>Our vision is</p>
-
-      <h2>Our Agent</h2>
-      <p></p>
-    </div>
   );
 }
 

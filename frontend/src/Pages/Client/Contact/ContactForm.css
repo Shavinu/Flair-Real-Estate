@@ -1,53 +1,58 @@
 .form-container {
-    margin: 2rem 2rem;
-    color: #2a2a2a;
+  color: #2a2a2a;
+  margin: 7rem;
+  display: flex;
+  justify-content: center;
+  flex-Direction: column;
+  text-Align: center;
+}
+
+.form-container form {
+  padding-top: 3rem;
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  margin: auto;
+}
+
+.form-container input {
+  height: 3rem;
+  padding: 0 1rem;
+  margin-bottom: 2rem;
+  border-radius: 0.3rem;
+  border: 1px solid #250e0e;
+}
+
+.form-container textarea {
+  padding: 1rem;
+  margin-bottom: 2rem;
+  border-radius: 0.3rem;
+  border: 1px solid #250e0e;
+}
+
+.form-container button {
+  height: 40px;
+  width: 120px;
+  margin: auto;
+  display: inline;
+  color: #000;
+  background: white;
+  border: 1px solid #000;
+  border-radius: 3px;
+}
+
+.form-container button:hover {
+  color: white;
+  background: black;
+}
+
+@media screen and (max-width: 850px) {
+  .form-container {
+    margin: 4rem 2rem;
   }
-  
+
   .form-container form {
-    padding-top: 3rem;
-    display: flex;
-    flex-direction: column;
-    width: 50%;
-    margin: auto;
+    padding-top: 2rem;
+    width: 90%;
   }
-  
-  .form-container input {
-    height: 3rem;
-    padding: 0 1rem;
-    margin-bottom: 2rem;
-    border-radius: 0.3rem;
-    border: 1px solid #250e0e;
-  }
-  
-  .form-container textarea {
-    padding: 1rem;
-    margin-bottom: 2rem;
-    border-radius: 0.3rem;
-    border: 1px solid #250e0e;
-  }
-  
-  .form-container button {
-    height: 40px;
-    width: 120px;
-    display: inline;
-    color: #000;
-    background: white;
-    border: 1px solid #000;
-    border-radius: 3px;
-  }
-  
-  .form-container button:hover {
-    color: white;
-    background: black;
-  }
-  
-  @media screen and (max-width: 850px) {
-    .form-container {
-      margin: 4rem 2rem;
-    }
-    .form-container form {
-      padding-top: 2rem;
-      width: 90%;
-    }
-  }
-  
+}

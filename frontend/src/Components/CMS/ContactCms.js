@@ -6,29 +6,32 @@ import * as CmsService from '../../Services/CmsService';
 import ReactQuill from 'react-quill';
 import Toast from '../Toast';
 import 'react-quill/dist/quill.snow.css';
+import { EditImageBrowser, UploadTitle } from './Components/EditImageBrowser';
 
 const ContactCms = () => {
     const page = ('Contact');
-    const fileInput = useRef();
-    const [image, setImage] = useState('');
+    const [titleImage, setTitleImage] = useState('');
     const [textBody, setTextBody] = useState('');
     const [serviceID, setServiceID] = useState('');
     const [templateID, setTemplateID] = useState('');
     const [publicKey, setPublicKey] = useState('');
     const [errors, setErrors] = useState();
     const [isLoading, setIsLoading] = useState(false)
+    const [deletedTitleImage, setDeletedTitleImage] = useState(null);
+    const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
 
+    //finds page by name and sets variables 
     const findPage = (page) => {
         CmsService.findPage(page)
             .then((response) => {
-                setImage(response.image);
+                setTitleImage(response.image);
                 setTextBody(response.textBody);
                 setServiceID(response.serviceId);
                 setTemplateID(response.templateId);
                 setPublicKey(response.publicKey);
             })
     }
-
+    //handle errors
     const errorShake = () => {
         window.jQuery('button[type=submit]').addClass('animated headShake bg-red');
 
@@ -42,6 +45,7 @@ const ContactCms = () => {
             );
     };
 
+    //you already know
     const isValid = () => {
         let isValid = true;
         let errors = {}
@@ -66,11 +70,11 @@ const ContactCms = () => {
             isValid = false
         }
         setErrors(errors);
-        console.log(errors);
+        console.log("errors", errors);
         return isValid
     }
 
-    const onSubmit = (e) => {
+    const onSubmit = async (e) => {
         setIsLoading(true);
         e.preventDefault();
         if (!isValid()) {
@@ -79,13 +83,22 @@ const ContactCms = () => {
             return
         }
 
+        //uploads image, needs refinement e.g if already has image, use diffent method
+        var titleImageId = null;
+        console.log("title", titleImage, user);
+        if (titleImage) {
+            titleImageId = await UploadTitle(titleImage, user);
+            console.log("id", titleImageId)
+        }
+
         const onCancel = (e) => {
 
         }
 
+        //prepare json package
         const body = {
             page: "Contact",
-            image: null,
+            image: titleImageId,
             pdf: null,
             textBody: textBody,
             serviceId: serviceID,
@@ -93,7 +106,7 @@ const ContactCms = () => {
             publicKey: publicKey,
         }
         console.log(JSON.stringify(body))
-
+        //send it 
         CmsService.updatePage(page, JSON.stringify(body))
             .then(response => {
                 Toast('Page has been updated successfully!', 'success');
@@ -101,7 +114,7 @@ const ContactCms = () => {
             })
             .catch((error) => {
                 Toast('Failed to update user!', 'danger');
-                console.log(error, 'failed here')
+                console.log(error, 'failed to update page')
                 errorShake();
             })
             .finally(() =>
@@ -112,6 +125,10 @@ const ContactCms = () => {
     useEffect(() => {
         findPage(page);
     }, [page]);
+
+    const handleQuillEdit = (value) => {
+        setTextBody(value)
+    }
 
     return (
         <>
@@ -125,8 +142,13 @@ const ContactCms = () => {
                             md={12}>
                             <Group>
                                 <label htmlFor='image'>Edit image</label>
-                                <div style={{ border: "1px dashed", margin: "1rem" }}>
-                                    <input type='file' ref={fileInput} style={{ padding: "1rem" }} />
+                                <div className="d-xl-flex" style={{ border: "1px dashed", margin: "15px" }}>
+                                    <EditImageBrowser
+                                        titleImage={titleImage}
+                                        setTitleImage={setTitleImage}
+                                        deletedTitleImage={deletedTitleImage}
+                                        setDeletedTitleImage={setDeletedTitleImage}
+                                    />
                                 </div>
                             </Group>
                         </Col>
@@ -136,12 +158,10 @@ const ContactCms = () => {
                             <Group>
                                 <label htmlFor='text' style={{ padding: "1rem" }}>Edit text</label>
                                 <ReactQuill
-                                    defaultValue={textBody}
-                                    onChange={(e) => {
-                                        setTextBody(e.value);
-                                    }}
+                                    value={textBody}
+                                    onChange={handleQuillEdit}
+                                    placeholder='wish this would work'
                                     error={errors?.textBody}
-
                                 />
                             </Group>
                         </Col>
