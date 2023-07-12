@@ -45,7 +45,7 @@ const AboutUs = () => {
     />
     {/* <!-- END Navigation--> */}
     <>
-      <div style={{ margin: "7rem", display: "flex", justifyContent: "center", flexDirection: "column", textAlign: "center" }}>
+      <div style={{ margin: "2rem", display: "flex", justifyContent: "center", flexDirection: "column", textAlign: "center" }}>
         <h1>About Us</h1>
         <img style={{ padding: "2rem", margin: "auto", width: "99%" }} src={imageUrls[image]} alt="About Us" />
         <div style={{ margin: "auto", width: "80%" }} dangerouslySetInnerHTML={{ __html: bodyText }} />

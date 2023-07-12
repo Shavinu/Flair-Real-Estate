@@ -1,6 +1,6 @@
 .hero {
   width: 100%;
-  height: 90vh;
+  height: 100vh;
   position: relative;
 }
 
@@ -23,13 +23,13 @@
 
 .villain {
   width: 100%;
-  height: 50vh;
+  height: 60vh;
   position: relative;
 }
 
 .villain-mid {
   width: 100%;
-  height: 50vh;
+  height: 60vh;
   position: relative;
 }
 
