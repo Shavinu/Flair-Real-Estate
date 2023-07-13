@@ -1,4 +1,5 @@
 import Home from './Pages/Admin/Home';
+import * as Frontpage from './Pages/Admin/Frontpage/';
 import * as Users from './Pages/Admin/Users';
 import * as Groups from './Pages/Admin/Groups';
 import * as Project from './Pages/Project';
@@ -135,6 +136,12 @@ export const views = [
     icon: 'feather icon-user-check',
     element: <Dashboard.EditProfile />,
     isRoute: true,
+  },
+  {
+    name: 'Front page',
+    action: '/frontpage',
+    icon: 'feather icon-users',
+    element: <Frontpage.Frontpage />,
   },
   {
     name: 'User Groups',
