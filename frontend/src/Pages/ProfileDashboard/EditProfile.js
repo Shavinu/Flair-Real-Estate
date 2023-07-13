@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate, Navigate } from 'react-router-dom';
 import {
+  Container,
   Button,
   Card,
   Col,
@@ -370,6 +371,7 @@ const EditProfile = ({ page }) => {
 
   return (
     <>
+    <Container className="content-container">
       <ContentHeader
         headerTitle='Edit Profile'
         breadcrumb={[
@@ -930,6 +932,7 @@ const EditProfile = ({ page }) => {
           </Col>
         </Row>
       </Modal>
+      </Container>
     </>
   );
 };

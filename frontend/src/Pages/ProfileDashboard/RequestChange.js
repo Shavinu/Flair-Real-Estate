@@ -1,7 +1,7 @@
 import { Link, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import * as UserService from '../../Services/UserService';
-import { Alert, Button } from '../../Components';
+import { Container, Alert, Button } from '../../Components';
 
 const RequestChange = () => {
   const [alertMessage, setAlertMessage] = useState('');
@@ -104,6 +104,7 @@ const RequestChange = () => {
 
   return (
     <>
+    <Container className="content-container">
       <section className='row flexbox-container'>
         <div className='col-xl-8 col-11 d-flex justify-content-center'>
           <div className='card bg-authentication rounded-0 mb-0'>
@@ -171,6 +172,7 @@ const RequestChange = () => {
           </div>
         </div>
       </section>
+      </Container>
     </>
   );
 };
