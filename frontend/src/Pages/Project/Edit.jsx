@@ -307,8 +307,7 @@ const EditProject = () => {
     );
   } else if (initialDataSet && editorAllowed) {
     return (
-    <div className = "content-container">
-    <Container>
+    <Container className = "content-container">
       <ContentHeader headerTitle="Edit Project"
         breadcrumb={[
           { name: "Home", link: "/" },
@@ -475,7 +474,6 @@ const EditProject = () => {
         />
       </div>
     </Container>
-    </div>
     )
   }
 }
