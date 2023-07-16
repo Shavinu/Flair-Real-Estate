@@ -5,6 +5,7 @@ import Dropdown from "./dropdown";
 import Scrollbar from "./scrollbar";
 import CustomBreadcrumbs from "./custom-breadcrumbs";
 import ConfirmDialog from "./confirm-dialog";
+import Image from "./image";
 
 export {
   Logo,
@@ -14,4 +15,5 @@ export {
   Scrollbar,
   CustomBreadcrumbs,
   ConfirmDialog,
+  Image
 }

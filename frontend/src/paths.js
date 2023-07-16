@@ -1,10 +1,12 @@
 import { ICONS, SvgColor } from "./components/icons";
 import * as Auth from "./pages/auth";
 import * as Dashboard from "./pages/dashboard";
+import * as Client from "./pages/client";
 
 const ROOTS = {
   AUTH: '/auth',
   DASHBOARD: '/dashboard',
+  Client: '/',
 };
 
 export const paths = {
@@ -22,6 +24,11 @@ export const paths = {
       create: `${ROOTS.DASHBOARD}/users/create`,
       edit: `${ROOTS.DASHBOARD}/users/:id`
     }
+  },
+  client: {
+    home: ROOTS.Client,
+    about: `${ROOTS.Client}/about`,
+    contact: `${ROOTS.Client}/contact`,
   }
 }
 
@@ -39,6 +46,16 @@ export const api = {
     edit: '/api/users/{{id}}',
     delete: '/api/users/{{id}}',
     deleteMany: '/api/users/delete-many',
+  },
+  projects: {
+    list: '/api/projects',
+    search: '/api/search/projects_search',
+  },
+  files: {
+    stream: '/api/files/stream/{{id}}',
+  },
+  listings: {
+    search: '/api/search/listings_search',
   }
 }
 
@@ -95,4 +112,12 @@ export const AuthViews = [
   //   action: '/auth/reset-password/:userId/:token',
   //   element: <Auth.ResetPassword />,
   // },
+];
+
+export const ClientViews = [
+  {
+    name: 'Home',
+    action: paths.client.home,
+    element: <Client.Home />,
+  },
 ];

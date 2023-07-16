@@ -1,8 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 
-import { views, AuthViews } from './paths';
-import { AuthLayout, DashboardLayout } from "./layouts";
-
+import { views, AuthViews, ClientViews } from './paths';
+import { AuthLayout, DashboardLayout, ClientLayout } from "./layouts";
 
 //get all paths which are defined in paths.js file
 export const getPaths = (r, parentIndex = 0) => {
@@ -54,6 +53,9 @@ const RenderRouters = () => {
       </Route>
       <Route element={<DashboardLayout />}>
         {getRoutes(views)}
+      </Route>
+      <Route element={<ClientLayout />}>
+        {getRoutes(ClientViews)}
       </Route>
     </Routes>
   );

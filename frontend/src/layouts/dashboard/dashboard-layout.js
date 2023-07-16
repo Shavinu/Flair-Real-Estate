@@ -10,7 +10,6 @@ const DashboardLayout = () => {
   const lgUp = useResponsive('up', 'lg');
   const [isOpen, setIsOpen] = useState(false);
 
-
   return <>
     <AuthGuard>
       <Header onOpenNav={() => setIsOpen(true)}/>

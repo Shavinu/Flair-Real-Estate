@@ -14,7 +14,7 @@ export const isValidEmail = (email) => {
 
 export const capitalize = (s) => (s && s[0].toUpperCase() + s.slice(1)) || ""
 
-export const isValidMobile = (mobile) =>{
+export const isValidMobile = (mobile) => {
   mobile = mobile.replace(/-|\s/g, "");
   const regex = /^(?:\+?61|0)[2-478](?:[ -]?[0-9]){8}$/;
 
@@ -26,6 +26,10 @@ export const isValidPassword = (password) => {
   return regex.test(password);
 }
 
-export const dateFormat = (date) => {
-  return moment(date).format('YYYY-MM-DD [at] h:mm A z');
+export const dateFormat = (date, format = 'YYYY-MM-DD [at] h:mm A z') => {
+  return moment(date).format(format);
+}
+
+export const priceFormat = (price) => {
+  return new Intl.NumberFormat().format(price)
 }

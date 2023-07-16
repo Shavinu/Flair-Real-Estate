@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { useOffSetTop } from '../../../hooks/use-off-set-top';
 import { useResponsive } from '../../../hooks/use-responsive';
 import { bgBlur } from '../../../theme/css';
-import { HEADER, NAV } from './config-layout';
+import { HEADER, NAV } from '../../config-layout';
 import { SvgColor } from '../../../components/icons';
 import { ASSETS_URL } from '../../../config-global';
 import ProfileDropdown from './profile-dropdown';

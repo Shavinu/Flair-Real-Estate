@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'; // @mui
 import { useResponsive } from '../../../hooks/use-responsive';
-import { HEADER, NAV } from './config-layout';
+import { HEADER, NAV } from '../../config-layout';
 import { Box } from '@mui/material';
 
 const Main = ({ children, sx, ...other }) => {
