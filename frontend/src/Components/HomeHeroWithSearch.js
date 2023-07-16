@@ -22,9 +22,9 @@ function HomeHeroWithSearch(props) {
       <div className={props.cName}>
         <img src={props.heroImg} alt="heroImg" />
         <div className="hero-text">
-          <h1>{props.title}</h1>
-          <p>{props.text}</p>
-          <Container>
+           <Container>
+            <h1>{props.title}</h1>
+            <p>{props.text}</p>
             <Card className="p-4">
               <CardBody>
                 <InputGroup className="rounded">
