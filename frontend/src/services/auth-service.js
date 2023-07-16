@@ -5,6 +5,10 @@ const login = (credentials) => {
   return utils.fetch.httpPost(api.auth.login, credentials)
 }
 
+const register = (credentials) => {
+  return utils.fetch.httpPost(api.auth.register, credentials)
+}
+
 const getCurrentUser = (token) => {
   return utils.fetch.httpPost(api.auth.currentUser)
 }
@@ -27,6 +31,7 @@ const verifyLicence = (accType, licence) => {
 
 const AuthService = {
   login,
+  register,
   getCurrentUser,
   forgotPassword,
   verifyEmail,

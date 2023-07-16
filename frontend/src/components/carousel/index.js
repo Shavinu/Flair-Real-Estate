@@ -5,5 +5,6 @@ export { default as CarouselArrows } from './carousel-arrows';
 export { default as CarouselArrowIndex } from './carousel-arrow-index';
 
 export { default as useCarousel } from './use-carousel';
+export { default as CarouselThumbnail } from './carousel-thumbnail';
 
 export default Carousel;

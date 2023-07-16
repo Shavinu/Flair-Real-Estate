@@ -1,7 +1,6 @@
 import { AppBar, IconButton, Stack, Toolbar } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { useOffSetTop } from '../../../hooks/use-off-set-top';
 import { useResponsive } from '../../../hooks/use-responsive';
 import { bgBlur } from '../../../theme/css';
 import { HEADER, NAV } from '../../config-layout';

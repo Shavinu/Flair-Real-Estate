@@ -9,11 +9,13 @@ import { paths } from "../../paths";
 import { KeyboardArrowLeftRounded } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import AuthService from "../../services/auth-service";
+import { useSnackbar } from '../../components/snackbar';
 
 const Register = () => {
   const [type, setType] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
+  const { enqueueSnackbar } = useSnackbar();
 
   const formik = useFormik({
     initialValues: {
@@ -22,11 +24,12 @@ const Register = () => {
       phoneNo: '',
       email: '',
       company: '',
-      license: '',
-      jobTitle: '',
+      licence: '',
+      jobType: '',
       password: '',
       passwordConfirmation: '',
-      accType: type
+      accType: type,
+      verified: false,
     },
     validationSchema: Yup.object({
       accType: Yup
@@ -51,10 +54,10 @@ const Register = () => {
       company: Yup
         .string()
         .required('Company is required'),
-      license: Yup
+      licence: Yup
         .string()
-        .required('License is required'),
-      jobTitle: Yup
+        .required('licence is required'),
+      jobType: Yup
         .object()
         .required('Job Title is required'),
       password: Yup
@@ -85,10 +88,11 @@ const Register = () => {
         .required('Passwords must match'),
     }),
     onSubmit: async (values) => {
-      let data = { ...values, jobTitle: values.jobTitle.value };
+      let data = { ...values, jobType: values.jobType.value };
+      delete data.passwordConfirmation;
       setIsSubmitting(true);
 
-      await AuthService.verifyLicence(data.accType, data.license)
+      await AuthService.verifyLicence(data.accType, data.licence)
         .then((response) => {
           if (response?.error) {
             setAlertMessage(response.error.message);
@@ -109,10 +113,10 @@ const Register = () => {
               })
               .catch((response) => {
                 if (
-                  response.response.data?.error &&
-                  response.response.data?.error.message
+                  response?.response?.data?.message
                 ) {
-                  setAlertMessage(response.response.data.error.message);
+                  setAlertMessage(response?.response?.data?.message);
+                  enqueueSnackbar('Register Successfully! Please verify your email before login!');
                 }
               });
           } else {
@@ -123,10 +127,12 @@ const Register = () => {
           }
         })
         .catch((error) => {
-          setAlertMessage('An error occurred while verifying the licence.');
+          setAlertMessage(error?.response?.data?.error?.message || 'An error occurred while verifying the licence.');
           setIsSubmitting(false);
           return;
         });
+
+      setIsSubmitting(false);
     }
   });
 
@@ -254,22 +260,22 @@ const Register = () => {
           </Typography>
 
           <TextField
-            error={!!(formik.touched.license && formik.errors.license)}
+            error={!!(formik.touched.licence && formik.errors.licence)}
             fullWidth
-            helperText={formik.touched.license && formik.errors.license}
+            helperText={formik.touched.licence && formik.errors.licence}
             label={type !== 'assistant agent'
-              ? 'License Number'
+              ? 'Licence Number'
               : 'Certificate Number'}
-            name="license"
+            name="licence"
             onBlur={formik.handleBlur}
             onChange={formik.handleChange}
             type="text"
-            value={formik.values.license}
+            value={formik.values.licence}
           />
 
           <Autocomplete
-            value={formik.values.jobTitle}
-            onChange={(e, value) => formik.setFieldValue('jobTitle', value)}
+            value={formik.values.jobType}
+            onChange={(e, value) => formik.setFieldValue('jobType', value)}
             options={[
               {
                 value: 'incharge',
@@ -286,14 +292,14 @@ const Register = () => {
               },
             ]}
             getOptionLabel={(option) => option.label || ""}
-            isOptionEqualToValue={(option) => !!formik.values.jobTitle && option.value === formik.values.jobTitle}
+            isOptionEqualToValue={(option) => !!formik.values.jobType && option.value === formik.values.jobType}
             freeSolo
-            name="jobTitle"
+            name="jobType"
             renderInput={(params) => <TextField {...params}
               label="Job Title"
               type="text"
-              error={!!(formik.touched.jobTitle && formik.errors.jobTitle)}
-              helperText={formik.touched.jobTitle && formik.errors.jobTitle} />}
+              error={!!(formik.touched.jobType && formik.errors.jobType)}
+              helperText={formik.touched.jobType && formik.errors.jobType} />}
           />
 
           <Grid container>

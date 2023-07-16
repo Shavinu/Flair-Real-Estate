@@ -1,13 +1,15 @@
-import { Box, Card, CardContent, Container, InputAdornment, Link, Stack, TextField, Typography, outlinedInputClasses } from "@mui/material";
+import { ChevronRight } from "@mui/icons-material";
+import { Box, Button, Container, Link, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { alpha, useTheme } from '@mui/material/styles';
 import { Helmet } from "react-helmet-async";
 import { RouterLink } from "../../../components";
-import Iconify from "../../../components/icons/iconify";
 import Image from "../../../components/image";
 import { useResponsive } from "../../../hooks/use-responsive";
+import HomeHero from "../../../sections/home/home-hero";
 import { bgGradient } from "../../../theme/css";
 import LatestProperties from "./components/latest-properties";
+import { paths } from "../../../paths";
 
 const Home = () => {
   const theme = useTheme();
@@ -19,59 +21,7 @@ const Home = () => {
       <title> Flair Real Estate</title>
     </Helmet>
 
-    <Box
-      sx={{
-        ...bgGradient({
-          color: alpha(theme.palette.grey[900], 0.8),
-          imgUrl: '/assets/images/home/hero.jpg',
-        }),
-        py: 20,
-        overflow: 'hidden',
-        position: 'relative',
-      }}
-    >
-      <Container>
-        <Box
-          sx={{
-            textAlign: { xs: 'center' },
-          }}
-        >
-          <div>
-            <Typography variant="h1" sx={{ color: 'primary.main' }}>
-              Flair Real Estate
-            </Typography>
-
-            <Stack spacing={2} display="inline-flex" direction="row" sx={{ color: 'common.white' }}>
-              <Typography variant="h2">Choose Your New Estate with Flair Real Estate.</Typography>
-            </Stack>
-          </div>
-
-          <Card sx={{ my: 5 }}>
-            <CardContent>
-              <TextField
-                fullWidth
-                placeholder="Search "
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{
-                  [`& .${outlinedInputClasses.root}`]: {
-                    bgcolor: 'common.white',
-                  },
-                  [`& .${outlinedInputClasses.input}`]: {
-                    typography: 'subtitle1',
-                  },
-                }}
-              />
-            </CardContent>
-          </Card>
-        </Box>
-      </Container>
-    </Box>
+    <HomeHero />
 
     <Container
       sx={{
@@ -103,7 +53,7 @@ const Home = () => {
         )}
 
         <Grid xs={12} md={6} lg={5}>
-          <Typography variant="h2" sx={{ mb: 3 }}>
+          <Typography variant="h3" sx={{ mb: 3 }}>
             What We Do
           </Typography>
           <Typography>
@@ -121,7 +71,7 @@ const Home = () => {
       }}
     >
       <Container>
-        <Typography variant="h2" sx={{ mb: 3 }}>
+        <Typography variant="h3" sx={{ mb: 3 }}>
           What We Offer
         </Typography>
 
@@ -250,6 +200,29 @@ const Home = () => {
       <Container>
         <LatestProperties />
       </Container>
+    </Box>
+
+    <Box
+      sx={{
+        ...bgGradient({
+          color: alpha(theme.palette.grey[900], 0.8),
+          imgUrl: '/assets/images/home/hero.jpg',
+        }),
+        py: 20,
+        overflow: 'hidden',
+        position: 'relative',
+      }}
+    >
+      <Box sx={{
+        textAlign: { xs: 'center' },
+      }}>
+        <Button LinkComponent={RouterLink} href={paths.client.properties.list} variant="text">
+          <Typography variant="h4" color="common.white">
+            Search Properties
+          </Typography>
+          <ChevronRight fontSize="large" sx={{pt:0.5, color: "common.white"}} />
+        </Button>
+      </Box>
     </Box>
   </>
 }

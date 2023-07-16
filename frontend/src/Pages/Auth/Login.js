@@ -43,9 +43,9 @@ const Login = () => {
       setIsSubmitting(true);
       try {
         await login(values.email, values.password);
-        router.push(returnTo || paths.dashboard.root);
+        router.push(returnTo || paths.client.home);
       } catch (err) {
-        setErrorMsg(err?.response?.data?.message);
+        setErrorMsg(err?.response?.data?.error?.message || 'An error occurred while login! Please try again');
       }
       setIsSubmitting(false);
     }
@@ -97,7 +97,7 @@ const Login = () => {
             value={formik.values.password}
           />
 
-          <Link component={RouterLink} href="/auth/forgot-password" variant="body2" color="inherit" underline="always" sx={{ alignSelf: 'flex-end' }}>
+          <Link component={RouterLink} href={paths.auth.forgotPassword} variant="body2" color="inherit" underline="always" sx={{ alignSelf: 'flex-end' }}>
             Forgot password?
           </Link>
 

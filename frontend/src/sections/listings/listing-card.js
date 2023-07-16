@@ -8,7 +8,7 @@ import { DEFAULT_AVATAR_URL, HOST_URL } from "../../config-global";
 import utils from "../../utils";
 
 const ListingCard = ({ item }) => {
-  const { _id, name, owner, priceRange, status, type, address, options, commission, images = [], createdAt, isProject } = item
+  const { _id, name, owner, priceRange, status, type, address, options, commission, images = [], createdAt, isProject, availableListingCount } = item
 
   const theme = useTheme();
 
@@ -18,7 +18,6 @@ const ListingCard = ({ item }) => {
   });
 
   return <>
-    <Link component={RouterLink} href={isProject ? `/projects/${_id}` : `listings/${_id}`}>
     <Card sx={{ mx: 1 }} variant="outlined">
       <Box
         sx={{
@@ -38,7 +37,7 @@ const ListingCard = ({ item }) => {
         >
           <Stack spacing={0.5} direction="row">
             <Chip label={type} color="primary" variant="filled" size="small" />
-            <Chip label={status} color="success" variant="filled" size="small" />
+            <Chip label={isProject && availableListingCount > 0 ? `${availableListingCount} Available` : status} color="success" variant="filled" size="small" />
             {
               commission?.exist && <Chip label={commission?.amount || commission?.percent} color="info" variant="filled" size="small" />
             }
@@ -103,82 +102,83 @@ const ListingCard = ({ item }) => {
           </Carousel>
         </CarouselArrows>
       </Box>
-      <CardContent sx={{
-        pt: 4,
-        width: 1,
-        backgroundColor: 'common.white'
-      }}>
-        <Typography
-          variant="caption"
-          component="div"
-          sx={{
-            mb: 1,
-            color: 'text.disabled',
-          }}
-        >
-          Posted by: {owner?.firstName} {owner?.lastName}
-        </Typography>
-
-        <Box sx={{ pb: 2 }}>
-          <Typography variant="h6">
-            {name}
+      <Link component={RouterLink} href={isProject ? `/projects/${_id}` : `/listings/${_id}`} sx={{ textDecoration: 'none', color: 'common.black' }}>
+        <CardContent sx={{
+          pt: 4,
+          width: 1,
+          backgroundColor: 'common.white'
+        }}>
+          <Typography
+            variant="caption"
+            component="div"
+            sx={{
+              mb: 1,
+              color: 'text.disabled',
+            }}
+          >
+            Posted by: {owner?.firstName} {owner?.lastName}
           </Typography>
 
-          <Typography variant="body1">
-            {address}
-          </Typography>
-
-          <Stack direction="row" spacing={1} sx={{ pt: 2 }}>
-            {options?.bedrooms && <Stack direction="row" spacing={0.5}>
-              <Hotel sx={{ pb: 0.5 }} />
-              <Typography variant="body2">{options?.bedrooms}</Typography>
-            </Stack>}
-
-            {options?.bathrooms && <Stack direction="row" spacing={0.5}>
-              <Bathtub sx={{ pb: 0.5 }} />
-              <Typography variant="body2">{options?.bathrooms}</Typography>
-            </Stack>}
-
-            {options?.carSpaces && <Stack direction="row" spacing={0.5}>
-              <DirectionsCarFilled sx={{ pb: 0.5 }} />
-              <Typography variant="body2">{options?.carSpaces}</Typography>
-            </Stack>}
-            {options?.landSize && <Stack direction="row" spacing={0.5}>
-              <OpenWithRounded sx={{ pb: 0.5 }} />
-              <Typography variant="body2">{options?.landSize} <span>m<sup>2</sup></span></Typography>
-            </Stack>}
-          </Stack>
-        </Box>
-
-        <Divider />
-
-        <Box sx={{ pt: 2 }}>
-          <Stack direction="row" justifyContent="space-between">
-            <Typography
-              variant="caption"
-              component="div"
-              sx={{
-                mb: 1,
-                color: 'text.disabled',
-              }}
-            >
-              {utils.string.dateFormat(createdAt, 'DD MMM YYYY')}
+          <Box sx={{ pb: 2 }}>
+            <Typography variant="h6">
+              {name}
             </Typography>
-            <Typography
-              variant="caption"
-              component="div"
-              sx={{
-                mb: 1,
-                color: 'text.disabled',
-              }}
-            >
-              {utils.string.dateFormat(createdAt, 'DD MMM YYYY')}
+
+            <Typography variant="body1">
+              {address}
             </Typography>
-          </Stack>
-        </Box>
-      </CardContent>
-      </Card>
-    </Link>
+
+            <Stack direction="row" spacing={1} sx={{ pt: 2 }}>
+              {options?.bedrooms && <Stack direction="row" spacing={0.5}>
+                <Hotel sx={{ pb: 0.5 }} />
+                <Typography variant="body2">{options?.bedrooms}</Typography>
+              </Stack>}
+
+              {options?.bathrooms && <Stack direction="row" spacing={0.5}>
+                <Bathtub sx={{ pb: 0.5 }} />
+                <Typography variant="body2">{options?.bathrooms}</Typography>
+              </Stack>}
+
+              {options?.carSpaces && <Stack direction="row" spacing={0.5}>
+                <DirectionsCarFilled sx={{ pb: 0.5 }} />
+                <Typography variant="body2">{options?.carSpaces}</Typography>
+              </Stack>}
+              {options?.landSize && <Stack direction="row" spacing={0.5}>
+                <OpenWithRounded sx={{ pb: 0.5 }} />
+                <Typography variant="body2">{options?.landSize} <span>m<sup>2</sup></span></Typography>
+              </Stack>}
+            </Stack>
+          </Box>
+
+          <Divider />
+
+          <Box sx={{ pt: 2 }}>
+            <Stack direction="row" justifyContent="space-between">
+              <Typography
+                variant="caption"
+                component="div"
+                sx={{
+                  mb: 1,
+                  color: 'text.disabled',
+                }}
+              >
+                Property Type: {type}
+              </Typography>
+              <Typography
+                variant="caption"
+                component="div"
+                sx={{
+                  mb: 1,
+                  color: 'text.disabled',
+                }}
+              >
+                {utils.string.dateFormat(createdAt, 'DD MMM YYYY')}
+              </Typography>
+            </Stack>
+          </Box>
+        </CardContent>
+      </Link>
+    </Card>
   </>
 }
 

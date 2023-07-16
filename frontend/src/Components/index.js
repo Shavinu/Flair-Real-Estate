@@ -6,6 +6,7 @@ import Scrollbar from "./scrollbar";
 import CustomBreadcrumbs from "./custom-breadcrumbs";
 import ConfirmDialog from "./confirm-dialog";
 import Image from "./image";
+import Markdown from "./markdown";
 
 export {
   Logo,
@@ -15,5 +16,6 @@ export {
   Scrollbar,
   CustomBreadcrumbs,
   ConfirmDialog,
-  Image
+  Image,
+  Markdown
 }

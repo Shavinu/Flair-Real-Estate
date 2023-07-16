@@ -1,6 +1,16 @@
 import axios from "axios";
 import { HOST_URL } from "../config-global";
 import { api } from "../paths";
+import utils from "../utils";
+
+const getListing = async (id) => {
+  return utils.fetch.httpGet(utils.url.replaceId(api.listings.get, id));
+};
+
+export const getListingDetail = async (id) => {
+  return utils.fetch.httpGet(utils.url.replaceId(api.listings.get, id));
+};
+
 
 const searchListings = async (page, limit, query = {}) => {
   if (query) {
@@ -23,7 +33,9 @@ const searchListings = async (page, limit, query = {}) => {
 };
 
 const ListingService = {
-  searchListings
+  searchListings,
+  getListingDetail,
+  getListing,
 }
 
 export default ListingService;

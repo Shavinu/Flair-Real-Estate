@@ -1,7 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 
-import { views, AuthViews, ClientViews } from './paths';
-import { AuthLayout, DashboardLayout, ClientLayout } from "./layouts";
+import { AuthLayout, ClientLayout, DashboardLayout } from "./layouts";
+import { AuthViews, ClientViews, views } from './paths';
 
 //get all paths which are defined in paths.js file
 export const getPaths = (r, parentIndex = 0) => {

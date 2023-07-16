@@ -24,6 +24,9 @@ const SidebarList = ({ item, depth, config }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
+  if (item.isRoute) {
+    return <></>
+  }
 
   return <>
     <SidebarItem

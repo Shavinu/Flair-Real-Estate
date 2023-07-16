@@ -68,6 +68,9 @@ const ProfileDropdown = () => {
         <MenuItem sx={{ px: 1 }} onClick={() => handleClickItem('/')}>
           <Typography variant="body2">Home</Typography>
         </MenuItem>
+        <MenuItem sx={{ px: 1 }} onClick={() => window.location.href = 'http://localhost:3000/users'}>
+          <Typography variant="body2">Dashboard</Typography>
+        </MenuItem>
         <MenuItem sx={{ px: 1 }} onClick={() => handleClickItem('/profile')}>
           <Typography variant="body2">Profile</Typography>
         </MenuItem>

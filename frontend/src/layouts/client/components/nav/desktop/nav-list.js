@@ -21,7 +21,7 @@ export default function NavList({ item, offsetTop }) {
 
   const active = useActiveLink(action, false);
 
-  const externalLink = action.includes('http');
+  const externalLink = action?.includes('http');
 
   useEffect(() => {
     if (nav.value) {
@@ -35,6 +35,10 @@ export default function NavList({ item, offsetTop }) {
       nav.onTrue();
     }
   };
+
+  if (item.isRoute) {
+    return <  ></>
+  }
 
   return (
     <>

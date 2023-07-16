@@ -1,7 +1,9 @@
-import { ICONS, SvgColor } from "./components/icons";
+import { Navigate } from "react-router-dom";
+import { ICONS } from "./components/icons";
+import NotFoundPage from "./pages/404";
 import * as Auth from "./pages/auth";
-import * as Dashboard from "./pages/dashboard";
 import * as Client from "./pages/client";
+import * as Dashboard from "./pages/dashboard";
 
 const ROOTS = {
   AUTH: '/auth',
@@ -27,14 +29,24 @@ export const paths = {
   },
   client: {
     home: ROOTS.Client,
-    about: `${ROOTS.Client}/about`,
-    contact: `${ROOTS.Client}/contact`,
+    properties: {
+      list: `/properties`,
+    },
+    projects: {
+      detail: '/projects/:id',
+    },
+    listings: {
+      detail: '/listings/:id',
+    },
+    about: `/about`,
+    contact: `/contact`,
   }
 }
 
 export const api = {
   auth: {
     login: '/api/auth/login',
+    register: '/api/auth/register',
     forgotPassword: '/api/auth/forgot-password',
     currentUser: '/api/auth/current-user',
     verifyEmail: 'api/auth/verify/:userId/:token',
@@ -48,6 +60,7 @@ export const api = {
     deleteMany: '/api/users/delete-many',
   },
   projects: {
+    get: '/api/projects/{{id}}',
     list: '/api/projects',
     search: '/api/search/projects_search',
   },
@@ -55,6 +68,7 @@ export const api = {
     stream: '/api/files/stream/{{id}}',
   },
   listings: {
+    get: '/api/listings/{{id}}',
     search: '/api/search/listings_search',
   }
 }
@@ -120,4 +134,37 @@ export const ClientViews = [
     action: paths.client.home,
     element: <Client.Home />,
   },
+  {
+    name: 'Properties',
+    action: paths.client.properties.list,
+    element: <Client.PropertyHomeList />,
+  },
+  {
+    name: 'Properties Detail',
+    action: paths.client.properties.detail,
+    element: <Client.PropertyHomeDetail />,
+    isRoute: true,
+  },
+  {
+    name: 'Project Detail',
+    action: paths.client.projects.detail,
+    element: <Client.ProjectHomeDetail />,
+    isRoute: true,
+  },
+  {
+    name: 'Listing Detail',
+    action: paths.client.listings.detail,
+    element: <Client.ListingHomeDetail />,
+    isRoute: true,
+  },
+  {
+    action: "/404",
+    element: <NotFoundPage />,
+    isRoute: true,
+  },
+  {
+    action: "*",
+    element: <Navigate to="/404" replace />,
+    isRoute: true,
+  }
 ];

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { forwardRef } from 'react';
 import { ASSETS_URL } from '../config-global';
 
-const Logo = forwardRef(({ link = '/dashboard', sx, ...other }, ref) => {
+const Logo = forwardRef(({ link = '/', sx, ...other }, ref) => {
   const logo = (
     <Box
       component="img"

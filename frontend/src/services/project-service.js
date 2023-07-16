@@ -7,6 +7,10 @@ const getProjectList = () => {
   return utils.fetch.httpGet(api.projects.list);
 }
 
+export const getProjectDetail = async (id) => {
+  return utils.fetch.httpGet(utils.url.replaceId(api.projects.get, id));
+};
+
 const searchProjects = async (page, limit, query = {}) => {
   if (query) {
     query.page = page;
@@ -29,6 +33,7 @@ const searchProjects = async (page, limit, query = {}) => {
 
 const ProjectService = {
   getProjectList,
+  getProjectDetail,
   searchProjects
 }
 

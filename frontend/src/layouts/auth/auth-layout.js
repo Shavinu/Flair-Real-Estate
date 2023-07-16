@@ -25,6 +25,7 @@ const AuthLayout = () => {
             zIndex: 9,
             position: 'absolute',
             m: { xs: 2, md: 5 },
+            width: 80
           }}
         />
 

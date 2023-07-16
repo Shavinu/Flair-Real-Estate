@@ -57,7 +57,7 @@ export default function NavMobile({ offsetTop, data }) {
 
           <List disablePadding sx={{ px: 2 }}>
             {ClientViews.map((item, index) => <SidebarList
-              key={item.name + item.path + index}
+              key={`${item.name}-${item.action}-${index}`}
               item={item}
               depth={1}
               config={SidebarConfig(item.config)} />)}

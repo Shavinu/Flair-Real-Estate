@@ -12,7 +12,7 @@ export default function NavDesktop({ offsetTop }) {
   return (
     <Stack component="nav" direction="row" spacing={5} sx={{ mr: 2.5, height: 1 }}>
       {ClientViews.map((link, key) => (
-        <NavList key={link.title + key} item={link} offsetTop={offsetTop} />
+        <NavList key={`${link.name}-${link.action}-${key}`} item={link} offsetTop={offsetTop} />
       ))}
     </Stack>
   );

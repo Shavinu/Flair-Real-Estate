@@ -1,13 +1,17 @@
-import { AppBar, Box, Button, Container, Link, Stack, Toolbar, useTheme } from "@mui/material";
+import { AppBar, Box, Button, Container, Stack, Toolbar, useTheme } from "@mui/material";
+import { Logo } from "../../../components";
 import { useOffSetTop } from "../../../hooks/use-off-set-top";
-import { HEADER } from "../../config-layout";
-import { bgBlur } from "../../../theme/css";
-import { Logo, RouterLink } from "../../../components";
-import { paths } from "../../../paths";
-import HeaderShadow from "./header-shadow";
 import { useResponsive } from "../../../hooks/use-responsive";
-import NavMobile from "./nav/mobile/nav-mobile";
+import { paths } from "../../../paths";
+import { bgBlur } from "../../../theme/css";
+import { HEADER } from "../../config-layout";
+import HeaderShadow from "./header-shadow";
 import NavDesktop from "./nav/desktop/nav-desktop";
+import NavMobile from "./nav/mobile/nav-mobile";
+import { useContext } from "react";
+import { AuthContext } from "../../../providers/auth/auth-context";
+import useDropdown from "../../../components/dropdown/use-dropdown";
+import { ProfileDropdown } from "../../dashboard/components";
 
 const Header = () => {
   const theme = useTheme();
@@ -15,6 +19,8 @@ const Header = () => {
   const mdUp = useResponsive('up', 'md');
 
   const offsetTop = useOffSetTop(HEADER.H_DESKTOP);
+
+  const { user } = useContext(AuthContext);
 
   return <>
     <AppBar sx={{ backgroundColor: theme.palette.background.default }}>
@@ -49,12 +55,13 @@ const Header = () => {
           {mdUp && <NavDesktop offsetTop={offsetTop} />}
 
           <Stack alignItems="center" direction={{ xs: 'row', md: 'row-reverse' }}>
-            <Button variant="contained" target="_blank" rel="noopener" href={paths.minimalUI}>
-              Purchase Now
-            </Button>
-
-            {/* {mdUp && <LoginButton />} */}
-
+            {!user
+              ? <Button variant="outlined" href={paths.auth.login} >
+                Login
+              </Button>
+              : <>
+                <ProfileDropdown />
+              </>}
           </Stack>
         </Container>
       </Toolbar>

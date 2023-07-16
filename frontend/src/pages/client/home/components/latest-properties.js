@@ -34,22 +34,38 @@ const LatestProperties = () => {
       try {
         let properties = [];
         const response = await ProjectService.searchProjects(1, 3, {});
-        const projects = response.projects.map(result => ({
-          _id: result._id,
-          name: result.projectName,
-          commission: result.projectCommission,
-          address: result.projectLocation[0].locationName,
-          owner: result.projectOwner,
-          priceRange: result.projectPriceRange[0],
-          status: result.projectStatus,
-          type: result.projectType,
-          images: getImageUrls(result.projectSlideImages),
-          isProject: true,
-          createdAt: result.createdAt,
-        }))
+
+        const projects = response?.projects.map(async result => {
+          const listingPromises = result?.projectListings.map(listingId => ListingService.getListing(listingId));
+          const fetchedListings = await Promise.all(listingPromises);
+          let availableListingsCount = 0;
+
+          fetchedListings.forEach(listing => {
+            if (listing.status === 'Available') {
+              availableListingsCount++;
+            }
+          });
+
+          return {
+            _id: result._id,
+            name: result.projectName,
+            commission: result.projectCommission,
+            address: result.projectLocation[0].locationName,
+            owner: result.projectOwner,
+            priceRange: result.projectPriceRange[0],
+            status: result.projectStatus,
+            type: result.projectType,
+            images: getImageUrls(result.projectSlideImages),
+            isProject: true,
+            createdAt: result.createdAt,
+            availableListingCount: availableListingsCount
+          }
+        })
+
+        const fetchedProjects = await Promise.all(projects);
 
         const listingResponse = await ListingService.searchListings(1, 3, {});
-        const listings = listingResponse.listings.map(result => ({
+        const listings = listingResponse?.listings.map(result => ({
           _id: result._id,
           name: result.listingName,
           commission: result.listingCommission,
@@ -68,7 +84,7 @@ const LatestProperties = () => {
           createdAt: result.createdAt,
         }))
 
-        properties = [...projects, ...listings];
+        properties = [...fetchedProjects, ...listings];
         setProperties(properties);
 
       } catch (error) {
@@ -97,7 +113,7 @@ const LatestProperties = () => {
   }, [getLatestProperties]);
 
   return <>
-    <Typography variant="h2" sx={{ mb: 3 }}>
+    <Typography variant="h3" sx={{ mb: 3 }}>
       Latest Properties
     </Typography>
 

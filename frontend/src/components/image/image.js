@@ -6,7 +6,6 @@ import { alpha, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 //
 import { getRatio } from './utils';
-import { HOST_URL } from '../../config-global';
 
 // ----------------------------------------------------------------------
 
