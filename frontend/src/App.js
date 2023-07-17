@@ -8,6 +8,8 @@ import SnackbarProvider from "./components/snackbar/snackbar-provider";
 // slick-carousel
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+// map
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 const App = () => {
   useScrollToTop();

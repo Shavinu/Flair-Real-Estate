@@ -129,7 +129,9 @@ const LatestProperties = () => {
         onPrev={carousel.onPrev}
       >
         <Carousel ref={carousel.carouselRef} {...carousel.carouselSettings}>
-          {properties.map((project, key) => <ListingCard key={project.name + key} item={project} />)}
+          {properties.map((project, key) => <Box key={project.name + key} sx={{ px: 1 }}>
+            <ListingCard item={project}/>
+          </Box>)}
         </Carousel>
       </CarouselArrows>
     </Box>

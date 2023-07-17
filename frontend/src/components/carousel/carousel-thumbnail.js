@@ -98,8 +98,8 @@ export default function CarouselThumbnail({ data }) {
         asNavFor={carouselThumb.nav}
         ref={carouselLarge.carouselRef}
       >
-        {data.map((item) => (
-          <Image key={item.id} alt={item} src={item} ratio="16/9" />
+        {data.map((item, index) => (
+          <Image key={`image-${index}`} alt={item} src={item} ratio="16/9" />
         ))}
       </Carousel>
 
@@ -120,7 +120,7 @@ export default function CarouselThumbnail({ data }) {
         ref={carouselThumb.carouselRef}
       >
         {data.map((item, index) => (
-          <Box key={item.id} sx={{ px: 0.5 }}>
+          <Box key={`image-box-${index}`} sx={{ px: 0.5 }}>
             <Avatar
               variant="rounded"
               alt={item}

@@ -1,15 +1,15 @@
+import { Apartment, List } from "@mui/icons-material"
+import { Container, Pagination, Stack, Tab, Tabs } from "@mui/material"
+import Grid from "@mui/material/Unstable_Grid2/Grid2"
+import { useCallback, useEffect, useState } from "react"
 import { Helmet } from "react-helmet-async"
 import { PROJECT_NAME } from "../../../config-global"
-import Grid from "@mui/material/Unstable_Grid2/Grid2"
 import HomeHero from "../../../sections/home/home-hero"
-import { useCallback, useEffect, useState } from "react"
+import ListingCard from "../../../sections/listings/listing-card"
+import HotOpportunitiesList from "../../../sections/properties/hot-opportunities-list"
 import FileService from "../../../services/file-service"
 import ListingService from "../../../services/listing-service"
 import ProjectService from "../../../services/project-service"
-import ListingCard from "../../../sections/listings/listing-card"
-import { Box, Card, CardContent, CardMedia, Container, IconButton, Link, Pagination, Stack, Tab, Tabs, Typography } from "@mui/material"
-import { Apartment, Bathtub, DirectionsCarFilled, Hotel, List, OpenWithRounded } from "@mui/icons-material"
-import { RouterLink } from "../../../components"
 
 const TABS = {
   projects: 'projects',
@@ -21,7 +21,6 @@ const PropertyHomeList = () => {
   const [properties, setProperties] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [latestListings, setLatestListings] = useState([]);
 
   const getProperties = useCallback(
     async () => {
@@ -43,7 +42,7 @@ const PropertyHomeList = () => {
             return {
               _id: result._id,
               name: result.projectName,
-              commission: result.projectCommission,
+              commission: result.projectCommission[0],
               address: result.projectLocation[0].locationName,
               owner: result.projectOwner,
               priceRange: result.projectPriceRange[0],
@@ -64,7 +63,7 @@ const PropertyHomeList = () => {
           const listings = listingResponse?.listings.map(result => ({
             _id: result._id,
             name: result.listingName,
-            commission: result.listingCommission,
+            commission: result.listingCommission[0],
             address: result.streetAddress,
             owner: result.devloper,
             priceRange: result.priceRange[0],
@@ -90,35 +89,6 @@ const PropertyHomeList = () => {
     [currentPage, currentTab],
   );
 
-  const getLatestListings = useCallback(
-    async () => {
-      const listingResponse = await ListingService.searchListings(1, 5, {});
-      const listings = listingResponse?.listings.map(result => ({
-        _id: result._id,
-        name: result.listingName,
-        commission: result.listingCommission,
-        address: result.streetAddress,
-        owner: result.devloper,
-        priceRange: result.priceRange[0],
-        status: result.status,
-        type: result.type,
-        image: getImageUrl(result.titleImage),
-        options: {
-          bedrooms: result.bedrooms,
-          bathrooms: result.bathrooms,
-          carSpace: result.carSpace,
-          landSize: result.landSize,
-        },
-        createdAt: result.createdAt,
-      }))
-
-      console.log(listings);
-
-      setLatestListings(listings);
-    },
-    [],
-  )
-
   const getImageUrls = (images) => {
     const imgs = images.map(image => {
       const value = Object.values(image);
@@ -133,13 +103,6 @@ const PropertyHomeList = () => {
     return imgs
   };
 
-  const getImageUrl = (image) => {
-    if (image) {
-      return FileService.getImageUrl(image)
-    }
-
-    return null
-  };
 
   const handlePageChange = (e, newPage) => {
     setCurrentPage(newPage);
@@ -154,13 +117,8 @@ const PropertyHomeList = () => {
   }, [getProperties]);
 
   useEffect(() => {
-    getLatestListings();
-  }, [getLatestListings])
-
-  useEffect(() => {
     setCurrentPage(1);
   }, [currentTab])
-
 
   return <>
     <Helmet>
@@ -191,54 +149,7 @@ const PropertyHomeList = () => {
           </Grid>
         </Grid>
         <Grid xs={12} md={4}>
-          <Typography variant="h4">Hot Opportunities</Typography>
-          <Stack direction="column" spacing={2} sx={{ pt: 2 }}>
-            {latestListings.map((listing, index) => <Link key={`${listing.name}-${index}`} component={RouterLink} href={`/listings/${listing._id}`} sx={{ textDecoration: 'none' }}>
-              <Card sx={{ display: 'flex' }} variant="outlined">
-                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                  <CardContent sx={{ flex: '1 0 auto' }}>
-                    <Stack direction="row" spacing={2}>
-                      <CardMedia
-                        component="img"
-                        sx={{ width: 151, borderRadius: 1 }}
-                        image={listing.image}
-                        alt="Live from space album cover"
-                      />
-                      <Box>
-                        <Typography component="div" variant="body1" fontWeight="bold">
-                          {listing.name}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" component="div">
-                          {listing.address}
-                        </Typography>
-                        <Stack direction="row" spacing={1} sx={{ pt: 2 }}>
-                          {listing.options?.bedrooms && <Stack direction="row" spacing={0.5}>
-                            <Hotel sx={{ pb: 0.5 }} />
-                            <Typography variant="body2">{listing.options?.bedrooms}</Typography>
-                          </Stack>}
-
-                          {listing.options?.bathrooms && <Stack direction="row" spacing={0.5}>
-                            <Bathtub sx={{ pb: 0.5 }} />
-                            <Typography variant="body2">{listing.options?.bathrooms}</Typography>
-                          </Stack>}
-
-                          {listing.options?.carSpaces && <Stack direction="row" spacing={0.5}>
-                            <DirectionsCarFilled sx={{ pb: 0.5 }} />
-                            <Typography variant="body2">{listing.options?.carSpaces}</Typography>
-                          </Stack>}
-                          {listing.options?.landSize && <Stack direction="row" spacing={0.5}>
-                            <OpenWithRounded sx={{ pb: 0.5 }} />
-                            <Typography variant="body2">{listing.options?.landSize} <span>m<sup>2</sup></span></Typography>
-                          </Stack>}
-                        </Stack>
-                      </Box>
-                    </Stack>
-                  </CardContent>
-                </Box>
-              </Card>
-            </Link>)}
-          </Stack>
-
+          <HotOpportunitiesList />
         </Grid>
       </Grid>
 

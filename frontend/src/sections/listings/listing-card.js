@@ -6,6 +6,7 @@ import { Image, RouterLink } from "../../components";
 import Carousel, { CarouselArrows, useCarousel } from "../../components/carousel";
 import { DEFAULT_AVATAR_URL, HOST_URL } from "../../config-global";
 import utils from "../../utils";
+import { priceFormat } from "../../utils/string";
 
 const ListingCard = ({ item }) => {
   const { _id, name, owner, priceRange, status, type, address, options, commission, images = [], createdAt, isProject, availableListingCount } = item
@@ -17,8 +18,10 @@ const ListingCard = ({ item }) => {
     autoplaySpeed: 5000,
   });
 
+  const commissionValue = (commission?.amount ? `$${priceFormat(commission?.amount)}`: `${commission?.percent}%`)
+
   return <>
-    <Card sx={{ mx: 1 }} variant="outlined">
+    <Card variant="outlined">
       <Box
         sx={{
           position: 'relative',
@@ -39,7 +42,7 @@ const ListingCard = ({ item }) => {
             <Chip label={type} color="primary" variant="filled" size="small" />
             <Chip label={isProject && availableListingCount > 0 ? `${availableListingCount} Available` : status} color="success" variant="filled" size="small" />
             {
-              commission?.exist && <Chip label={commission?.amount || commission?.percent} color="info" variant="filled" size="small" />
+              commission?.exists && <Chip label={`Commission: ${commissionValue}`} color="info" variant="filled" size="small" />
             }
           </Stack>
         </Box>
@@ -143,6 +146,7 @@ const ListingCard = ({ item }) => {
                 <DirectionsCarFilled sx={{ pb: 0.5 }} />
                 <Typography variant="body2">{options?.carSpaces}</Typography>
               </Stack>}
+              
               {options?.landSize && <Stack direction="row" spacing={0.5}>
                 <OpenWithRounded sx={{ pb: 0.5 }} />
                 <Typography variant="body2">{options?.landSize} <span>m<sup>2</sup></span></Typography>

@@ -7,6 +7,7 @@ import CustomBreadcrumbs from "./custom-breadcrumbs";
 import ConfirmDialog from "./confirm-dialog";
 import Image from "./image";
 import Markdown from "./markdown";
+import FileThumbnail from "./file-thumbnail";
 
 export {
   Logo,
@@ -17,5 +18,6 @@ export {
   CustomBreadcrumbs,
   ConfirmDialog,
   Image,
-  Markdown
+  Markdown,
+  FileThumbnail,
 }

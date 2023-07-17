@@ -7,6 +7,7 @@ import PropertyDetailView from "../../../sections/properties/property-detail-vie
 import FileService from "../../../services/file-service";
 import ListingService from "../../../services/listing-service";
 import ProjectService from "../../../services/project-service";
+import utils from "../../../utils";
 
 const ProjectHomeDetail = () => {
   const [property, setProperty] = useState({});
@@ -30,7 +31,7 @@ const ProjectHomeDetail = () => {
         _id: result._id,
         name: result.projectName,
         description: result.projectDescription,
-        commission: result.projectCommission,
+        commission: result.projectCommission[0],
         address: result.projectLocation[0].locationName,
         owner: result.projectOwner,
         priceRange: result.projectPriceRange[0],
@@ -39,9 +40,16 @@ const ProjectHomeDetail = () => {
         images: getImageUrls(result.projectSlideImages),
         isProject: true,
         createdAt: result.createdAt,
-        availableListingCount: availableListingsCount
+        availableListingCount: availableListingsCount,
+        attachments: utils.array.groupBy(result.projectFiles.map(file => ({ ...file, url: FileService.getImageUrl(file.file_id) })) || [], 'category'),
+        coordinates: {
+          longitude: result.projectLocation[0]?.longitude,
+          latitude: result.projectLocation[0]?.latitude,
+        },
+        listings: fetchedListings,
       }
 
+      console.log(project);
       setProperty(project);
     },
     [id],
@@ -64,7 +72,6 @@ const ProjectHomeDetail = () => {
   useEffect(() => {
     getProjectDetail();
   }, [getProjectDetail])
-
 
   return <>
     <Helmet>

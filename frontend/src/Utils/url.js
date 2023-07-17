@@ -28,7 +28,7 @@ export const urlWithQueryString = (url, queryFilters) => {
 }
 
 export const replaceId = (url, id) => {
-  return url.replace(/\{\{\s*id\s*\}\}/gi, id.toString())
+  return url.replace(/\{\{\s*id\s*\}\}/gi, id?.toString())
 }
 
 export const currentPath = (location) => {
