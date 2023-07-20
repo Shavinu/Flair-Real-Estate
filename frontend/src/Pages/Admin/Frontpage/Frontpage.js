@@ -389,6 +389,9 @@ const Frontpage = () => {
                     <Row>
                         <br /><br />
                         <p><br />Description</p>
+                        <p>
+                            Flair Real Estate admin dashboard lets you walk through all the main functions at a glance.
+                        </p>
                     </Row>
                 </Card>
             </Col>
