@@ -123,6 +123,10 @@ const Frontpage = () => {
             .then((response) => {
                 setProjects(response);
             })
+        ProjectService.getAllProjects()
+            .then((response) => {
+                setProjectByAvailability(response);
+            })
     }, []);
 
     //Users by type
@@ -170,14 +174,14 @@ const Frontpage = () => {
             if (projects.projectStatus === "Deactive") return Deactive++;
         });
         setProjectByAvailability([
-            { name: "Active", qty: Active },
-            { name: "Deactive", qty: Deactive }
+            { projectStatus: "Active", qty: Active },
+            { projectStatus: "Deactive", qty: Deactive }
         ]);
-    }, [users]);
+    }, [projectByAvailability]);
     //End of projects by availability
 
 
-    //Extract userNames and maxPrice
+    //Extract userNames
     const filteredUserData = users.map((item) => {
         const userName = item.firstName;
         return {
@@ -186,6 +190,36 @@ const Frontpage = () => {
     })
     const Usercount = filteredUserData.length;
 
+    //Extracting recent user details
+    const filternewUserDate = users.map((item) => {
+        const userName = item.firstName;
+        const userDate = item.createdAt;
+        const userChangeDate = item.updatedAt;
+        return {
+            userName: item.firstName,
+            userDate: item.createdAt,
+            userChangeDate: item.updatedAt
+        }
+    })
+
+
+    // Function to remove characters after "T" in the date string
+    function removeTimeFromDate(dateString) {
+        if (dateString && dateString.includes('T')) {
+            return dateString.split('T')[0] ;
+        }
+        return dateString;
+    }
+
+    // Loop through the array and modify the "userDate" field
+    for (let i = 0; i < filternewUserDate.length; i++) {
+        filternewUserDate[i].userDate = removeTimeFromDate(filternewUserDate[i].userDate);
+    }
+    // Loop through the array and modify the "userChangeDate" field
+    for (let i = 0; i < filternewUserDate.length; i++) {
+        filternewUserDate[i].userChangeDate = removeTimeFromDate(filternewUserDate[i].userChangeDate);
+    }
+          
 
     //Extract projectNames and maxPrice
     const filteredProjectData = projects.map((item) => {
@@ -245,14 +279,14 @@ const Frontpage = () => {
                 </Card>
             </Col>
             <br />
-            <Col lg={12}>
+            <Col lg={9}>
                 <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
                     <Row>
                         <h4>Quick summary</h4>
                         <br /><br />
                     </Row>
                     <Row>
-                        <Col lg={3}>
+                        <Col lg={4}>
                             <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
                                 <h5>Number of users</h5>
                                 <br />
@@ -260,14 +294,14 @@ const Frontpage = () => {
 
                             </Card>
                         </Col>
-                        <Col lg={3}>
+                        <Col lg={4}>
                             <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
                                 <h5>Number of projects</h5>
                                 <br />
                                 <p><h1>{Projectcount}</h1></p>
                             </Card>
                         </Col>
-                        <Col lg={3}>
+                        <Col lg={4}>
                             <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
                                 <h5>Number of listings</h5>
                                 <br />
@@ -317,7 +351,7 @@ const Frontpage = () => {
                                                 <div style={{ width: 20, height: 20, background: color }} />
                                                 <small style={{ opacity: 0.7 }}>
                                                     {/* {capitalizeFirstLetter(usersByType[i]?.name.toString())} */}
-                                                    {usersByType[i]?.name.toString()}
+                                                    {(usersByType[i]?.name.toString())}
                                                 </small>
                                             </Stack>
                                         ))}
@@ -351,7 +385,7 @@ const Frontpage = () => {
                                                 <div style={{ width: 20, height: 20, background: color }} />
                                                 <small style={{ opacity: 0.7 }}>
                                                     {/* {capitalizeFirstLetter(usersByLicense[i]?.name.toString())} */}
-                                                    {usersByLicense[i]?.name.toString()}
+                                                    {(usersByLicense[i]?.name.toString())}
                                                 </small>
                                             </Stack>
                                         ))}
@@ -359,10 +393,39 @@ const Frontpage = () => {
                                 </Stack>
                             </Card>
                         </Col>
+                        <Col lg={4}>
+                            <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
+                            <h6>Recent user account changes</h6><br/>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Create Date</th>
+                                        <th>Update Date</th>
+                                    </tr><br/>
+                                </thead>
+                                <tbody>
+                                    
+                                    {filternewUserDate.slice(0,5).map((item) => (
+                                        <tr key={item.userName}>
+                                            <td>{item.userName}</td>
+                                            <td>{item.userDate}</td>
+                                            <td>{item.userChangeDate}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                            </Card>
+                        </Col>
                     </Row>
                     <Row>
                         <br /><br />
                         <p><br />Description</p>
+                        <p>
+                            In the user summary segment, each types of users are divided to give a quick glance of the user diversity in the website. Each types of users can be identified by hovering over the required portion of the pie chart.
+                            The second element shows the percentage of license builders registered with Flair Real Estate. Finally, the recent user account changes are displayed according to the recent dates and update dates. This feature lets the 
+                            admin know what users have been registered and updated their profiles. 
+                        </p>
                     </Row>
                 </Card>
             </Col>
@@ -402,7 +465,8 @@ const Frontpage = () => {
                         <Col lg={4}>
                             <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
                                 <h6>Landsize by listings</h6><br/>
-                                <PieChart width={500} height={300}>
+                                <ResponsiveContainer width={400} height={300}>
+                                <PieChart >
                                     <Pie
                                         dataKey="landSize"
                                         startAngle={180}
@@ -413,8 +477,11 @@ const Frontpage = () => {
                                         outerRadius={80}
                                         fill="#8884d8"
                                         label
+                                        
                                     />
+                                    <Tooltip/>
                                 </PieChart>
+                                </ResponsiveContainer>
                             </Card>
                         </Col>
                         <Col lg={3}>
@@ -434,6 +501,13 @@ const Frontpage = () => {
                     <Row>
                         <br /><br />
                         <p><br />Description</p>
+                        <p><ul>Listings of the Flair Real Estate are graphically shown. The maximum and the minimum prices of the listings are contrasted accordingly.
+                            The land sizes of the each listing entries are presented in the second pie chart as it makes easier to identify the average listing landsizes.
+                            In the third segment, it is the types of popular listings that are shown.
+                            </ul>
+                                 
+                            
+                        </p>
                     </Row>
                 </Card>
             </Col>
@@ -445,16 +519,16 @@ const Frontpage = () => {
                         <br /><br />
                     </Row>
                     <Row>
-                        <Col lg={7}>
+                        <Col lg={9}>
                             <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
                                 <h6>Minimum and Maxium prices of projects</h6><br/>
                                 <BarChart
-                                    width={700}
+                                    width={900}
                                     height={300}
                                     data={filteredProjectData}
                                     margin={{
                                         top: 0,
-                                        right: 40,
+                                        right: 15,
                                         left: 20,
                                         bottom: 5,
                                     }}
@@ -476,14 +550,14 @@ const Frontpage = () => {
                                 <Col lg={6}>
                                     <PieChart width={200} height={200}>
                                         <Pie
-                                            data={usersByLicense}
+                                            data={projectByAvailability}
                                             labelLine={false}
                                             label={renderCustomizedLabelAvailability}
                                             outerRadius={80}
                                             fill="#8884d8"
                                             dataKey="qty"
                                         >
-                                            {usersByType.map((entry, index) => (
+                                            {projectByAvailability.map((entry, index) => (
                                                 <Cell key={`cell-${index}`} fill={COLORSforAvailability[index % COLORSforAvailability.length]} />
                                             ))}
                                         </Pie>
@@ -498,7 +572,7 @@ const Frontpage = () => {
                                                 <div style={{ width: 20, height: 20, background: color }} />
                                                 <small style={{ opacity: 0.7 }}>
                                                     {/* {capitalizeFirstLetter(usersByType[i]?.name.toString())} */}
-                                                    {projectByAvailability[i]?.name.toString()}
+                                                    {(projectByAvailability[i]?.projectStatus)}
                                                 </small>
                                             </Stack>
                                         ))}
@@ -510,6 +584,11 @@ const Frontpage = () => {
                     <Row>
                         <br /><br />
                         <p><br />Description</p>
+                        <p>
+                            The project summary element, the first graph describes the lowest and the highest project prices related to the each project. It is clear to identify which and what project is costly. 
+                            Using the hover interactive function enabled, admin can easily identify and get more details. 
+                            In the last segment of the project summary, active and deactive projects can be quickly analysed. The percentage is much more accurate and clear to understand.
+                        </p>
                     </Row>
                 </Card>
             </Col>
@@ -528,6 +607,30 @@ const Frontpage = () => {
                             <p>{JSON.stringify(filteredProjectData)}</p>
                             <p>{Projectcount}</p>
                             <p>{JSON.stringify(users)}</p>
+                            <p>{JSON.stringify(filternewUserDate.slice(0,5))}</p>
+                            <br/><br/>
+                            <p>modifiedJsonArray</p>
+                            <br/>
+                            <table border={1}>
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Date</th>
+                                        <th>Update</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {filternewUserDate.slice(0,5).map((item) => (
+                                        <tr key={item.userName}>
+                                            <td>{item.userName}</td>
+                                            <td>{item.userDate}</td>
+                                            <td>{item.userChangeDate}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+
+
                             <br></br>
                             <br></br>
                             <h2>Available listings by minimum prices</h2>
@@ -561,7 +664,7 @@ const Frontpage = () => {
                             <Card.Subtitle className="text-white lead bg-dark p-1 mt-0 mb-1 rounded" style={{ background: 'linear-gradient(to right, rgba(167, 169, 239, 1), rgba(178, 156, 226, 0.8))' }}>Available listings by maximum prices</Card.Subtitle>
 
                             <div style={{ width: '100%', height: 300 }}>
-                                <ResponsiveContainer>
+                             *136   <ResponsiveContainer>
                                     <PieChart>
                                         <Pie dataKey="maxPrice" data={filteredDat2} fill="#990033" label />
                                     </PieChart>
