@@ -1,10 +1,14 @@
 .resources-page {
   margin: 2rem 2rem;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
 }
 
 .resources-page .contents {
   display: flex;
   flex-wrap: wrap;
+
 }
 
 
@@ -19,7 +23,7 @@
   text-align: center;
   padding: 30px;
   cursor: pointer;
-  flex-basis: 25%;  
+  flex-basis: 25%;
   margin-bottom: 20px;
 }
 
@@ -35,4 +39,3 @@
 .resources-page i {
   padding-right: 10px;
 }
-

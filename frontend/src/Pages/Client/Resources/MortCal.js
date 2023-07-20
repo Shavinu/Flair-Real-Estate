@@ -2,11 +2,12 @@ import Footer from "../../../Components//Footer";
 import Navbar from "../../../Components//Navbar";
 import HomeHero from "../../../Components//HomeHero";
 import Form from '../../../Components/Calculator/Form';
-import "./ResourcesPage.css"; 
+import { Card, CardBody, Button } from '../../../Components';
+import "./ResourcesPage.css";
 
 const MortCal = () => {
-    return (
-      <>
+  return (
+    <>
       {/* <!-- BEGIN Navigation--> */}
       <HomeHero
         cName="villain"
@@ -18,12 +19,15 @@ const MortCal = () => {
       />
       {/* <!-- END Navigation--> */}
       <div className="resources-page">
-        <h1>Mortgage Calculator</h1>
-        <Form />
-        <p> </p>
+        <Card style={{ marginLeft: "15%", marginRight: "15%", marginTop: "2rem" }}>
+          <CardBody>
+            <h1>Mortgage Calculator</h1>
+            <Form />
+          </CardBody>
+        </Card>
       </div>
-      </>
-    );
-  }
-  
-  export default MortCal;
+    </>
+  );
+}
+
+export default MortCal;

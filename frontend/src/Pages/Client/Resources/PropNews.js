@@ -1,11 +1,11 @@
 import Footer from "../../../Components/Footer";
 import Navbar from "../../../Components/Navbar";
 import HomeHero from "../../../Components/HomeHero";
-import "./ResourcesPage.css"; 
+import "./ResourcesPage.css";
 
 const PropNews = () => {
-    return (
-      <>
+  return (
+    <>
       {/* <!-- BEGIN Navigation--> */}
       <HomeHero
         cName="villain"
@@ -18,10 +18,10 @@ const PropNews = () => {
       {/* <!-- END Navigation--> */}
       <div className="resources-page">
         <h1>Property News</h1>
-        <p> </p>
+        <iframe src='https://drive.google.com/file/d/1S4vU3_X1GD2bCefG-IkoiGpK6KrP11pY/preview' width={"80%"} height={"1150px"} style={{ margin: "auto" }} />
       </div>
-      </>
-    );
-  }
-  
-  export default PropNews;
+    </>
+  );
+}
+
+export default PropNews;
