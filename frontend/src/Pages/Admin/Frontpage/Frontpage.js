@@ -2,7 +2,7 @@ import * as ListingService from '../../../Services/ListingService';
 import * as UserService from '../../../Services/UserService';
 import * as ProjectService from '../../../Services/ProjectService';
 import { useEffect, useState } from 'react';
-import { Col, Card, ListGroup, Carousel, Badge, Button, ButtonGroup } from "react-bootstrap";
+import { Col, Card } from "react-bootstrap";
 import { Container, Row } from 'react-bootstrap';
 import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { PieChart, Pie } from 'recharts';
@@ -12,6 +12,7 @@ import { Stack } from 'react-bootstrap';
 const Frontpage = () => {
 
     const [listings, setlistings] = useState([])
+    const [listingsByRegion, setlistingsByRegion] = useState([])
     const [users, setUsers] = useState([])
     const [usersByType, setUsersByType] = useState([])
     const [usersByLicense, setUsersByLicense] = useState([])
@@ -110,6 +111,35 @@ const Frontpage = () => {
     };
     //End of piechart colors for projectsbyAvailability
 
+    //Piechart colors for listing by subrub
+    const COLORSBySuburb = ['#00C49F', '#0088FE', '#FFBB28', '#FF8042', '#8A0C40', '#3807EB'];
+    const RADIANBySuburb = Math.PI / 180;
+    const renderCustomizedLabelBySuburb = ({
+        cx,
+        cy,
+        midAngle,
+        innerRadius,
+        outerRadius,
+        percent,
+    }) => {
+        const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+        const x = cx + radius * Math.cos(-midAngle * RADIANBySuburb);
+        const y = cy + radius * Math.sin(-midAngle * RADIANBySuburb);
+
+        return (
+            <text
+                x={x}
+                y={y}
+                fill="white"
+                textAnchor={x > cx ? 'start' : 'end'}
+                dominantBaseline="central"
+            >
+                {`${(percent * 100).toFixed(0)}%`}
+            </text>
+        );
+    };
+    //End of piechart colors for for listing by subrub
+
     useEffect(() => {
         ListingService.getAllListings()
             .then((response) => {
@@ -131,21 +161,21 @@ const Frontpage = () => {
 
     //Users by type
     useEffect(() => {
-        let builder = 0,
-            moderator = 0,
-            agent = 0,
-            user = 0;
+        let Builder = 0,
+            Moderator = 0,
+            Agent = 0,
+            User = 0;
         users.forEach((users) => {
-            if (users.accType === "builder") return builder++;
-            if (users.accType === "moderator") return moderator++;
-            if (users.accType === "agent") return agent++;
-            if (users.accType === "user") return user++;
+            if (users.accType === "builder") return Builder++;
+            if (users.accType === "moderator") return Moderator++;
+            if (users.accType === "agent") return Agent++;
+            if (users.accType === "user") return User++;
         });
         setUsersByType([
-            { name: 'builder', qty: builder },
-            { name: 'moderator', qty: moderator },
-            { name: 'agent', qty: agent },
-            { name: 'user', qty: user },
+            { name: 'builder', qty: Builder },
+            { name: 'moderator', qty: Moderator },
+            { name: 'agent', qty: Agent },
+            { name: 'user', qty: User },
         ]);
     }, [users]);
     //End of users by type
@@ -179,6 +209,33 @@ const Frontpage = () => {
         ]);
     }, [projectByAvailability]);
     //End of projects by availability
+
+    //Listings by region
+    useEffect(() => {
+        let NewSouthWales = 0,
+            Queensland = 0,
+            Victoria = 0,
+            SouthAustralia = 0,
+            WesternAustralia = 0,
+            NorthernTerritory = 0
+        listings.forEach((listings) => {
+            if (listings.region === "New South Wales") return NewSouthWales++;
+            if (listings.region === "Queensland") return Queensland++;
+            if (listings.region === "Victoria") return Victoria++;
+            if (listings.region === "South Australia") return SouthAustralia++;
+            if (listings.region === "Western Australia") return WesternAustralia++;
+            if (listings.region === "Northern Territory") return NorthernTerritory++;
+        });
+        setlistingsByRegion([
+            { region: 'New South Wales', qty: NewSouthWales },
+            { region: 'Queensland', qty: Queensland },
+            { region: 'Victoria', qty: Victoria },
+            { region: 'South Australia', qty: SouthAustralia },
+            { region: 'Western Australia', qty: WesternAustralia },
+            { region: 'Northern Territory', qty: NorthernTerritory }
+        ]);
+    }, [listingsByRegion]);
+    //End listing by region
 
 
     //Extract userNames
@@ -254,8 +311,28 @@ const Frontpage = () => {
         return {
             listingName: item.listingName,
         };
+    });   
+
+    //Listing type filter
+    const filteredListingTypeData = listings.map((item) => {
+        const listingType = item.listingName.split(',')[0].trim();
+        return {
+            type: item.type
+        };
     });
 
+    //Extract same type of listing
+    // Create a Set to store unique types
+    const uniqueTypes = new Set();
+
+    // Filter the array to keep only unique types
+    const uniqueArray = filteredListingTypeData.filter(item => {
+        if (!uniqueTypes.has(item.type)) {
+            uniqueTypes.add(item.type);
+            return true;
+        }
+        return false;
+    });
 
     // Extract listing names before the first comma
     const filteredDat2 = listings.map((item) => {
@@ -464,24 +541,39 @@ const Frontpage = () => {
                         </Col>
                         <Col lg={4}>
                             <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
-                                <h6>Landsize by listings</h6><br/>
-                                <ResponsiveContainer width={400} height={300}>
-                                <PieChart >
-                                    <Pie
-                                        dataKey="landSize"
-                                        startAngle={180}
-                                        endAngle={0}
-                                        data={filteredData}
-                                        cx="50%"
-                                        cy="50%"
-                                        outerRadius={80}
-                                        fill="#8884d8"
-                                        label
-                                        
-                                    />
-                                    <Tooltip/>
-                                </PieChart>
-                                </ResponsiveContainer>
+                            <h6>Listings by region</h6>
+                                <Col lg={6}>
+                                    <PieChart width={300} height={200}>
+                                        <Pie
+                                            data={listingsByRegion}
+                                            labelLine={false}
+                                            label={renderCustomizedLabelBySuburb}
+                                            outerRadius={80}
+                                            fill="#8884d8"
+                                            dataKey="qty"
+                                        >
+                                            {listingsByRegion.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                            ))}
+                                        </Pie>
+
+                                        <Tooltip />
+                                    </PieChart>
+                                </Col>
+                                <Stack gap={2}>
+                                    
+                                    <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
+                                        {COLORSBySuburb.map((color, i) => (
+                                            <Stack key={color} alignItems="center" spacing={1}>
+                                                <div style={{ width: 20, height: 20, background: color }} />
+                                                <small style={{ opacity: 0.7 }}>
+                                                    {/* {capitalizeFirstLetter(usersByType[i]?.name.toString())} */}
+                                                    {(listingsByRegion[i]?.region)}
+                                                </small>
+                                            </Stack>
+                                        ))}
+                                    </div>
+                                </Stack>
                             </Card>
                         </Col>
                         <Col lg={3}>
@@ -489,7 +581,7 @@ const Frontpage = () => {
                             <div>
                                 <p><h6>Types of listings</h6><br/></p>
                             <ul>
-                                {listings.map(item => (
+                                {uniqueArray.map(item => (
                                     <li key={item.listingName}>{item.type}</li>
                                 ))}
                             </ul>
@@ -502,7 +594,7 @@ const Frontpage = () => {
                         <br /><br />
                         <p><br />Description</p>
                         <p><ul>Listings of the Flair Real Estate are graphically shown. The maximum and the minimum prices of the listings are contrasted accordingly.
-                            The land sizes of the each listing entries are presented in the second pie chart as it makes easier to identify the average listing landsizes.
+                            The region distribution of the available listings entries are presented in the second pie chart as it makes easier to identify the average listing regions.
                             In the third segment, it is the types of popular listings that are shown.
                             </ul>
                                  
@@ -593,7 +685,7 @@ const Frontpage = () => {
                 </Card>
             </Col>
             <br/><br/>
-            <Col lg={12}>
+            {/* <Col lg={12}>
                 <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
                     <Row>
                         <div>
@@ -606,8 +698,8 @@ const Frontpage = () => {
                             <br></br>
                             <p>{JSON.stringify(filteredProjectData)}</p>
                             <p>{Projectcount}</p>
-                            <p>{JSON.stringify(users)}</p>
-                            <p>{JSON.stringify(filternewUserDate.slice(0,5))}</p>
+                            <p>{JSON.stringify(listingsByRegion)}</p>
+                            <p>{JSON.stringify(listings)}</p>
                             <br/><br/>
                             <p>modifiedJsonArray</p>
                             <br/>
@@ -657,24 +749,9 @@ const Frontpage = () => {
                     </Row>
                 </Card>
                 <br></br>
-                <br></br>
-                <div>
-                    <Row>
-                        <Card>
-                            <Card.Subtitle className="text-white lead bg-dark p-1 mt-0 mb-1 rounded" style={{ background: 'linear-gradient(to right, rgba(167, 169, 239, 1), rgba(178, 156, 226, 0.8))' }}>Available listings by maximum prices</Card.Subtitle>
+                <br></br>              
 
-                            <div style={{ width: '100%', height: 300 }}>
-                             *136   <ResponsiveContainer>
-                                    <PieChart>
-                                        <Pie dataKey="maxPrice" data={filteredDat2} fill="#990033" label />
-                                    </PieChart>
-                                </ResponsiveContainer>
-                            </div>
-                        </Card>
-                    </Row>
-                </div>
-
-            </Col>
+            </Col> */}
         
         </Container>
     );
