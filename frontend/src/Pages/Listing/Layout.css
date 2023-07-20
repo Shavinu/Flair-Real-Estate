@@ -1,0 +1,47 @@
+.content-container {
+    padding: 50px 50px; 
+}
+
+.button-for-user {
+    position: relative;
+    cursor: pointer;
+    height: 50px;
+    width: 60px;
+    color: #fff;
+    background-color: #444;
+    border: 1px solid #fff;
+    border-radius: 8px;
+    box-sizing: border-box;
+    padding: 2px;
+  }
+  
+  .button-for-user:hover {
+    background: #fff;
+    color: #444;
+    border: 1px solid #444;
+  }
+  
+  .button-for-user:active {
+    box-shadow: 0px 0px 12px 0px rgba(225, 225, 225, 1);
+  }
+  
+  .button-for-user:focus {
+    outline: 0;
+  }
+
+.link {
+    color: #444;
+}
+
+.truncate-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* number of lines to show */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mapboxgl-map {
+  width: 100% !important;
+  height: 400px !important;
+}

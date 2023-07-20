@@ -1,6 +1,6 @@
 import React, { Component, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Card, Col, ContentHeader, Row } from "../../Components";
+import { Container, Button, Card, Col, ContentHeader, Row } from "../../Components";
 import CardBody from "../../Components/Card/CardBody";
 import { Group, Input, Label } from "../../Components/Form";
 import Select from "react-select";
@@ -19,7 +19,7 @@ import { ImageBrowser, UploadTitle, UploadSlides } from './Components/ImageBrows
 import SelectProjectMembers from "./Components/MembersSelector";
 import ProjectCommission from './Components/CommissionSelector';
 
-import './Create.css';
+import './Layout.css';
 import 'react-quill/dist/quill.snow.css';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import FileManager from "../../Components/Files/FileManager";
@@ -229,6 +229,7 @@ const Create = () => {
 
   return (
     <>
+    <Container className = "content-container">
       <ContentHeader headerTitle="Create Project"
         breadcrumb={[
           { name: "Home", link: "/" },
@@ -431,6 +432,7 @@ const Create = () => {
           </Card>
         </Col> */}
       </Row >
+      </Container>
     </>
   )
 }

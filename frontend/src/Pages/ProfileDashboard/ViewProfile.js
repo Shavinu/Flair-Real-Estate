@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Button, Card, Col, ContentHeader, Row } from '../../Components';
+import { Container, Button, Card, Col, ContentHeader, Row } from '../../Components';
 import CardBody from '../../Components/Card/CardBody';
 import * as UserService from '../../Services/UserService';
 import { Group, Label, Select } from '../../Components/Form';
@@ -70,6 +70,7 @@ const ViewProfile = () => {
 
   return (
         <>
+        <Container className="content-container">
           <ContentHeader
             headerTitle='My Profile'
             breadcrumb={[
@@ -218,6 +219,7 @@ const ViewProfile = () => {
               </Card>
             </Col>
           </Row>
+          </Container>
         </>
   );
 };

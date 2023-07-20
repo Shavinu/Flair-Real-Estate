@@ -287,6 +287,7 @@ const EditProject = () => {
     );
   } else if (initialDataSet && !editorAllowed) {
     return (
+      <div className = "content-container">
       <Container>
         <ContentHeader headerTitle="Edit Project"
           breadcrumb={[
@@ -302,9 +303,11 @@ const EditProject = () => {
           <h4>Sorry, you are not allowed to edit this project</h4>
         </div>
       </Container>
+      </div>
     );
   } else if (initialDataSet && editorAllowed) {
-    return (<Container>
+    return (
+    <Container className = "content-container">
       <ContentHeader headerTitle="Edit Project"
         breadcrumb={[
           { name: "Home", link: "/" },

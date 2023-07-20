@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import * as ListingService from "../../Services/ListingService";
 import * as FileService from "../../Services/FileService";
 import SearchLocations from "../../Components/Maps/SearchBased";
-import "./List.css";
+import "./Layout.css";
 
 const SearchComponent = ({ onSearch, all = true }) => {
   const initialState = {
@@ -601,7 +601,7 @@ const PriceRangeInput = ({ onChange, min, max, step, parentMinPrice, parentMaxPr
   }, [minPrice, maxPrice, reset]);
 
   return (
-    <Container className='mx-1 p-0'>
+    <Container className="content-container">
       <Row className='align-items-center'>
         <Col>
           <Select
@@ -702,7 +702,7 @@ const Search = () => {
   };
 
   return (
-    <Container className="mt-0">
+    <Container className="content-container">
       <ContentHeader headerTitle="Listings"
         breadcrumb={[
           { name: "Home", link: "/" },

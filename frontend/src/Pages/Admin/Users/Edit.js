@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Button, Card, Col, ContentHeader, DatePicker, Row } from "../../../Components";
+import { Container, Button, Card, Col, ContentHeader, DatePicker, Row } from "../../../Components";
 import CardBody from "../../../Components/Card/CardBody";
 import * as UserService from '../../../Services/UserService';
 import * as GroupService from '../../../Services/GroupService';
@@ -8,6 +8,7 @@ import { Group, Input, Label, Select } from "../../../Components/Form";
 import utils from "../../../Utils";
 import Toast from "../../../Components/Toast";
 import moment from "moment";
+import "../Layout.css";
 
 const Edit = () => {
   const [user, setUser] = useState();
@@ -178,13 +179,9 @@ const Edit = () => {
     id && getUserDetailById(id);
   }, [id]);
 
-  return <>
+  return <> 
+  <Container className="content-container">
     <ContentHeader headerTitle="Edit User"
-      breadcrumb={[
-        { name: "Home", link: "/" },
-        { name: "Users", link: "/users" },
-        { name: "Edit", active: true },
-      ]}
       options={
       <div className='col-12 d-flex mt-1 px-0'>
       <Link
@@ -430,6 +427,7 @@ const Edit = () => {
         </Card>
       </Col>
     </Row>
+    </Container>
   </>
 }
 

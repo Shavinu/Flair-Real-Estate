@@ -74,7 +74,7 @@ const Sidebar = (props) => {
           <li className="nav-item mr-auto">
             <Link className="navbar-brand" to={homeUrl}>
               <img src={`${process.env.REACT_APP_PUBLIC_URL}/assets/images/logo/logo.png`} alt="icon" width={25} />
-              <h2 className="brand-text mb-0">Flair Real Estate</h2>
+              <h2 className="sidebar-title">Flair Real Estate</h2>
             </Link></li>
           <li className="nav-item nav-toggle">
             <Link className="nav-link modern-nav-toggle pr-0" data-toggle="collapse">

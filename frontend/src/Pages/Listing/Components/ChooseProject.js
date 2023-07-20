@@ -3,7 +3,7 @@ import { Container, Row, Col, Card, Pagination, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import * as ProjectService from '../../../Services/ProjectService';
 import * as FileService from '../../../Services/FileService';
-import '../List.css';
+import '../Layout.css';
 import './ChooseProject.css';
 
 const ChooseProject = ({ onProjectChange, initialData, reset }) => {

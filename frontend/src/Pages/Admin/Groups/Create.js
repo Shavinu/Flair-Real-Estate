@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import {
+  Container,
   Alert,
   Button,
   Card,
@@ -13,6 +14,7 @@ import { Group, Input, Label, Select } from '../../../Components/Form';
 import utils from '../../../Utils';
 import * as GroupService from '../../../Services/GroupService';
 import Toast from '../../../Components/Toast';
+import "../Layout.css";
 
 const Create = () => {
   const [name, setName] = useState('');
@@ -118,6 +120,7 @@ const Create = () => {
 
   return (
     <>
+     <Container className="content-container">
       <ContentHeader
         headerTitle='Create Group'
         breadcrumb={[
@@ -268,6 +271,7 @@ const Create = () => {
           </Card>
         </Col>
       </Row>
+      </Container>
     </>
   );
 };

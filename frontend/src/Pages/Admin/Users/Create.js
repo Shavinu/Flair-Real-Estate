@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
+  Container,
   Button,
   Card,
   Col,
@@ -16,6 +17,7 @@ import utils from '../../../Utils';
 import * as AuthServices from '../../../Services/AuthService';
 import Toast from '../../../Components/Toast';
 import moment from 'moment';
+import "../Layout.css";
 
 const Create = () => {
   const [groups, setGroups] = useState([]);
@@ -202,8 +204,8 @@ const Create = () => {
     getGroupList();
   }, []);
 
-  return (
-    <>
+  return ( <>
+    <Container className="content-container">
       <ContentHeader
         headerTitle='Create User'
         breadcrumb={[
@@ -534,6 +536,7 @@ const Create = () => {
           </Card>
         </Col>
       </Row>
+      </Container>
     </>
   );
 };

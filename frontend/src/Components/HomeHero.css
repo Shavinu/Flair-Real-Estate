@@ -47,10 +47,11 @@
   left: 50%;
   transform: translate(-50%, -50%);
   width: 100%;
+  display: block;
+  text-align: center;
 }
 
 .hero-text h1 {
-  margin-left: 500px;
   font-size: 3rem;
   font-weight: 800;
   background: #fff;
@@ -59,7 +60,6 @@
 }
 
 .hero-text p {
-  margin-left: 450px;
   color: #f4f4f4;
   font-size: 1.3rem;
   padding: 0.5rem 0 2rem 0;

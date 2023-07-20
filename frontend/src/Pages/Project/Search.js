@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import * as ProjectService from "../../Services/ProjectService";
 import * as FileService from "../../Services/FileService";
 import SearchLocations from "../../Components/Maps/SearchBased";
-import "./List.css";
+import "./Layout.css";
 
 const SearchComponent = ({ onSearch, all = true }) => {
   const initialState = {
@@ -644,7 +644,7 @@ const Search = () => {
   };
 
   return (
-    <Container className="mt-0">
+    <Container className="content-container">
       <ContentHeader headerTitle="Projects"
         breadcrumb={[
           { name: "Home", link: "/" },
