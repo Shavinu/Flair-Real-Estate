@@ -7,8 +7,7 @@ import Toast from '../../Toast';
 import { EditImageBrowser, UploadTitle } from './EditImageBrowser';
 import * as CmsService from '../../../Services/CmsService';
 
-function UploadText() {
-    const page = ('Buyers');
+function UploadText({ page }) {
     const [titleImage, setTitleImage] = useState('');
     const [fileLink, setFileLink] = useState();
     const [pdfId, setPdfId] = useState();
@@ -102,8 +101,7 @@ function UploadText() {
 
 
     useEffect(() => {
-        findPage(page);
-        console.log("page Forund", imageId)
+        findPage(page.page);
     }, [page]);
 
     return (

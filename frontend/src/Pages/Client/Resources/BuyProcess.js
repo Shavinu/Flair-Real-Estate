@@ -26,20 +26,23 @@ const BuyProcess = () => {
         setPdfId(response.pdf);
         setTextBody(response.textBody);
         setFileLink(response.publicKey);
-        checkMethod(response.serviceId);
         getImageUrl(response.image);
+        FileService.getFileUrl(response.pdf);
+        checkMethod(response.serviceId);
       })
   }
 
   const checkMethod = (method) => {
-    if (method == "text") {
+
+    if (String(method) === 'text') {
       setIndex(0);
-    }
-    if (method == "pdf") {
+    } else if (String(method) === 'pdf') {
       setIndex(1);
-    }
-    if (method == "link") {
-      setIndex(2);
+      setFileLink(FileService.streamFile(pdfId));
+    } else if (String(method) === 'link') {
+      setIndex(1);
+    } else {
+      console.log('error');
     }
   }
 
@@ -79,9 +82,6 @@ const BuyProcess = () => {
 
         </div>
         <div className="tabContent" hidden={index !== 1}>
-          <h1>Insert PDF doc here</h1>
-        </div>
-        <div className="tabContent" hidden={index !== 2}>
           <div style={{ margin: "2rem", display: "flex", justifyContent: "center", flexDirection: "column", textAlign: "center" }}>
             <iframe src={fileLink} width={"80%"} height={"1150px"} style={{ margin: "auto" }} />
           </div>

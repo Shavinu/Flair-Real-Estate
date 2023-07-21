@@ -5,8 +5,7 @@ import Toast from '../../Toast';
 import * as FileService from '../../../Services/FileService';
 import * as CmsService from '../../../Services/CmsService';
 
-function UploadPdf() {
-    const page = ('Buyers');
+function UploadPdf({ page }) {
     const form = useRef();
     const fileInput = useRef();
     const [titleImage, setTitleImage] = useState('');
@@ -100,7 +99,7 @@ function UploadPdf() {
 
 
     useEffect(() => {
-        findPage(page);
+        findPage(page.page);
     }, [page]);
 
     return (

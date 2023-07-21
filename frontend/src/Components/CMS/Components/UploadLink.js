@@ -3,8 +3,7 @@ import { Button, Container, Row, Col, Form, CloseButton } from 'react-bootstrap'
 import Toast from '../../Toast';
 import * as CmsService from '../../../Services/CmsService';
 
-function UploadLink() {
-    const page = ('Buyers');
+function UploadLink({ page }) {
     const form = useRef();
     const fileInput = useRef();
     const [errors, setErrors] = useState();
@@ -80,7 +79,7 @@ function UploadLink() {
     }
 
     useEffect(() => {
-        findPage(page);
+        findPage(page.page);
     }, [page]);
 
     return (
