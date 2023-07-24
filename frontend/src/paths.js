@@ -1,5 +1,11 @@
 import Home from './Pages/Admin/Home';
+//imports for the frontpages
 import * as Frontpage from './Pages/Admin/Frontpage/';
+import * as ClientFrontpage from './Pages/Client/Frontpage/';
+import * as BuilderFrontpage from './Pages/Builder/Frontpage';
+import * as UserFrontpage from './Pages/User/Frontpage';
+import * as ModeratorFrontpage from './Pages/Moderator/Frontpage';
+//End of frontpage imports
 import * as Users from './Pages/Admin/Users';
 import * as Groups from './Pages/Admin/Groups';
 import * as Project from './Pages/Project';
@@ -23,12 +29,15 @@ import ListingPage from './Pages/Client/Listing/ListingPage';
 import AboutContent from './Pages/Admin/Management/AboutContent';
 import ProjectDetail from './Pages/Client/Listing/ProjectDetail';
 import ListingDetail from './Pages/Client/Listing/ListingDetail';
+import { useEffect } from 'react';
 
 export const ROOTS = {
   AUTH: '/auth',
   DASHBOARD: '/dashboard',
   CLIENT: '/',
 }
+
+
 
 export const paths = {
   auth: {
@@ -46,6 +55,33 @@ export const paths = {
     }
   },
 }
+
+//Method to identify and intiate front page for each user
+const SetFrontPagePart = () => {
+  const user = JSON.parse(localStorage.getItem('user'));
+
+  if (user == null) {
+    localStorage.getItem('user', []);
+    console.log("User have no login");
+  }
+  else if(user != null) {    
+    console.log(user.payload.accType);
+    if (user && user.payload.accType === "admin") {
+      return <Frontpage.Frontpage />;
+    } else if (user.payload.accType === "agent") {
+      return <ClientFrontpage.Frontpage />;
+    } else if (user.payload.accType === "moderator") {
+      return <ModeratorFrontpage.Frontpage />;
+    } else if (user.payload.accType === "builder") {
+      return <BuilderFrontpage.Frontpage />;
+    } else if (user.payload.accType === "user") {
+      return <UserFrontpage.Frontpage />;
+    } else {
+      return <Frontpage.Frontpage />; 
+    }
+  }
+};
+//End of SetFrontPagePart 
 
 export const views = [
   // {
@@ -97,6 +133,12 @@ export const views = [
     isRoute: true,
   },
   {
+    name: 'Front page',
+    action: '/frontpage',
+    icon: 'feather icon-users',
+    element: SetFrontPagePart(),
+  },
+  {
     name: 'Users',
     action: '/users',
     icon: 'feather icon-user',
@@ -136,12 +178,6 @@ export const views = [
     icon: 'feather icon-user-check',
     element: <Dashboard.EditProfile />,
     isRoute: true,
-  },
-  {
-    name: 'Front page',
-    action: '/frontpage',
-    icon: 'feather icon-users',
-    element: <Frontpage.Frontpage />,
   },
   {
     name: 'User Groups',

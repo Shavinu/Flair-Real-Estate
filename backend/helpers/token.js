@@ -1,11 +1,12 @@
 const JWT = require('jsonwebtoken');
 const createError = require('http-errors');
 
-const signAccessToken = (userId, userEmail) => {
+const signAccessToken = (userId, userEmail, accType) => {
   return new Promise((resolve, reject) => {
     const payload = {
       _id: userId,
       email: userEmail,
+      accType: accType
     };
 
     const secret = process.env.ACCESS_TOKEN_SECRET;

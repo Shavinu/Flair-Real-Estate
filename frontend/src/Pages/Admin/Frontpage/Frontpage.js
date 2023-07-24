@@ -260,23 +260,7 @@ const Frontpage = () => {
     })
 
 
-    // Function to remove characters after "T" in the date string
-    function removeTimeFromDate(dateString) {
-        if (dateString && dateString.includes('T')) {
-            return dateString.split('T')[0] ;
-        }
-        return dateString;
-    }
-
-    // Loop through the array and modify the "userDate" field
-    for (let i = 0; i < filternewUserDate.length; i++) {
-        filternewUserDate[i].userDate = removeTimeFromDate(filternewUserDate[i].userDate);
-    }
-    // Loop through the array and modify the "userChangeDate" field
-    for (let i = 0; i < filternewUserDate.length; i++) {
-        filternewUserDate[i].userChangeDate = removeTimeFromDate(filternewUserDate[i].userChangeDate);
-    }
-          
+             
 
     //Extract projectNames and maxPrice
     const filteredProjectData = projects.map((item) => {
@@ -471,30 +455,6 @@ const Frontpage = () => {
                                         ))}
                                     </div>
                                 </Stack>
-                            </Card>
-                        </Col>
-                        <Col lg={4}>
-                            <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
-                            <h6>Recent user account changes</h6><br/>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Create Date</th>
-                                        <th>Update Date</th>
-                                    </tr><br/>
-                                </thead>
-                                <tbody>
-                                    
-                                    {filternewUserDate.slice(0,5).map((item) => (
-                                        <tr key={item.userName}>
-                                            <td>{item.userName}</td>
-                                            <td>{item.userDate}</td>
-                                            <td>{item.userChangeDate}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
                             </Card>
                         </Col>
                     </Row>

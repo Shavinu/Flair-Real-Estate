@@ -19,7 +19,7 @@ const Frontpage = () => {
                 <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
                     <Row>
                         <div>
-                            <h1>Flair Real Estate Agent Dashboard</h1>
+                            <h1>Flair Real Estate Moderator Dashboard</h1>
                         </div>
                     </Row>
                 </Card>
