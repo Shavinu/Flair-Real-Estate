@@ -601,7 +601,7 @@ const PriceRangeInput = ({ onChange, min, max, step, parentMinPrice, parentMaxPr
   }, [minPrice, maxPrice, reset]);
 
   return (
-    <Container className="content-container">
+    <Container>
       <Row className='align-items-center'>
         <Col>
           <Select
