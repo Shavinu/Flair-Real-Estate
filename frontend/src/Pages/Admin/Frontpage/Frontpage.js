@@ -4,7 +4,7 @@ import * as ProjectService from '../../../Services/ProjectService';
 import { useEffect, useState } from 'react';
 import { Col, Card } from "react-bootstrap";
 import { Container, Row } from 'react-bootstrap';
-import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, Cell, XAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { PieChart, Pie } from 'recharts';
 import "../Layout.css";
 import { Stack } from 'react-bootstrap';
@@ -14,15 +14,21 @@ const Frontpage = () => {
     const [listings, setlistings] = useState([])
     const [listingsByRegion, setlistingsByRegion] = useState([])
     const [users, setUsers] = useState([])
+    const [UsersName, setUsersName] = useState([])
     const [usersByType, setUsersByType] = useState([])
     const [usersByLicense, setUsersByLicense] = useState([])
     const [projectByAvailability, setProjectByAvailability] = useState([])
     const [projects, setProjects] = useState([])
 
 
-    const capitalizeFirstLetter = (name) => {
-        return name.charAt(0).toUpperCase() + name.slice(1);
-    };
+    //Get userID for the frontpage
+    const SetFrontPagePart = () => {
+        const user = JSON.parse(localStorage.getItem('user'));
+        const userID = user.payload._id;
+
+        return userID;
+    }
+    const ID = SetFrontPagePart();
 
     //Piechart colors
     const COLORS = ['#00C49F', '#0088FE', '#FFBB28', '#FF8042'];
@@ -149,6 +155,10 @@ const Frontpage = () => {
             .then((response) => {
                 setUsers(response);
             })
+        UserService.getUserList()
+            .then((response) => {
+                setUsersName(response);
+            })    
         ProjectService.getAllProjects()
             .then((response) => {
                 setProjects(response);
@@ -240,31 +250,17 @@ const Frontpage = () => {
 
     //Extract userNames
     const filteredUserData = users.map((item) => {
-        const userName = item.firstName;
+        //const userName = item.firstName;
         return {
             userName: item.userName
         }
     })
     const Usercount = filteredUserData.length;
-
-    //Extracting recent user details
-    const filternewUserDate = users.map((item) => {
-        const userName = item.firstName;
-        const userDate = item.createdAt;
-        const userChangeDate = item.updatedAt;
-        return {
-            userName: item.firstName,
-            userDate: item.createdAt,
-            userChangeDate: item.updatedAt
-        }
-    })
-
-
-             
+            
 
     //Extract projectNames and maxPrice
     const filteredProjectData = projects.map((item) => {
-        const projectName = item.projectName;
+        //const projectName = item.projectName;
         return {
             projectName: item.projectName,
             minPrice: item.projectPriceRange[0].maxPrice,
@@ -280,7 +276,7 @@ const Frontpage = () => {
 
     // Extract listingName and minPrice
     const filteredData = listings.map((item) => {
-        const listingName = item.listingName.split(',')[0].trim();
+        //const listingName = item.listingName.split(',')[0].trim();
         return {
             listingName: item.listingName,
             minPrice: item.priceRange[0].minPrice,
@@ -288,18 +284,11 @@ const Frontpage = () => {
             landSize: item.landSize
         };
     });
-    const Listingcount = filteredData.length;
-
-    //X axis
-    const filteredDataX = listings.map((item) => {
-        return {
-            listingName: item.listingName,
-        };
-    });   
+    const Listingcount = filteredData.length; 
 
     //Listing type filter
     const filteredListingTypeData = listings.map((item) => {
-        const listingType = item.listingName.split(',')[0].trim();
+        //const listingType = item.listingName.split(',')[0].trim();
         return {
             type: item.type
         };
@@ -318,14 +307,22 @@ const Frontpage = () => {
         return false;
     });
 
-    // Extract listing names before the first comma
-    const filteredDat2 = listings.map((item) => {
-        const listingName = item.listingName.split(',')[0].trim();
-        return {
-            listingName: listingName,
-            maxPrice: item.priceRange[0].maxPrice,
-        };
-    });
+
+    //Extract username and listings/ projects
+    const filteredLoginUser = UsersName.map((item) => {
+        const uID = item._id;
+
+        if (uID === ID) {
+            return {
+                _id: item._id,
+                firstName: item.firstName,
+                lastName: item.lastName
+            };
+        }
+        else { return {} }
+    })
+    const filteredFirstNames = filteredLoginUser.map(item => item ? item.firstName : null).filter(firstName => firstName !== null);
+//End of extracting the login user first name
 
 
     return (
@@ -340,14 +337,21 @@ const Frontpage = () => {
                 </Card>
             </Col>
             <br />
-            <Col lg={9}>
+            <Col lg={12}>
                 <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
                     <Row>
                         <h4>Quick summary</h4>
                         <br /><br />
                     </Row>
                     <Row>
-                        <Col lg={4}>
+                        <Col lg={3}>
+                            <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
+                                <h5>Welcome</h5>
+                                <br />
+                                <p><h1><i>{filteredFirstNames}</i></h1></p>
+                            </Card>
+                        </Col>
+                        <Col lg={3}>
                             <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
                                 <h5>Number of users</h5>
                                 <br />
@@ -355,14 +359,14 @@ const Frontpage = () => {
 
                             </Card>
                         </Col>
-                        <Col lg={4}>
+                        <Col lg={3}>
                             <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
                                 <h5>Number of projects</h5>
                                 <br />
                                 <p><h1>{Projectcount}</h1></p>
                             </Card>
                         </Col>
-                        <Col lg={4}>
+                        <Col lg={3}>
                             <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
                                 <h5>Number of listings</h5>
                                 <br />
@@ -477,23 +481,23 @@ const Frontpage = () => {
                         <br /><br />
                     </Row>
                     <Row>
-                        <Col lg={5}>
+                        <Col lg={9}>
+                        <ResponsiveContainer>
                             <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
                                 <h6>Minimum and Maxium prices of listings</h6><br/>
                                 <BarChart
-                                    width={500}
+                                    width={800}
                                     height={300}
                                     data={filteredData}
                                     margin={{
                                         top: 5,
-                                        right: 30,
-                                        left: 20,
+                                        right: 5,
+                                        left: 5,
                                         bottom: 5,
                                     }}
                                 >
                                     <CartesianGrid strokeDasharray="3 3" />
                                     <XAxis dataKey="listingName" />
-                                    {/* <YAxis /> */}
                                     <Tooltip />
                                     <Legend />
                                     <Bar dataKey="minPrice" fill="#8884d8" />
@@ -501,11 +505,13 @@ const Frontpage = () => {
                                 </BarChart>
 
                             </Card>
+                            </ResponsiveContainer>
                         </Col>
-                        <Col lg={4}>
-                            <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
-                            <h6>Listings by region</h6>
-                                <Col lg={6}>
+                        </Row><br/>
+                        <Row>
+                        <Col lg={7}>
+                            <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">                                
+                            <h6>Listings by region of all listings in Flair Real Estate</h6>
                                     <PieChart width={300} height={200}>
                                         <Pie
                                             data={listingsByRegion}
@@ -519,12 +525,9 @@ const Frontpage = () => {
                                                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                             ))}
                                         </Pie>
-
                                         <Tooltip />
                                     </PieChart>
-                                </Col>
                                 <Stack gap={2}>
-                                    
                                     <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
                                         {COLORSBySuburb.map((color, i) => (
                                             <Stack key={color} alignItems="center" spacing={1}>
@@ -560,8 +563,6 @@ const Frontpage = () => {
                             The region distribution of the available listings entries are presented in the second pie chart as it makes easier to identify the average listing regions.
                             In the third segment, it is the types of popular listings that are shown.
                             </ul>
-                                 
-                            
                         </p>
                     </Row>
                 </Card>
@@ -575,6 +576,7 @@ const Frontpage = () => {
                     </Row>
                     <Row>
                         <Col lg={9}>
+                            <ResponsiveContainer>
                             <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
                                 <h6>Minimum and Maxium prices of projects</h6><br/>
                                 <BarChart
@@ -583,21 +585,20 @@ const Frontpage = () => {
                                     data={filteredProjectData}
                                     margin={{
                                         top: 0,
-                                        right: 15,
-                                        left: 20,
+                                        right: 5,
+                                        left: 5,
                                         bottom: 5,
                                     }}
                                 >
                                     <CartesianGrid strokeDasharray="3 3" />
                                     <XAxis dataKey="projectName" />
-                                    {/* <YAxis /> */}
                                     <Tooltip />
                                     <Legend />
                                     <Bar dataKey="minPrice" fill="#8884d8" />
                                     <Bar dataKey="maxPrice" fill="#82ca9d" />
                                 </BarChart>
-
                             </Card>
+                            </ResponsiveContainer>
                         </Col>
                         <Col lg={3}>
                             <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
@@ -648,6 +649,8 @@ const Frontpage = () => {
                 </Card>
             </Col>
             <br/><br/>
+            <p>{JSON.stringify(ID)}</p>
+            <p>{JSON.stringify(filteredFirstNames)}</p>
             {/* <Col lg={12}>
                 <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
                     <Row>

@@ -4,19 +4,29 @@ import * as ProjectService from '../../../Services/ProjectService';
 import { useEffect, useState } from 'react';
 import { Col, Card } from "react-bootstrap";
 import { Container, Row } from 'react-bootstrap';
-import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, Cell, XAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { PieChart, Pie } from 'recharts';
 import "./Layout.css";
+
 import { Stack } from 'react-bootstrap';
 
 
 const Frontpage = () => {
 
-
+    const [Users2, setUsers] = useState([])
     const [projects, setProjects] = useState([])
     const [projectByAvailability, setProjectByAvailability] = useState([])
     const [listings, setlistings] = useState([])
     const [listingsByRegion, setlistingsByRegion] = useState([])
+
+    //Get userID for the frontpage
+    const SetFrontPagePart = () => {
+        const user = JSON.parse(localStorage.getItem('user'));
+        const userID = user.payload._id;
+
+        return userID;
+    }
+    const ID = SetFrontPagePart();
 
     //Piechart colors for listing by subrub
     const COLORSBySuburb = ['#00C49F', '#0088FE', '#FFBB28', '#FF8042', '#8A0C40', '#3807EB'];
@@ -105,6 +115,10 @@ const Frontpage = () => {
     //End listing by region
 
     useEffect(() => {
+        UserService.getUserList()
+            .then((response) => {
+                setUsers(response);
+            })
         ListingService.getAllListings()
             .then((response) => {
                 setlistings(response);
@@ -136,33 +150,68 @@ const Frontpage = () => {
 
     //Extract projectNames and maxPrice
     const filteredProjectData = projects.map((item) => {
-        const projectName = item.projectName;
         return {
             projectName: item.projectName,
+            projectOwner: item.projectOwner._id,
             minPrice: item.projectPriceRange[0].maxPrice,
             maxPrice: item.projectPriceRange[0].minPrice,
             projectStatus: item.projectStatus
         }
     })
+    const filteredProjects = filteredProjectData.filter(project => project.projectOwner === ID);
     const Projectcount = filteredProjectData.length;
 
 
-        // Extract listingName and minPrice
-        const filteredData = listings.map((item) => {
-            const listingName = item.listingName.split(',')[0].trim();
-            return {
-                listingName: item.listingName,
-                minPrice: item.priceRange[0].minPrice,
-                maxPrice: item.priceRange[0].maxPrice,
-                landSize: item.landSize
-            };
-        });
-        const Listingcount = filteredData.length;
+    //Extract Project details by Owner
+    const filteredProjectDataByOwner = projects.map((item) => {
+        return {
+            projectName: item.projectName,
+            projectOwner: item.projectOwner._id,
+            location: item.projectLocation[0].locationName
+        }
+    })
+
+
+    //Filtering the userID with filtered projectArray
+    const filteredUserProjects = filteredProjectDataByOwner.filter(project => project.projectOwner === ID);
+    const ProjectcountByOwner = filteredUserProjects.length;
+    //End
+
+
+    // Extract listingName and minPrice
+    const filteredListingDataByOwner = listings.map((item) => {
+        //const listingName = item.listingName.split(',')[0].trim();
+        return {
+            listingName: item.listingName,
+            streetAddress: item.streetAddress,
+            devloper: item.devloper
+        };
+    });
+
+    //Filtering the userID with filtered listingsArray
+    const filteredUserListings = filteredListingDataByOwner.filter(project => project.devloper === ID);
+    const ListingscountByOwner = filteredUserListings.length;
+    //End
+
+
+    // Extract listingName and minPrice
+    const filteredData = listings.map((item) => {
+        //const listingName = item.listingName.split(',')[0].trim();
+        return {
+            listingName: item.listingName,
+            devloper: item.devloper,
+            minPrice: item.priceRange[0].minPrice,
+            maxPrice: item.priceRange[0].maxPrice,
+            landSize: item.landSize
+        };
+    });
+    const filteredListings = filteredData.filter(project => project.devloper === ID);
+    const Listingcount = filteredData.length;
 
 
     //Listing type filter
     const filteredListingTypeData = listings.map((item) => {
-        const listingType = item.listingName.split(',')[0].trim();
+        //const listingType = item.listingName.split(',')[0].trim();
         return {
             type: item.type
         };
@@ -178,7 +227,29 @@ const Frontpage = () => {
             return true;
         }
         return false;
-    });    
+    });
+
+
+
+    //Extract username and listings/ projects
+    const filteredLoginUser = Users2.map((item) => {
+        const uID = item._id;
+
+        if (uID === ID) {
+            return {
+                _id: item._id,
+                firstName: item.firstName,
+                lastName: item.lastName
+            };
+        }
+        else {return {}}
+    })
+    const filteredFirstNames = filteredLoginUser.map(item => item ? item.firstName : null).filter(firstName => firstName !== null);
+    //End of extracting the login user first name
+
+
+
+
 
     return (
         <Container className="content-container">
@@ -203,22 +274,22 @@ const Frontpage = () => {
                             <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
                                 <h5>Welcome</h5>
                                 <br />
-                                {/* <p><h1>{Usercount}</h1></p> */}
+                                <p><h1>{filteredFirstNames}</h1></p>
 
                             </Card>
                         </Col>
                         <Col lg={4}>
                             <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
-                                <h5>Number of projects</h5>
+                                <h5>Number of your projects</h5>
                                 <br />
-                                <p><h1>{Projectcount}</h1></p>
+                                <p><h1>{ProjectcountByOwner} / {Projectcount}</h1></p>
                             </Card>
                         </Col>
                         <Col lg={4}>
                             <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
-                                <h5>Number of listings</h5>
+                                <h5>Number of your listings</h5>
                                 <br />
-                                <p><h1>{Listingcount}</h1></p>
+                                <p><h1>{ListingscountByOwner} / {Listingcount}</h1></p>
                             </Card>
                         </Col>
                     </Row>
@@ -226,7 +297,7 @@ const Frontpage = () => {
                         <br /><br />
                         <p><br />Description</p>
                         <p>
-                            Flair Real Estate admin dashboard lets you walk through all the main functions at a glance.
+                            Flair Real Estate agent dashboard lets you walk through your listings, projects.
                         </p>
                     </Row>
                 </Card>
@@ -239,56 +310,55 @@ const Frontpage = () => {
                         <br /><br />
                     </Row>
                     <Row>
-                        <Col lg={5}>
-                            <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
-                                <h6>Minimum and Maxium prices of listings</h6><br/>
-                                <BarChart
-                                    width={500}
-                                    height={300}
-                                    data={filteredData}
-                                    margin={{
-                                        top: 5,
-                                        right: 30,
-                                        left: 20,
-                                        bottom: 5,
-                                    }}
-                                >
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="listingName" />
-                                    {/* <YAxis /> */}
-                                    <Tooltip />
-                                    <Legend />
-                                    <Bar dataKey="minPrice" fill="#8884d8" />
-                                    <Bar dataKey="maxPrice" fill="#82ca9d" />
-                                </BarChart>
-
-                            </Card>
-                        </Col>
-                        <br/>
-                        <Col lg={4}>
-                            <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
-                            <h6>Listings by region</h6>
-                                <Col lg={6}>
-                                    <PieChart width={300} height={200}>
-                                        <Pie
-                                            data={listingsByRegion}
-                                            labelLine={false}
-                                            label={renderCustomizedLabelBySuburb}
-                                            outerRadius={80}
-                                            fill="#8884d8"
-                                            dataKey="qty"
-                                        >
-                                            {listingsByRegion.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={COLORSBySuburb[index % COLORSBySuburb.length]} />
-                                            ))}
-                                        </Pie>
-
+                        <Col lg={12}>
+                            <ResponsiveContainer>
+                                <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
+                                    <h6>Minimum and Maxium prices of your listings</h6><br />
+                                    <BarChart
+                                        width={1130}
+                                        height={270}
+                                        data={filteredListings}
+                                        margin={{
+                                            top: 5,
+                                            right: 3,
+                                            left: 3,
+                                            bottom: 5,
+                                        }}
+                                    >
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis dataKey="listingName" />
+                                        {/* <YAxis /> */}
                                         <Tooltip />
-                                    </PieChart>
-                                </Col>
+                                        <Legend />
+                                        <Bar dataKey="minPrice" fill="#8884d8" />
+                                        <Bar dataKey="maxPrice" fill="#82ca9d" />
+                                    </BarChart>
+                                </Card>
+                            </ResponsiveContainer>
+                        </Col>
+                    </Row>
+                    <br />
+                    <Row>
+                        <Col lg={7}>
+                            <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
+                                <h6>Listings by region of all listings in Flair Real Estate</h6>
+                                <PieChart width={300} height={200}>
+                                    <Pie
+                                        data={listingsByRegion}
+                                        labelLine={false}
+                                        label={renderCustomizedLabelBySuburb}
+                                        outerRadius={90}
+                                        fill="#8884d8"
+                                        dataKey="qty"
+                                    >
+                                        {listingsByRegion.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={COLORSBySuburb[index % COLORSBySuburb.length]} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip />
+                                </PieChart>
                                 <Stack gap={2}>
-                                    
-                                    <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
+                                    <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                                         {COLORSBySuburb.map((color, i) => (
                                             <Stack key={color} alignItems="center" spacing={1}>
                                                 <div style={{ width: 20, height: 20, background: color }} />
@@ -303,29 +373,30 @@ const Frontpage = () => {
                             </Card>
                         </Col>
                         <Col lg={3}>
-                        <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
-                            <div>
-                                <p><h6>Types of listings</h6><br/></p>
-                            <ul>
-                                {uniqueArray.map(item => (
-                                    <li key={item.listingName}>{item.type}</li>
-                                ))}
-                            </ul>
-                            </div>
-                        
-                        </Card>
+                            <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
+                                <div>
+                                    <p><h6>All types of listings in Flair Real Estate</h6><br /></p>
+                                    <ul>
+                                        {uniqueArray.map(item => (
+                                            <li key={item.listingName}>{item.type}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+
+                            </Card>
                         </Col>
                     </Row>
-                    
+
+
                     <Row>
                         <br /><br />
                         <p><br />Description</p>
-                        <p><ul>Listings of the Flair Real Estate are graphically shown. The maximum and the minimum prices of the listings are contrasted accordingly.
-                            The region distribution of the available listings entries are presented in the second pie chart as it makes easier to identify the average listing regions.
+                        <p><ul>Your listings of the Flair Real Estate are graphically shown. The maximum and the minimum prices of the listings are contrasted for your easiness.
+                            The regional distribution of the available listings entries in Flair Real Estate are presented in the second pie chart as it makes easier to identify the average listing regions.
                             In the third segment, it is the types of popular listings that are shown.
-                            </ul>
-                                 
-                            
+                        </ul>
+
+
                         </p>
                     </Row>
                 </Card>
@@ -340,33 +411,36 @@ const Frontpage = () => {
                     </Row>
                     <Row>
                         <Col lg={9}>
-                            <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
-                                <h6>Minimum and Maxium prices of projects</h6><br/>
-                                <BarChart
-                                    width={900}
-                                    height={300}
-                                    data={filteredProjectData}
-                                    margin={{
-                                        top: 0,
-                                        right: 15,
-                                        left: 20,
-                                        bottom: 5,
-                                    }}
-                                >
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="projectName" />
-                                    {/* <YAxis /> */}
-                                    <Tooltip />
-                                    <Legend />
-                                    <Bar dataKey="minPrice" fill="#8884d8" />
-                                    <Bar dataKey="maxPrice" fill="#82ca9d" />
-                                </BarChart>
+                            <ResponsiveContainer>
+                                <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
+                                    <h6>Minimum and Maxium prices of your projects</h6><br />
 
-                            </Card>
+                                    <BarChart
+                                        width={800}
+                                        height={300}
+                                        data={filteredProjects}
+                                        margin={{
+                                            top: 0,
+                                            right: 5,
+                                            left: 5,
+                                            bottom: 5,
+                                        }}
+                                    >
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis dataKey="projectName" />
+                                        {/* <YAxis /> */}
+                                        <Tooltip />
+                                        <Legend />
+                                        <Bar dataKey="minPrice" fill="#8884d8" />
+                                        <Bar dataKey="maxPrice" fill="#82ca9d" />
+                                    </BarChart>
+
+                                </Card>
+                            </ResponsiveContainer>
                         </Col>
                         <Col lg={3}>
                             <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
-                                <h6>Active and deactive projects</h6><br/>
+                                <h6>Active and deactive projects in Flair Real Estate</h6><br />
                                 <Col lg={6}>
                                     <PieChart width={200} height={200}>
                                         <Pie
@@ -405,14 +479,92 @@ const Frontpage = () => {
                         <br /><br />
                         <p><br />Description</p>
                         <p>
-                            The project summary element, the first graph describes the lowest and the highest project prices related to the each project. It is clear to identify which and what project is costly. 
-                            Using the hover interactive function enabled, admin can easily identify and get more details. 
+                            The project summary element, the first graph describes the lowest and the highest project prices related to the each project. It is clear to identify which and what project is costly.
+                            Using the hover interactive function enabled, admin can easily identify and get more details.
                             In the last segment of the project summary, active and deactive projects can be quickly analysed. The percentage is much more accurate and clear to understand.
                         </p>
                     </Row>
                 </Card>
             </Col>
-            <br/><br/>
+            <br />
+            <Col lg={12}>
+
+                <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
+                    <Row>
+                        <h4>Your summary</h4>
+                        <br />
+                        <p>
+                            As one of our agents, your listings are displayed below in project and listing categories. 
+                        </p>
+                        <br />
+                    </Row>
+                    <Row>
+                        <Col lg={10}>
+                        <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
+                            <p><h5>Projects</h5></p>
+                            <br />
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Project Name</th>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <th>Location</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {filteredUserProjects.map((project, index) => (
+                                        <tr key={index}>
+                                            <td>{project.projectName}</td>&nbsp;
+                                            <td>{project.location}</td>
+                                        </tr>
+                                    ))}
+                                </tbody><br/>
+                            </table>
+                        </Card>
+                        </Col>
+                    </Row>
+
+                    <br />
+                    <Row>
+                        <Col lg={10}>
+                            <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
+                                <p><h5>Listings</h5></p>
+                                <br />
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Listing Name</th>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            <th>Location</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {filteredUserListings.map((listing, index) => (
+                                            <tr key={index}>
+                                                <td>{listing.listingName}</td>&nbsp;
+                                                <td>{listing.streetAddress}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody><br/>
+                                </table>
+                            </Card>
+                        </Col>
+                    </Row>
+                    <br />
+                </Card>
+            </Col>
+            <br />
+            <br />
+            <p><h2>User ID - {ID}</h2></p>
+            <p>{JSON.stringify(filteredLoginUser)}</p>
+            <p>{JSON.stringify(filteredFirstNames)}</p><br />
+            {/* <p>{JSON.stringify(projectsByOwner)}</p> */}
+            {/* <p>{JSON.stringify(projectsByOwner.projects[0].projectName)}</p>
+            <p>{JSON.stringify(projectsByOwner.projects[0].projectLocation[0].locationName)}</p> */}
+            <br />
+            <p>{JSON.stringify(filteredListings)}</p>
+            <p></p>
         </Container>
     );
 }
