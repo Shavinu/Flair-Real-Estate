@@ -83,7 +83,7 @@ const verifyEmail = async (req, res, next) => {
       return res.status(400).send({ message: 'Unable to delete token' });
     }
 
-    const { accessToken, payload } = await signAccessToken(user.id, user.email);
+    const { accessToken, payload } = await signAccessToken(user.id, user.email, user.accType);
 
     res
       .status(200)
@@ -128,7 +128,7 @@ const login = async (req, res, next) => {
         });
     }
 
-    const { accessToken, payload } = await signAccessToken(user.id, user.email);
+    const { accessToken, payload } = await signAccessToken(user.id, user.email, user.accType);
 
     res.status(200).send({ accessToken, payload });
   } catch (error) {
