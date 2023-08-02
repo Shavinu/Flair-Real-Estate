@@ -5,6 +5,7 @@ import { ASSETS_URL } from "../../../config-global";
 import useDropdown from "../../../components/dropdown/use-dropdown";
 import { Dropdown } from "../../../components";
 import { AuthContext } from "../../../providers/auth/auth-context";
+import { paths } from "../../../paths";
 
 const ProfileDropdown = () => {
   const router = useRouter();
@@ -68,7 +69,10 @@ const ProfileDropdown = () => {
         <MenuItem sx={{ px: 1 }} onClick={() => handleClickItem('/')}>
           <Typography variant="body2">Home</Typography>
         </MenuItem>
-        <MenuItem sx={{ px: 1 }} onClick={() => window.location.href = 'http://localhost:3000/users'}>
+        {/* <MenuItem sx={{ px: 1 }} onClick={() => window.location.href = 'http://localhost:3000/users'}>
+          <Typography variant="body2">Dashboard</Typography>
+        </MenuItem> */}
+        <MenuItem sx={{ px: 1 }} onClick={() => handleClickItem(paths.dashboard.root)}>
           <Typography variant="body2">Dashboard</Typography>
         </MenuItem>
         <MenuItem sx={{ px: 1 }} onClick={() => handleClickItem('/profile')}>
@@ -79,7 +83,7 @@ const ProfileDropdown = () => {
       <Divider sx={{ borderStyle: 'dashed' }} />
       <MenuItem
         onClick={handleLogout}
-        sx={{ px:1, m: 1, fontWeight: 'fontWeightBold', color: 'error.main' }}
+        sx={{ px: 1, m: 1, fontWeight: 'fontWeightBold', color: 'error.main' }}
       >
         <Typography variant="body2">
           Logout

@@ -10,6 +10,7 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 // map
 import 'mapbox-gl/dist/mapbox-gl.css';
+import SearchProvider from "./providers/search/search-provider";
 
 const App = () => {
   useScrollToTop();
@@ -20,7 +21,9 @@ const App = () => {
         <SnackbarProvider>
           <ProgressBar />
           <AuthConsumer>
-            <RenderRouters />
+            <SearchProvider>
+              <RenderRouters />
+            </SearchProvider>
           </AuthConsumer>
         </SnackbarProvider>
       </ThemeProvider>

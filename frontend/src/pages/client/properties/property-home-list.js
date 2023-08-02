@@ -1,7 +1,7 @@
 import { Apartment, List } from "@mui/icons-material"
 import { Container, Pagination, Stack, Tab, Tabs } from "@mui/material"
 import Grid from "@mui/material/Unstable_Grid2/Grid2"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useContext, useEffect, useState } from "react"
 import { Helmet } from "react-helmet-async"
 import { PROJECT_NAME } from "../../../config-global"
 import HomeHero from "../../../sections/home/home-hero"
@@ -10,6 +10,7 @@ import HotOpportunitiesList from "../../../sections/properties/hot-opportunities
 import FileService from "../../../services/file-service"
 import ListingService from "../../../services/listing-service"
 import ProjectService from "../../../services/project-service"
+import { SearchContext } from "../../../providers/search/search-context"
 
 const TABS = {
   projects: 'projects',
@@ -21,12 +22,21 @@ const PropertyHomeList = () => {
   const [properties, setProperties] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const { searchResults, onSearch } = useContext(SearchContext);
 
   const getProperties = useCallback(
+
     async () => {
       try {
         if (currentTab === TABS.projects) {
-          const response = await ProjectService.searchProjects(currentPage, 6, {});
+          const response = await ProjectService.searchProjects(currentPage, 6, {
+            projectName: searchResults.searchTerm,
+            projectType: searchResults.type !== 'All' && searchResults.type !== 'Projects' ? searchResults.type : '',
+            projectPriceRange: {
+              minPrice: searchResults.minPrice !== 0 ? searchResults.minPrice : undefined,
+              maxPrice: searchResults.maxPrice !== 0 ? searchResults.maxPrice : undefined,
+            }
+          });
 
           const projects = response?.projects.map(async result => {
             const listingPromises = result?.projectListings.map(listingId => ListingService.getListing(listingId));
@@ -59,7 +69,14 @@ const PropertyHomeList = () => {
           setProperties(fetchedProjects);
           setTotalPages(response.totalPages);
         } else {
-          const listingResponse = await ListingService.searchListings(currentPage, 6, {});
+          const listingResponse = await ListingService.searchListings(currentPage, 6, {
+            listingName: searchResults.searchTerm,
+            type: searchResults.type !== 'All' && searchResults.type !== 'Projects' ? searchResults.type : '',
+            priceRange: {
+              minPrice: searchResults.minPrice !== 0 ? searchResults.minPrice : undefined,
+              maxPrice: searchResults.maxPrice !== 0 ? searchResults.maxPrice : undefined,
+            }
+          });
           const listings = listingResponse?.listings.map(result => ({
             _id: result._id,
             name: result.listingName,
@@ -86,7 +103,7 @@ const PropertyHomeList = () => {
         console.error("Error fetching projects:", error);
       }
     },
-    [currentPage, currentTab],
+    [currentPage, currentTab, searchResults],
   );
 
   const getImageUrls = (images) => {

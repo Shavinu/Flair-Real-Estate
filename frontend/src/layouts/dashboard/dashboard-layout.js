@@ -21,6 +21,7 @@ const DashboardLayout = () => {
         }}
       >
         <Sidebar openNav={isOpen} onCloseNav={() => setIsOpen(false)} />
+
         <Main>
           <Outlet />
         </Main>
