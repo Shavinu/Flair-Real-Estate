@@ -326,7 +326,7 @@ const Frontpage = () => {
 
 
     return (
-        <Container className="content-container">
+        <Container>
             <Col lg={12}>
                 <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
                     <Row>

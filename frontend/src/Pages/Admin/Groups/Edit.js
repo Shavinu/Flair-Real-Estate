@@ -137,7 +137,7 @@ const Edit = () => {
 
   return (
     <>
-      <Container className="content-container">
+      <Container>
       <ContentHeader
         headerTitle='Edit Group'
         breadcrumb={[

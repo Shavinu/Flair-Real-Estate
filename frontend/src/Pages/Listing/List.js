@@ -67,7 +67,7 @@ const Listings = () => {
   };
 
   return (
-    <Container className="content-container">
+    <Container>
       <ContentHeader headerTitle="Your Listings"
         breadcrumb={[
           { name: "Home", link: "/" },

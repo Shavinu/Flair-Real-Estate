@@ -80,13 +80,14 @@ const ListingPage = () => {
           <Container>
             <h1>Real Estate</h1>
             <p>Choose Your New Estate with Real Estate.</p>
-            <SearchFunction onSearch={handleSearch}/>
+            
           </Container>
         </div>
       </div>
       
 
         <Container className="listing-container">
+          <SearchFunction onSearch={handleSearch}/>
           <Form.Group as={Row} className="mb-3 col-5" controlId="formPlaintextEmail">
             <Form.Label column sm="2">
               Sort By:

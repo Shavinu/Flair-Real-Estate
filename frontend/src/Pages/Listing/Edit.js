@@ -339,7 +339,7 @@ const Edit = () => {
 
   } else if (initialDataSet && !editorAllowed) {
     return (
-      <Container className="content-container">
+      <Container>
         <ContentHeader headerTitle="Edit Listing"
           breadcrumb={[
             { name: "Home", link: "/" },
@@ -357,7 +357,7 @@ const Edit = () => {
     );
   } else if (initialDataSet && editorAllowed) {
     return (
-      <Container className="content-container">
+      <Container>
         <ContentHeader headerTitle="Edit Listing"
           breadcrumb={[
             { name: "Home", link: "/" },

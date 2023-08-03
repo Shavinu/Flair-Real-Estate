@@ -131,7 +131,7 @@ const ListingDetails = () => {
   }, [fetchedEditableByWithSubgroups, editorGroup, editor, listing]);
 
   if (!listing) {
-    return <Container className="content-container">
+    return <Container>
     <ContentHeader headerTitle="View Listing"
       breadcrumb={[
         { name: "Home", link: "/" },
@@ -151,7 +151,7 @@ const ListingDetails = () => {
   }
 
   return (
-    <Container className="content-container">
+    <Container>
       <ContentHeader headerTitle="View Listing"
         breadcrumb={[
           { name: "Home", link: "/" },

@@ -180,8 +180,13 @@ const Edit = () => {
   }, [id]);
 
   return <> 
-  <Container className="content-container">
+  <Container>
     <ContentHeader headerTitle="Edit User"
+    breadcrumb={[
+      { name: "Home", link: "/" },
+      { name: "Users", link: "/users" },
+      { name: "Edit", active: true },
+    ]}
       options={
       <div className='col-12 d-flex mt-1 px-0'>
       <Link

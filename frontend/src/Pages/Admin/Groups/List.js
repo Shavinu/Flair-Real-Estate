@@ -106,7 +106,7 @@ const List = () => {
   }, []);
 
   return <>
-    <Container className="content-container">
+    <Container>
     <ContentHeader headerTitle="Group List"
       breadcrumb={[
         { name: "Home", link: "/" },

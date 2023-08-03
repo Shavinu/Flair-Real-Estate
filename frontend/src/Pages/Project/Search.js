@@ -644,7 +644,7 @@ const Search = () => {
   };
 
   return (
-    <Container className="content-container">
+    <Container>
       <ContentHeader headerTitle="Projects"
         breadcrumb={[
           { name: "Home", link: "/" },

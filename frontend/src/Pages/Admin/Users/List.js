@@ -103,7 +103,7 @@ const List = () => {
   }, []);
 
   return <>
-  <Container className="content-container">
+  <Container>
     <ContentHeader headerTitle="User List"
       options={<Link className="btn btn-primary waves-effect waves-light" to="/users/create">Add User</Link>}
     />
