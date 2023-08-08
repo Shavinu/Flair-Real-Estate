@@ -7,6 +7,7 @@ const defaultSearch = {
   minPrice: 0,
   maxPrice: 0,
   type: 'All',
+  status: 'Projects',
 }
 const SearchProvider = ({ children }) => {
   const [searchResults, setSearchResults] = useState(defaultSearch)

@@ -54,7 +54,7 @@ const HotOpportunitiesList = () => {
         <Card sx={{ display: 'flex' }} variant="outlined">
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
             <CardContent sx={{ flex: '1 0 auto' }}>
-              <Stack direction="row" spacing={2}>
+              <Stack direction="row" spacing={2} alignItems="center">
                 <CardMedia
                   component="img"
                   sx={{ width: 151, borderRadius: 1 }}

@@ -93,7 +93,8 @@ export default function CarouselThumbnail({ data }) {
         position: 'relative',
       }}
     >
-      <Carousel
+      {data.length > 1 ? <>
+        <Carousel
         {...carouselLarge.carouselSettings}
         asNavFor={carouselThumb.nav}
         ref={carouselLarge.carouselRef}
@@ -109,6 +110,9 @@ export default function CarouselThumbnail({ data }) {
         onNext={carouselThumb.onNext}
         onPrev={carouselThumb.onPrev}
       />
+      </>
+        : <Image alt={data[0]} src={data[0]} ratio="16/9" />}
+
     </Box>
   );
 
