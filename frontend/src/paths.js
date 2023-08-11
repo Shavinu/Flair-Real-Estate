@@ -133,9 +133,9 @@ export const views = [
     isRoute: true,
   },
   {
-    name: 'Front page',
+    name: 'Dashboard',
     action: '/frontpage',
-    icon: 'feather icon-users',
+    icon: 'feather icon-home',
     element: SetFrontPagePart(),
   },
   {
@@ -525,6 +525,8 @@ export const api = {
     getProjectByOwner: '/api/projects/owner/{{Id}}',
     addMembers: '/api/projects/{{id}}/add-members/',
     removeMembers: '/api/projects/{{id}}/remove-members/',
+    getUnapproved: '/api/projects/unapproved',
+    approve: '/api/projects/approve',
   },
   listings: {
     create: '/api/listings/create',
@@ -535,6 +537,8 @@ export const api = {
     update: '/api/listings/{{id}}',
     delete: '/api/listings/{{id}}',
     getByDeveloper: '/api/listings/developer/{{id}}',
+    getUnapproved: '/api/listings/unapproved',
+    approve: '/api/listings/approve',
   },
   cms: {
     getAll: '/api/cms',

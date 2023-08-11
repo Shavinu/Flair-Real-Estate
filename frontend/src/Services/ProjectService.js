@@ -14,6 +14,14 @@ export const getAllProjects = async () => {
     return utils.fetch.httpGet(api.projects.getAll);
 };
 
+export const getUnapprovedProjects = async () => {
+    return utils.fetch.httpGet(api.projects.getUnapproved);
+};
+
+export const approveProjects = async (id) => {
+    return utils.fetch.httpPost(api.projects.approve, id);
+};
+
 export const updateProject = async (id, data) => {
     const url = utils.url.replaceId(api.projects.update, id);
     return utils.fetch.httpPost(url, data);

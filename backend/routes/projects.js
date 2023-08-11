@@ -8,6 +8,12 @@ const projectController = require('../controllers/projectController');
 // projectFiles (optional), projectListings (optional), projectOwner, projectMembers (optional), projectStatus }
 router.post('/', projectController.createProject);
 
+//Get all the unapproved projects
+router.get('/unapproved', projectController.getUnapprovedProjects)
+
+//approved project
+router.post('/approve', projectController.approveProjects)
+
 // Get all projects
 // GET /api/projects
 router.get('/', projectController.getAllProjects);

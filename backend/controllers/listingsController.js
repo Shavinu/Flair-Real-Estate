@@ -166,6 +166,48 @@ const getaListing = async (req, res) => {
   res.status(200).json(listing);
 };
 
+//get notapproved listing
+const getUnapprovedListing = async(req, res) => {
+  try {
+    const listingsQuery = Listing.find({
+      listingApproved: false,
+    })
+      .sort({ createdAt: -1 });
+
+    const listings = await listingsQuery.exec();
+
+    res.status(200).json({
+      listings
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const approveListing = async (req, res) => {
+  try{
+  const { id } = req.body;
+  const filter = {_id: id};
+  //console.log('Received ID:', id);
+  const update = { listingApproved: true };
+  const approvedListing = await Listing.findOneAndUpdate(filter, update, {
+    new: true
+  });
+
+  if (!approvedListing) {
+    return res.status(404).json({ message: 'Listing not found or could not be updated.' });
+  }
+
+  //res.status(200).json(approvedListing);
+  res.status(200).json({ message: "Listing Approved!" });
+  }
+  catch (error)
+  {
+    res.status(500).json({ message: 'An error occurred while updating the listing.' });
+  }
+};
+
+
 //create new listing
 const createListing = async (req, res) => {
   try {
@@ -312,4 +354,6 @@ module.exports = {
   createListing,
   deleteListing,
   updateListing,
+  getUnapprovedListing,
+  approveListing,
 };

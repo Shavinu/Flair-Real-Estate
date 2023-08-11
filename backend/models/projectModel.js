@@ -155,6 +155,11 @@ const projectSchema = new Schema({
     type: String,
     required: true
   },
+  projectApproved:{
+    type: Boolean,
+    required: false,
+    default: false
+  },
   projectCommission: [{
     _id: false,
     exists: {
