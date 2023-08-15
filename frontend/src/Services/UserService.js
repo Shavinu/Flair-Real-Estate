@@ -17,6 +17,10 @@ export const updateUser = (id, body) => {
   return utils.fetch.httpPatch(utils.url.replaceId(api.users.edit, id), body);
 };
 
+export const approveUser = (id, body) => {
+  return utils.fetch.httpPatch(utils.url.replaceId(api.users.approve, id), body);
+};
+
 export const deleteUser = (id) => {
   return utils.fetch.httpDelete(utils.url.replaceId(api.users.delete, id));
 };

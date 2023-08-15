@@ -8,7 +8,8 @@ import { Container, Row } from 'react-bootstrap';
 import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { PieChart, Pie } from 'recharts';
 import "./Layout.css";
-import RowModal from './RowModal';
+import { RowModal, ListingRowModal, ProjectRowModal } from './RowModal';
+import { RowModalUserDelete, RowModalUserApprove, RowModalListingApprove, RowModalListingDelete, RowModalProjectApprove, RowModalProjectDelete } from './ConfirmModal';
 import Toast from "../../../Components/Toast";
 import { Button, ContentHeader, DatePicker, Dropdown } from "../../../Components";
 import { Stack } from 'react-bootstrap';
@@ -27,14 +28,28 @@ const Frontpage = () => {
 
   const [projects, setProjects] = useState([])
   const [listings, setlistings] = useState([])
+
+  //Delete confirmation modal
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
   const [showConfirmDeleteModalListing, setShowConfirmDeleteModalListing] = useState(false);
-  const [showConfirmDeleteModalProject, setShowConfirmDeleteModalProject] = useState(false);
-  const [tst, settst] = useState([]);
+  const [showConfirmDeleteModalProject, setShowConfirmDeleteModalProject] = useState(false);  
 
+  //Approve confirmation modal
+  const [showConfirmApproveModal, setShowConfirmApproveModal] = useState(false);
+  const [showConfirmApproveModalListing, setShowConfirmApproveModalListing] = useState(false);
+  const [showConfirmApproveModalProject, setShowConfirmApproveModalProject] = useState(false);
+
+  //Arrays for boostrap modal from datatable rows
   const [showModal, setShowModal] = useState(false);
-  const [selectedRow, setSelectedRow] = useState(null);
+  const [showListingModal, setShowListingModal] = useState(false);
+  const [showProjectModal, setShowProjectModal] = useState(false);
 
+  //Arrays for row data
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [selectedRowListing, setSelectedRowListing] = useState(null);
+  const [selectedRowProject, setSelectedRowProject] = useState(null);
+
+  //Boostrap tabs for user, listing and projects
   const [activeTabUser, setActiveTabUser] = useState('unapproved');
   const [activeTabProject, setActiveTabProject] = useState('unapproved');
   const [activeTabListing, setActiveTabListing] = useState('unapproved');
@@ -72,13 +87,21 @@ const Frontpage = () => {
 
   //Extracting the project details
   const filteredProjects = projects.map(project => ({
+    _id: project._id,
     projectName: project.projectName,
     projectType: project.projectType,
     projectOwner: project.projectOwner.firstName,
+    phoneNumber: project.projectOwner.phoneNo,
+    email: project.projectOwner.email,
+    licence: project.projectOwner.licence,
     locationName: project.projectLocation[0].locationName,
+    projectStatus: project.projectStatus,
     region: project.projectLocation[0].region,
+    createdAt: project.createdAt,
     updatedAt: project.updatedAt,
-    projectApproved: project.projectApproved
+    projectApproved: project.projectApproved,
+    projectTitleImage: project.projectTitleImage,
+    projectPriceRange: project.projectPriceRange
   }));
 
 
@@ -86,33 +109,23 @@ const Frontpage = () => {
   const countfilteredunApprovedProjects = filteredunApprovedProjects.length;
   const filteredApprovedProjects = filteredProjects.filter(project => project.projectApproved === true);//For the Graph
 
-
   // Extract listing details
   const filteredListings = listings.map((item) => {
     return {
+      _id: item._id,
       listingName: item.listingName,
       type: item.type,
+      region: item.region,
+      suburb: item.suburb,
+      project: item.project,
       devloper: item.devloper,
       streetAddress: item.streetAddress,
-      region: item.region,
       updatedAt: item.updatedAt,
+      titleImage: item.titleImage,
       listingApproved: item.listingApproved
     };
   });
-  //const filteredunApprovedListings = filteredListings.filter(item => item.listingApproved == false);
-  //const countfilteredunApprovedListings = filteredunApprovedListings.length;
-  //const filteredApprovedListings = filteredListings.filter(item => item.listingApproved === true);//For the Graph
 
-
-
-  // const filteredProjects = unapproveProject.projects.map(project => ({
-  //     projectName: project.projectName,
-  //     projectType: project.projectType,
-  //     projectOwner: project.projectOwner,
-  //     locationName: project.projectLocation[0].locationName,
-  //     region: project.projectLocation[0].region,
-  //     updatedAt: project.updatedAt
-  //   }));
 
   const userMap = {};
   Users2.forEach(user => {
@@ -130,10 +143,36 @@ const Frontpage = () => {
     return item;
   });
 
-  const filteredunapprovedListingData = listingsWithOwners.map(item => ({
+  const projectMap = {};
+  projects.forEach(project => {
+    projectMap[project._id] = project;
+  });
+
+  const listingsWithProjects = listingsWithOwners.map(item => {
+    const owner = projectMap[item.project];
+    if (owner) {
+      return {
+        ...item,
+        project: owner.projectName
+      };
+    }
+    return item;
+  });
+
+  const filteredunapprovedListingData = listingsWithProjects.map(item => ({
+    _id: item._id,
+    titleImage: item.titleImage,
+    project: item.project,
     listingName: item.listingName,
     type: item.type,
+    project: item.project,
+    suburb: item.suburb,
     devloper: item.devloper.firstName,
+    devLastname: item.devloper.lastName,
+    devMobile: item.devloper.mobileNo,
+    devMobile2: item.devloper.phoneNo,
+    email: item.devloper.email,
+    devLicence: item.devloper.verified,
     streetAddress: item.streetAddress,
     region: item.region,
     updatedAt: item.updatedAt,
@@ -147,6 +186,7 @@ const Frontpage = () => {
 
   //Extracting the user details that are unapproved
   const filteredunapprovedUserData = approveUsers.map(item => ({
+    _id: item._id,
     firstName: item.firstName,
     lastName: item.lastName,
     email: item.email,
@@ -157,7 +197,6 @@ const Frontpage = () => {
     city: item.city,
     licence: item.licence,
     company: item.company,
-    country: item.country,
     postcode: item.postcode,
     verified: item.verified,
     verifiedLicence: item.verifiedLicence
@@ -168,7 +207,11 @@ const Frontpage = () => {
   const filteredApprovedUsers = filteredunapprovedUserData.filter(item => item.verified === true);
 
   const userunApprovedColumns = useMemo(() => [
-    
+    {
+      name: 'ID',
+      selector: row => row._id || '--',
+      sortable: true,
+    },
     {
       name: 'First Name',
       selector: row => row.firstName || '--',
@@ -222,14 +265,21 @@ const Frontpage = () => {
       selector: row => row.postcode,
       sortable: true,
     },
+    ,
+    {
+      name: 'License Verified',
+      selector: row => row.verifiedLicence,
+      cell: row => row.verifiedLicence ? 'Verified' : 'Not verified',
+      sortable: true,
+    },
     {
       name: "Actions",
       button: true,
       cell: row => (<>
-        <Button className="btn btn-icon btn-sm btn-flat-primary my-1" onClick={() => onRowClicked(row)}>
+        <Button className="btn btn-icon btn-sm btn-flat-primary my-1" onClick={() => onSelectApprove(row)}>
           <i className="feather icon-user-check"></i>
         </Button>
-        <Button className="btn btn-icon btn-sm btn-flat-danger my-1" onClick={() => onRowClicked(row)}>
+        <Button className="btn btn-icon btn-sm btn-flat-danger my-1" onClick={() => onSelectDelete(row)}>
           <i className="feather icon-user-x"></i>
         </Button>
         <Button className="btn btn-icon btn-sm btn-flat-primary my-1" onClick={(e) => handleOpenModal(row)}>
@@ -238,14 +288,8 @@ const Frontpage = () => {
       </>)
     }
   ], []);
-  const usercolumnsToDisplay = userunApprovedColumns.filter(column => column.name !== '' 
+  const usercolumnsToDisplay = userunApprovedColumns.filter(column => column.name !== 'ID' 
   && column.name !== 'Postcode' && column.name !== 'Country' && column.name !== 'City' && column.name !== 'Last Modified At');
-
-  //TESTING
-  const onRowClicked = (row, event) => {
-    console.log("row", row);
-    //setActiveRow(row);
-  };
 
   const userApprovedColumns = useMemo(() => [
     {
@@ -323,15 +367,18 @@ const Frontpage = () => {
       name: "Actions",
       button: true,
       cell: row => (<>
-        <Button className="btn btn-icon btn-sm btn-flat-primary my-1" onClick={() => onRowClicked(row)}>
-          <i className="feather icon-check-square"></i>
+        <Button className="btn btn-icon btn-sm btn-flat-primary my-1" onClick={(e) => onProjectApproval(row)}>
+          <i className="feather icon-check"></i>
         </Button>
-        <Button className="btn btn-icon btn-sm btn-flat-danger my-1" onClick={() => onRowClicked(row)}>
-          <i className="feather icon-x-circle"></i>
+        <Button className="btn btn-icon btn-sm btn-flat-danger my-1" onClick={(e) => onProjectDelete(row)}>
+          <i className="feather icon-trash"></i>
         </Button>
-        <Button className="btn btn-icon btn-sm btn-flat-primary my-1" onClick={(e) => handleOpenModal(row)}>
+        <Button className="btn btn-icon btn-sm btn-flat-primary my-1" onClick={(e) => handleOpenModalProject(row)}>
           <i className="feather icon-eye"></i>
         </Button>
+        <Link className="btn btn-icon btn-sm btn-flat-primary my-1" to={`/projects/${row._id}`} target="_blank">
+          <i className="feather icon-corner-up-right"></i>
+        </Link>
       </>)
     }
   ], []);
@@ -367,6 +414,15 @@ const Frontpage = () => {
       selector: row => row.updatedAt,
       cell: row => row.updatedAt ? utils.dateFormat(row.updatedAt) : '--',
       sortable: true,
+    },
+    {
+      name: "Actions",
+      button: true,
+      cell: row => (<>
+        <Link className="btn btn-icon btn-sm btn-flat-primary my-1" to={`/projects/${row._id}`} target="_blank">
+          <i className="feather icon-corner-up-right"></i>
+        </Link>
+      </>)
     }
   ], []);
 
@@ -406,15 +462,18 @@ const Frontpage = () => {
       name: "Actions",
       button: true,
       cell: row => (<>
-        <Button className="btn btn-icon btn-sm btn-flat-primary my-1" onClick={() => onRowClicked(row)}>
-          <i className="feather icon-check-square"></i>
+        <Button className="btn btn-icon btn-sm btn-flat-primary my-1" onClick={(e) => onListingApproval(row)}>
+          <i className="feather icon-check"></i>
         </Button>
-        <Button className="btn btn-icon btn-sm btn-flat-danger my-1" onClick={() => onRowClicked(row)}>
-          <i className="feather icon-x-circle"></i>
+        <Button className="btn btn-icon btn-sm btn-flat-danger my-1" onClick={(e) => onListingDelete(row)}>
+          <i className="feather icon-trash"></i>
         </Button>
-        <Button className="btn btn-icon btn-sm btn-flat-primary my-1" onClick={(e) => handleOpenModal(row)}>
+        <Button className="btn btn-icon btn-sm btn-flat-primary my-1" onClick={(e) => handleOpenModalListing(row)}>
           <i className="feather icon-eye"></i>
         </Button>
+        <Link className="btn btn-icon btn-sm btn-flat-primary my-1" to={`/listings/${row._id}`} target="_blank">
+          <i className="feather icon-corner-up-right"></i>
+        </Link>
       </>)
     }
   ], []);
@@ -450,10 +509,20 @@ const Frontpage = () => {
       selector: row => row.updatedAt,
       cell: row => row.updatedAt ? utils.dateFormat(row.updatedAt) : '--',
       sortable: true,
+    },
+    {
+      name: "Actions",
+      button: true,
+      cell: row => (<>
+        <Link className="btn btn-icon btn-sm btn-flat-primary my-1" to={`/listings/${row._id}`} target="_blank">
+          <i className="feather icon-corner-up-right"></i>
+        </Link>
+      </>)
     }
   ], []);
 
 
+  //For Users
   const handleOpenModal = (row) => {
     //console.log("row", row);
     setSelectedRow(row);
@@ -463,13 +532,210 @@ const Frontpage = () => {
   const handleCloseModal = () => {
     setShowModal(false);
   };
+  //END for Users
 
+  //For view Listing in a modal
+  const handleOpenModalListing = (row) => {
+    //console.log("row", row);
+    setSelectedRowListing(row);
+    setShowListingModal(true);
+  };
 
-  const onSelectedRowsChangeListing = (selected) => {
-    setSelectedListing(selected.selectedRows);
+  const handleCloseModalListing = () => {
+    setSelectedRowListing([]);
+    setShowListingModal(false);
+  };
+
+  //Approving the listing
+  const onListingApproval = (row) => {
+    setSelectedRowListing(row);
+    setShowConfirmApproveModalListing(true);
   }
-  const onSelectedRowsChangeProject = (selected) => {
-    setSelectedProject(selected.selectedRows);
+
+  const onConfirmApproveListing = () => {
+    const Userid = selectedRowListing._id;
+    ListingService.approveListing({ id: Userid })
+      .then(() => {
+        setSelectedRowListing([]);
+        Toast('Listing approved successfully', 'success');
+        //ListingService.getAllListings();//Trying to refresh
+        window.location.reload();
+      })
+      .catch(() => {
+        Toast('Failed approve!', 'danger');
+      })
+      .finally(() => setShowConfirmApproveModalListing(false))
+      setShowConfirmApproveModalListing(false);
+  }
+
+  const handleCloseListingApprove = () => {
+    setShowConfirmApproveModalListing(false);
+  };
+
+  //Deleting Listing
+  const onListingDelete = (row) => {
+    setSelectedRowListing(row);
+    setShowConfirmDeleteModalListing(true);
+  }
+
+  const onConfirmDeleteListing = () => {
+    const Userid = selectedRowListing._id;
+    console.log(Userid);
+    ListingService.deleteListing({ id: Userid })
+      .then(() => {
+        setSelectedRowListing([]);
+        Toast('Listing deleted successfully', 'success');
+        //ListingService.getAllListings();//Trying to refresh
+        window.location.reload();
+      })
+      .catch(() => {
+        Toast('Failed delete!', 'danger');
+        console.log("NOOOOOOOOOO");
+      })
+      .finally(() => setShowConfirmDeleteModalListing(false))
+      setShowConfirmDeleteModalListing(false);
+  }
+
+  const handleCloseListingDelete = () => {
+    setShowConfirmDeleteModalListing(false);
+  };
+  //END of Listing
+
+  //For Project
+  const handleOpenModalProject = (row) => {
+    //console.log("row", row);
+    setSelectedRowProject(row);
+    setShowProjectModal(true);
+  };
+
+  const handleCloseModalProject = () => {
+    setShowProjectModal(false);
+  };
+
+  ///////////////////////////////////////////////////////////////
+  //Approving project
+  const onProjectApproval = (row) => {
+    setSelectedRowProject(row);
+    setShowConfirmApproveModalProject(true);
+  }
+
+  const onConfirmApproveProject = () => {
+    const Userid = selectedRowProject._id;
+    ProjectService.approveProjects({ id: Userid })
+      .then(() => {
+        setSelectedRowProject([]);
+        Toast('Project approved successfully', 'success');
+        //ListingService.getAllListings();//Trying to refresh
+        window.location.reload();
+      })
+      .catch(() => {
+        Toast('Failed approve!', 'danger');
+      })
+      .finally(() => setShowConfirmApproveModalProject(false))
+    setShowConfirmApproveModalProject(false);
+  }
+
+  const handleCloseProjectApprove = () => {
+    setShowConfirmApproveModalProject(false);
+  };
+  ///END of approving project
+
+
+  //Begin delete project
+  const onProjectDelete = (row) => {
+    setSelectedRowProject(row);
+    setShowConfirmDeleteModalProject(true);
+  }
+
+  const onConfirmDeleteProject = () => {
+    const Userid = selectedRowProject._id;
+    console.log(Userid);
+    ProjectService.deleteProject({ id: Userid })
+      .then(() => {
+        setSelectedRowProject([]);
+        Toast('Project deleted successfully', 'success');
+        //ListingService.getAllListings();//Trying to refresh
+        window.location.reload();
+      })
+      .catch(() => {
+        Toast('Failed delete!', 'danger');
+        console.log("NOOOOOOOOOO");
+      })
+      .finally(() => setShowConfirmDeleteModalProject(false))
+    setShowConfirmDeleteModalProject(false);
+  }
+
+  const handleCloseProjectDelete = () => {
+    setShowConfirmDeleteModalProject(false);
+  };
+  /////////////////////////////////////////////////////////////////
+  //END of Project
+
+
+  //Deleting the user
+  const onSelectDelete = (row) => {
+    setSelectedUsers([]);
+    setSelectedUsers(row);
+    setShowConfirmDeleteModal(true);
+  }
+  const handleCloseUserDelete = () => {
+    setShowConfirmDeleteModal(false);
+  };
+
+  const onConfirmDeleteUsers = () => {
+    const Userid = selectedUsers.map(row => row._id);
+
+    UserService.deleteUser({ id: Userid })
+      .then(() => {
+        setSelectedUsers([]);
+        Toast('Delete successfully', 'success');
+        UserService.getUserList();
+      })
+      .catch(() => {
+        Toast('Failed to delete users!', 'danger');
+      })
+      .finally(() => setShowConfirmDeleteModal(false))
+    setShowConfirmDeleteModal(false);
+  }
+  //END of deleteing the user
+
+  const onSelectApprove = (row) => {
+    setSelectedUsers([]);
+    setSelectedUsers(row);
+    setShowConfirmApproveModal(true);
+  }
+  const onConfirmApproveUsers = () => {
+    const Userid = selectedUsers.map(row => row._id);
+
+    UserService.deleteUser({ id: Userid })
+      .then(() => {
+        setSelectedUsers([]);
+        Toast('Delete successfully', 'success');
+        UserService.getUserList();
+      })
+      .catch(() => {
+        Toast('Failed to delete users!', 'danger');
+      })
+      .finally(() => setShowConfirmApproveModal(false))
+    setShowConfirmApproveModal(false);
+  }
+
+  const handleCloseUserApprove = () => {
+    setShowConfirmApproveModal(false);
+  };
+
+  //Extracting the approved listing ID once the row is clicked
+  var listingRowID = null;  
+  const onRowClickedListing = (row) => {
+    listingRowID = row._id;
+    console.log('Listing clicked row id:', listingRowID);
+    
+  }
+
+  var projectRowID = null;
+  const onRowClickedProject = (row) => {
+    projectRowID = row._id;
+    console.log('Project clicked row id:', projectRowID);
   }
 
 
@@ -546,7 +812,7 @@ const Frontpage = () => {
                 <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
                   <h5>Pending projects</h5>
                   <br />
-                  <p><h2>{countfilteredunApprovedProjects} </h2></p>
+                  <p><h1>{countfilteredunApprovedProjects} </h1></p>
                 </Card>
               </Col>
             </Row>
@@ -605,6 +871,18 @@ const Frontpage = () => {
               handleClose={handleCloseModal}
               rowData={selectedRow}
             />
+            <RowModalUserDelete show={showConfirmDeleteModal}
+              setShow={setShowConfirmDeleteModal}
+              onSubmit={onConfirmDeleteUsers}
+              handleClose={handleCloseUserDelete}
+              rowData={selectedUsers}
+            />
+             <RowModalUserApprove show={showConfirmApproveModal}
+              setShow={handleOpenModal}
+              onSubmit={onConfirmApproveUsers}
+              handleClose={handleCloseUserApprove}
+              rowData={selectedUsers}
+            />
           </Row>
           <br />
         </Card>
@@ -634,9 +912,8 @@ const Frontpage = () => {
                           <DataTable
                             columns={listingColumns}
                             data={filteredunApprovedListings}
-                            selectableRows
-                            onSelectedRowsChangeListing={onSelectedRowsChangeListing}
-                            pagination />
+                            pagination
+                            highlightOnHover />
                         </CardBody>
                       </Tab>
                       <Tab eventKey="approved" title="Approved">
@@ -644,6 +921,8 @@ const Frontpage = () => {
                           <DataTable
                             columns={listingApprovedColumns}
                             data={filteredApprovedListings}
+                            onRowClicked={onRowClickedListing}
+                            highlightOnHover
                             pagination />
                         </CardBody>
                       </Tab>
@@ -652,6 +931,24 @@ const Frontpage = () => {
                 </Row>
               </ResponsiveContainer>
             </Col>
+            <ListingRowModal
+              show={showListingModal}
+              handleCloseListing={handleCloseModalListing}
+              rowData={selectedRowListing}
+              onApprove={onConfirmApproveListing}
+            />
+            <RowModalListingApprove show={showConfirmApproveModalListing}
+              setShow={handleOpenModalListing}
+              onApprove={onConfirmApproveListing}
+              handleClose={handleCloseListingApprove}
+              rowData={selectedRowListing}
+            />
+            <RowModalListingDelete show={showConfirmDeleteModalListing}
+              setShow={handleOpenModalListing}
+              onDelete={onConfirmDeleteListing}
+              handleClose={handleCloseListingDelete}
+              rowData={selectedRowListing}
+            />
           </Row><br />
         </Card>
       </Col>
@@ -680,8 +977,7 @@ const Frontpage = () => {
                           <DataTable
                             columns={projectColumns}
                             data={filteredunApprovedProjects}
-                            selectableRows
-                            onSelectedRowsChangeProject={onSelectedRowsChangeProject}
+                            highlightOnHover
                             pagination />
                         </CardBody>
                       </Tab>
@@ -690,6 +986,8 @@ const Frontpage = () => {
                           <DataTable
                             columns={projectApprovedColumns}
                             data={filteredApprovedProjects}
+                            highlightOnHover
+                            onRowClicked={onRowClickedProject}
                             pagination />
                         </CardBody>
                       </Tab>
@@ -698,15 +996,33 @@ const Frontpage = () => {
                 </Row>
               </ResponsiveContainer>
             </Col>
+            <ProjectRowModal
+              show={showProjectModal}
+              handleCloseProject={handleCloseModalProject}
+              onApprove={onConfirmApproveProject}
+              rowData={selectedRowProject}
+            />
+            <RowModalProjectApprove show={showConfirmApproveModalProject}
+              setShow={handleOpenModalProject}
+              onApprove={onConfirmApproveProject}
+              handleClose={handleCloseProjectApprove}
+              rowData={selectedRowProject}
+            />
+            <RowModalProjectDelete show={showConfirmDeleteModalProject}
+              setShow={handleOpenModalProject}
+              onDelete={onConfirmDeleteProject}
+              handleClose={handleCloseProjectDelete}
+              rowData={selectedRowProject}
+            />
           </Row><br />
         </Card>
       </Col><br /><br />
-      {/* <p>{JSON.stringify(filteredProjects)}</p> */}
-      {/* <p>{JSON.stringify(filteredunapprovedProjectData)}</p> */}
-      <p>{JSON.stringify(listingsWithOwners)}</p><br />
+      {/* <p>{JSON.stringify(listingsWithProjects)}</p><br></br> */}
+      {/* <p>{JSON.stringify(filteredunapprovedListingData)}</p> */}
+      {/* <p>{JSON.stringify(listingsWithOwners)}</p><br />
       <p>{JSON.stringify(filteredunapprovedListingData)}</p>
-
-      <p>{JSON.stringify(approveUsers)}</p>
+<br/><br/>
+      <p>{JSON.stringify(listingsWithProjects)}</p> */}
       <br />
     </Container>
   );

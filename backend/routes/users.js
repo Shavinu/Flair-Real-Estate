@@ -10,6 +10,7 @@ const {
   requestChange,
   verifyRequest,
   deleteToken,
+  approveUser,
 } = require('../controllers/userController')
 
 //Get all users
@@ -48,6 +49,9 @@ router.get('/verify-request/:userId/:token/:company', verifyRequest)
 
 // delete token
 router.post('/delete-token', deleteToken);
+
+//Approve user
+router.post('/approve/:id', approveUser);
 
 
 module.exports = router;

@@ -176,6 +176,30 @@ const deleteToken = async (req, res, next) => {
   }
 }
 
+//Approve user
+const approveUser = async (req, res) => {
+  try{
+  const { id } = req.body;
+  const filter = {_id: id};
+  //console.log('Received ID:', id);
+  const update = { verified: true };
+  const approvedUser = await User.findOneAndUpdate(filter, update, {
+    new: true
+  });
+
+  if (!approvedUser) {
+    return res.status(404).json({ message: 'User not found or could not be updated.' });
+  }
+
+  //res.status(200).json(approvedListing);
+  res.status(200).json({ message: "User Approved!" });
+  }
+  catch (error)
+  {
+    res.status(500).json({ message: 'An error occurred while updating the user.' });
+  }
+};
+
 module.exports = {
   getUsers,
   getaUser,
@@ -186,4 +210,5 @@ module.exports = {
   requestChange,
   verifyRequest,
   deleteToken,
+  approveUser,
 };
