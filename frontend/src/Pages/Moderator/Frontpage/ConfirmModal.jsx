@@ -58,7 +58,7 @@ const RowModalUserDelete = ({ show, handleClose, rowData}) => {
     );
 };
 
-const RowModalUserApprove = ({ show, handleClose, rowData}) => {
+const RowModalUserApprove = ({ show, handleClose, rowData, onApprove}) => {
     if (!rowData) {
         // Return a message or placeholder if rowData is not available
         return (
@@ -106,7 +106,7 @@ const RowModalUserApprove = ({ show, handleClose, rowData}) => {
                 <Button variant="secondary" onClick={handleClose}>
                     Close
                 </Button>
-                <Button variant="primary">
+                <Button variant="primary" onClick={onApprove}>
                     Approve user
                 </Button>
             </Modal.Footer>

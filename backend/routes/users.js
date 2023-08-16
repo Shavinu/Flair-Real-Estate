@@ -51,7 +51,7 @@ router.get('/verify-request/:userId/:token/:company', verifyRequest)
 router.post('/delete-token', deleteToken);
 
 //Approve user
-router.post('/approve/:id', approveUser);
+router.post('/approve', approveUser);
 
 
 module.exports = router;

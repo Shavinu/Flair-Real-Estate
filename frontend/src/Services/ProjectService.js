@@ -69,6 +69,7 @@ export const getProjectByOwner = async (ownerId, page, limit, search = '', initi
 };
 
 export const deleteProject = async (id) => {
+    console.log(JSON.stringify(id));
     return utils.fetch.httpDelete(utils.url.replaceId(api.projects.delete, id));
 };
 

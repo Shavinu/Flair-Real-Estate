@@ -291,7 +291,6 @@ const deleteListing = async (req, res) => {
   }
 
   res.status(200).json(listing);
-  res.status(200).json('Listing Removed');
 };
 
 //update Listing

@@ -477,7 +477,7 @@ export const api = {
     list: '/api/users',
     create: '/api/users/create',
     edit: '/api/users/{{id}}',
-    approve: '/api/users/approve',
+    approve: '/api/users/approve/',
     delete: '/api/users/{{id}}',
     deleteMany: '/api/users/delete-many',
     requestChange: 'api/users/request-change',

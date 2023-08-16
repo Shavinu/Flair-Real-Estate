@@ -22,8 +22,6 @@ const Frontpage = () => {
 
   const [Users2, setUsers] = useState([])
   const [selectedUsers, setSelectedUsers] = useState([]);
-  const [selectedListing, setSelectedListing] = useState([]);
-  const [selectedProject, setSelectedProject] = useState([]);
   const [approveUsers, setApproveUsers] = useState([]);
 
   const [projects, setProjects] = useState([])
@@ -579,18 +577,18 @@ const Frontpage = () => {
   }
 
   const onConfirmDeleteListing = () => {
-    const Userid = selectedRowListing._id;
-    console.log(Userid);
-    ListingService.deleteListing({ id: Userid })
+    const Listingid = selectedRowListing._id;
+    console.log(Listingid);
+    ListingService.deleteListing(Listingid)
       .then(() => {
-        setSelectedRowListing([]);
+        //setSelectedRowListing([]);
         Toast('Listing deleted successfully', 'success');
+        //console.log(response);
         //ListingService.getAllListings();//Trying to refresh
         window.location.reload();
       })
       .catch(() => {
         Toast('Failed delete!', 'danger');
-        console.log("NOOOOOOOOOO");
       })
       .finally(() => setShowConfirmDeleteModalListing(false))
       setShowConfirmDeleteModalListing(false);
@@ -648,9 +646,11 @@ const Frontpage = () => {
   }
 
   const onConfirmDeleteProject = () => {
-    const Userid = selectedRowProject._id;
-    console.log(Userid);
-    ProjectService.deleteProject({ id: Userid })
+    const Projectid = selectedRowProject._id;
+    console.log(Projectid);
+    console.log('Type of myVariable:', typeof Projectid);
+    //console.log(JSON.stringify(objectId));
+    ProjectService.deleteProject(Projectid)
       .then(() => {
         setSelectedRowProject([]);
         Toast('Project deleted successfully', 'success');
@@ -683,9 +683,9 @@ const Frontpage = () => {
   };
 
   const onConfirmDeleteUsers = () => {
-    const Userid = selectedUsers.map(row => row._id);
+    const Userid = selectedUsers._id;
 
-    UserService.deleteUser({ id: Userid })
+    UserService.deleteUser(Userid)
       .then(() => {
         setSelectedUsers([]);
         Toast('Delete successfully', 'success');
@@ -705,16 +705,19 @@ const Frontpage = () => {
     setShowConfirmApproveModal(true);
   }
   const onConfirmApproveUsers = () => {
-    const Userid = selectedUsers.map(row => row._id);
-
-    UserService.deleteUser({ id: Userid })
+    const Userid = selectedUsers._id
+    console.log(Userid);
+    console.log('Type of myVariable:', typeof Userid);
+    UserService.approveUser({ id: Userid })
       .then(() => {
         setSelectedUsers([]);
-        Toast('Delete successfully', 'success');
-        UserService.getUserList();
+        Toast('Approved successfully', 'success');
+        //UserService.getUserList();
+        window.location.reload();
       })
       .catch(() => {
-        Toast('Failed to delete users!', 'danger');
+        Toast('Failed to approve users!', 'danger');
+        console.log('Failed to approve user!');
       })
       .finally(() => setShowConfirmApproveModal(false))
     setShowConfirmApproveModal(false);
@@ -879,7 +882,7 @@ const Frontpage = () => {
             />
              <RowModalUserApprove show={showConfirmApproveModal}
               setShow={handleOpenModal}
-              onSubmit={onConfirmApproveUsers}
+              onApprove={onConfirmApproveUsers}
               handleClose={handleCloseUserApprove}
               rowData={selectedUsers}
             />
@@ -903,12 +906,6 @@ const Frontpage = () => {
                     <Tabs activeKey={activeTabListing} onSelect={handleTabChangeListing}>
                       <Tab eventKey="unapproved" title="Unapproved">
                         <CardBody>
-                          {selectedListing.length > 0 && <Dropdown
-                            className="btn btn-outline-success"
-                            label={`${selectedListing.length} items selected`}
-                            items={[
-                              { name: "Delete selected items", onClick: () => setShowConfirmDeleteModalListing(true) },
-                            ]} />}
                           <DataTable
                             columns={listingColumns}
                             data={filteredunApprovedListings}
@@ -968,12 +965,6 @@ const Frontpage = () => {
                     <Tabs activeKey={activeTabProject} onSelect={handleTabChangeProject}>
                       <Tab eventKey="unapproved" title="Unapproved">
                         <CardBody>
-                          {selectedProject.length > 0 && <Dropdown
-                            className="btn btn-outline-success"
-                            label={`${selectedProject.length} items selected`}
-                            items={[
-                              { name: "Delete selected items", onClick: () => setShowConfirmDeleteModalProject(true) },
-                            ]} />}
                           <DataTable
                             columns={projectColumns}
                             data={filteredunApprovedProjects}
