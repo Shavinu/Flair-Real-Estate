@@ -1,12 +1,12 @@
 import { Box, Drawer, List, Stack } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useEffect } from 'react';
-import { Logo, Scrollbar } from '../../../../components';
-import { usePathname } from '../../../../hooks/routes';
-import { useResponsive } from '../../../../hooks/use-responsive';
+import { Logo, Scrollbar } from 'src/components';
+import { usePathname } from 'src/hooks/routes';
+import { useResponsive } from 'src/hooks/use-responsive';
 import { NAV } from '../../../config-layout';
 import SidebarList from './sidebar-list';
-import { views } from '../../../../paths';
+import { views } from 'src/paths';
 import SidebarConfig from './sidebar-config';
 
 const Sidebar = ({ openNav, onCloseNav }) => {
@@ -33,7 +33,7 @@ const Sidebar = ({ openNav, onCloseNav }) => {
     <Logo sx={{ mt: 3, ml: 4, mb: 1 }} />
 
     <List disablePadding sx={{ px: 2 }}>
-      {views.map((item, index) => <SidebarList
+      {views.dashboard.map((item, index) => <SidebarList
         key={item.name + item.path + index}
         item={item}
         depth={1}

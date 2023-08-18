@@ -65,7 +65,7 @@ const Register = () => {
         .max(255)
         .min(8)
         .required('Password is required')
-        .test("isValidPass", "Password is not valid", (value: any, context: any) => {
+        .test("isValidPass", "Password is not valid", (value) => {
           const hasUpperCase = /[A-Z]/.test(value);
           const hasNumber = /[0-9]/.test(value);
           const hasLowerCase = /[a-z]/.test(value);

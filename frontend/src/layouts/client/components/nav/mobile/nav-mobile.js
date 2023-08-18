@@ -5,12 +5,13 @@ import List from '@mui/material/List';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 //
-import { usePathname } from '../../../../../hooks/routes';
-import { useBoolean } from '../../../../../hooks/use-boolean';
-import { SvgColor } from '../../../../../components/icons';
-import Scrollbar from '../../../../../components/scrollbar/scrollbar';
-import { Logo } from '../../../../../components';
-import { ClientViews } from '../../../../../paths';
+import React from 'react';
+import { views } from 'src/paths';
+import { usePathname } from 'src/hooks/routes';
+import { useBoolean } from 'src/hooks/use-boolean';
+import { SvgColor } from 'src/components/icons';
+import Scrollbar from 'src/components/scrollbar';
+import { Logo } from 'src/components';
 import SidebarList from '../../sidebar/sidebar-list';
 import SidebarConfig from '../../sidebar/sidebar-config';
 
@@ -56,7 +57,7 @@ export default function NavMobile({ offsetTop, data }) {
           <Logo sx={{ mx: 2.5, my: 3 }} link="/" />
 
           <List disablePadding sx={{ px: 2 }}>
-            {ClientViews.map((item, index) => <SidebarList
+            {views.map((item, index) => <SidebarList
               key={`${item.name}-${item.action}-${index}`}
               item={item}
               depth={1}

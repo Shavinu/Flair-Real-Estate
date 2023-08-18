@@ -25,7 +25,6 @@ const PropertyHomeList = () => {
   const { searchResults, onSearch } = useContext(SearchContext);
 
   const getProperties = useCallback(
-
     async () => {
       try {
         if (currentTab === TABS.projects) {

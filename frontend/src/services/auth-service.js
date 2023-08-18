@@ -17,6 +17,10 @@ const forgotPassword = (body) => {
   return utils.fetch.httpPost(api.auth.forgotPassword, body)
 }
 
+const sendVerifyEmail = (body) => {
+  return utils.fetch.httpPost(api.auth.sendVerifyEmail, body);
+}
+
 const verifyEmail = (userId, token) => {
   const url = api.auth.verifyEmail.replace(':userId', userId).replace(':token', token);
 
@@ -34,6 +38,7 @@ const AuthService = {
   register,
   getCurrentUser,
   forgotPassword,
+  sendVerifyEmail,
   verifyEmail,
   verifyLicence,
 }

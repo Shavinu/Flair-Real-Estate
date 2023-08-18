@@ -60,6 +60,38 @@ const register = async (req, res, next) => {
   }
 };
 
+const sendVerifyEmail = async (req, res, next) => {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+
+    if (!user) {
+      throw createError.NotFound(
+        `User not found!`
+      );
+    }
+
+    const token = await new Token({
+      userId: user._id,
+      token: crypto.randomBytes(32).toString('hex'),
+    }).save();
+
+    const subject = 'Verify Email';
+    const url = `${process.env.REACT_APP_PUBLIC_URL}/auth/verify/${user._id}/${token.token}`;
+    const html = `<p>Verify your email address to complete the signup process and login into your account.</p><p>This link
+        <b>expires in 1 hour.</b></p><p>Press <a href=${url}>here</a> to proceed.</p>`;
+
+    await sendEmail(process.env.MOD_EMAIL, user.email, subject, html);
+
+    res.status(200).send({
+      message:
+        'An Email has been sent to your address. Please verify your account',
+    });
+  } catch (error) {
+    error.status = 500;
+    next(error);
+  }
+}
+
 const verifyEmail = async (req, res, next) => {
   try {
     const user = await User.findOne({ _id: req.params.userId });
@@ -292,6 +324,7 @@ const logout = async (req, res, next) => {
 module.exports = {
   register,
   verifyLicenceNumber,
+  sendVerifyEmail,
   verifyEmail,
   login,
   forgotPassword,

@@ -1,7 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 
 import { AuthLayout, ClientLayout, DashboardLayout } from "./layouts";
-import { AuthViews, ClientViews, views } from './paths';
+import { views } from './paths';
 
 //get all paths which are defined in paths.js file
 export const getPaths = (r, parentIndex = 0) => {
@@ -49,13 +49,13 @@ const RenderRouters = () => {
   return (
     <Routes>
       <Route element={<AuthLayout />}>
-        {getRoutes(AuthViews)}
+        {getRoutes(views.auth)}
       </Route>
       <Route element={<DashboardLayout />}>
-        {getRoutes(views)}
+        {getRoutes(views.dashboard)}
       </Route>
       <Route element={<ClientLayout />}>
-        {getRoutes(ClientViews)}
+        {getRoutes(views.client)}
       </Route>
     </Routes>
   );

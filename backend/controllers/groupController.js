@@ -171,6 +171,17 @@ const addUserToGroup = async (req, res) => {
   }
 };
 
+const addManyUsersToGroup = async (req, res) => {
+  try {
+    const { userIds, groupId } = req.body;
+    const users = await User.updateMany({ _id: { $in: userIds } }, { $set: { group: groupId } });
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(400).json({ error: 'Cannot add user to group' });
+    console.log(error);
+  }
+};
+
 //delete user from group
 const deleteUserFromGroup = async (req, res) => {
   try {
@@ -210,7 +221,10 @@ const removeManyUsersFromGroup = async (req, res) => {
 const deleteManyGroups = async (req, res) => {
   try {
     const { ids } = req.body;
+
     const groups = await Group.deleteMany({ _id: { $in: ids } });
+    await Group.find({ groupParentId: { $in: ids } }).updateOne({ groupParentId: null })
+
     return res.status(200).json(groups);
   } catch (error) {
     console.error(error);
@@ -236,6 +250,7 @@ module.exports = {
   getGroup,
   getGroups,
   addUserToGroup,
+  addManyUsersToGroup,
   getGroupsBySearch,
   getUsersInGroup,
   deleteUserFromGroup,

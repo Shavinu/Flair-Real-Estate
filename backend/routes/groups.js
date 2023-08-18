@@ -7,6 +7,7 @@ const {
   getGroup,
   getGroups,
   addUserToGroup,
+  addManyUsersToGroup,
   getGroupsBySearch,
   getUsersInGroup,
   deleteUserFromGroup,
@@ -45,6 +46,10 @@ router.post('/getGroupsBySearch', getGroupsBySearch)
 //add user to group
 //body should contain userId and groupId
 router.post('/addUserToGroup', addUserToGroup)
+
+//add many users to group
+//body should contain userId and groupId
+router.post('/addManyUsersToGroup', addManyUsersToGroup)
 
 //get all users in group
 //body should contain groupId

@@ -1,12 +1,12 @@
 import { Helmet } from "react-helmet-async";
-import { PROJECT_NAME } from "../../../config-global";
-import { useParams } from "../../../hooks/routes";
+import { PROJECT_NAME } from "src/config-global";
+import { useParams } from "src/hooks/routes";
 import { useCallback, useEffect, useState } from "react";
-import UserService from "../../../services/user-service";
+import UserService from "src/services/user-service";
 import { Container } from "@mui/material";
-import { CustomBreadcrumbs } from "../../../components";
-import { paths } from "../../../paths";
-import UserForm from "./user-form";
+import { CustomBreadcrumbs } from "src/components";
+import { paths } from "src/paths";
+import UserForm from "src/sections/users/user-form/user-form";
 
 const Edit = () => {
   const { id } = useParams();
@@ -48,7 +48,6 @@ const Edit = () => {
       />
       <UserForm currentUser={currentUser} />
     </Container>
-
   </>
 }
 

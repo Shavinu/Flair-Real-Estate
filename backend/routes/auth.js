@@ -3,6 +3,7 @@ const router = express.Router();
 const { verifyAccessToken } = require('../helpers/token');
 const {
   register,
+  sendVerifyEmail,
   verifyEmail,
   verifyLicenceNumber,
   login,
@@ -13,6 +14,8 @@ const {
 } = require('../controllers/authController');
 
 router.post('/register', register);
+
+router.post("/send-verify-email", sendVerifyEmail);
 
 router.get("/verify/:userId/:token", verifyEmail);
 

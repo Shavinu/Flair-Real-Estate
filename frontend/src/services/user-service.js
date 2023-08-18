@@ -21,7 +21,7 @@ const deleteUser = (id) => {
   return utils.fetch.httpDelete(utils.url.replaceId(api.users.delete, id));
 };
 
-const deleteManyUser = (ids) => {
+const deleteManyUsers = (ids) => {
   return utils.fetch.httpPost(api.users.deleteMany, ids);
 };
 
@@ -31,7 +31,7 @@ const UserService = {
   createUser,
   updateUser,
   deleteUser,
-  deleteManyUser
+  deleteManyUsers,
 }
 
 export default UserService;
