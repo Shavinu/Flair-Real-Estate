@@ -17,8 +17,8 @@ export const updateUser = (id, body) => {
   return utils.fetch.httpPatch(utils.url.replaceId(api.users.edit, id), body);
 };
 
-export const approveUser = (id, body) => {
-  return utils.fetch.httpPatch(utils.url.replaceId(api.users.approve, id), body);
+export const approveUser = (id) => {
+  return utils.fetch.httpPost(api.users.approve, id);
 };
 
 export const deleteUser = (id) => {
@@ -62,4 +62,23 @@ export const deleteToken = (credentials) => {
     .then((response) => {
       return response;
     });
+};
+
+export const addFavorite = (id, body) => {
+  // const body = {
+  //   listingId,
+  //   projectId
+  // };
+  return utils.fetch.httpPost(api.users.addFavorite.id, body);
+  // utils.fetch.httpPatch(utils.url.replaceId(api.users.favouriteUser, id), body);
+};
+
+export const deleteFavorite = (userId, favoriteType, favoriteId) => {
+  const body = {
+    userId,
+    favoriteType,
+    favoriteId
+  };
+
+  return utils.fetch.httpDelete(api.users.deleteFavorite, body);
 };

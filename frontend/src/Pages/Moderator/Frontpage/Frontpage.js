@@ -689,10 +689,11 @@ const Frontpage = () => {
       .then(() => {
         setSelectedUsers([]);
         Toast('Delete successfully', 'success');
-        UserService.getUserList();
+        //UserService.getUserList();
+        window.location.reload();
       })
       .catch(() => {
-        Toast('Failed to delete users!', 'danger');
+        Toast('Failed to delete user!', 'danger');
       })
       .finally(() => setShowConfirmDeleteModal(false))
     setShowConfirmDeleteModal(false);
@@ -707,7 +708,7 @@ const Frontpage = () => {
   const onConfirmApproveUsers = () => {
     const Userid = selectedUsers._id
     console.log(Userid);
-    console.log('Type of myVariable:', typeof Userid);
+    console.log(JSON.stringify(selectedUsers));
     UserService.approveUser({ id: Userid })
       .then(() => {
         setSelectedUsers([]);
@@ -876,7 +877,7 @@ const Frontpage = () => {
             />
             <RowModalUserDelete show={showConfirmDeleteModal}
               setShow={setShowConfirmDeleteModal}
-              onSubmit={onConfirmDeleteUsers}
+              onDelete={onConfirmDeleteUsers}
               handleClose={handleCloseUserDelete}
               rowData={selectedUsers}
             />

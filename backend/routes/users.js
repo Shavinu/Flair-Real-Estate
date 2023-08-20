@@ -11,6 +11,8 @@ const {
   verifyRequest,
   deleteToken,
   approveUser,
+  favouriteUser,
+  favouriteUserDelete,
 } = require('../controllers/userController')
 
 //Get all users
@@ -53,5 +55,10 @@ router.post('/delete-token', deleteToken);
 //Approve user
 router.post('/approve', approveUser);
 
+// Route to add favorite project/listing to user's favorites
+router.post('/addFavorite', favouriteUser);
+
+// Route to add favorite project/listing to user's favorites
+router.post('/deleteFavorite/:userId/:listingType/:listingId', favouriteUserDelete);
 
 module.exports = router;

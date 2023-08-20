@@ -31,6 +31,7 @@ const ListingDetails = () => {
   const [latitude, setLatitude] = useState(null);
   const [coordinates, setCoordinates] = useState(null);
   const navigate = useNavigate();
+  const [liked, setLiked] = useState(false);
 
   useEffect(() => {
     const getLastSegment = () => {
@@ -149,6 +150,39 @@ const ListingDetails = () => {
     />;
     </Container>
   }
+  const handleLikeClick = () => {
+    console.log("This Listing ID->"+JSON.stringify(listing?._id));
+
+    setLiked(true);
+    Toast('Listing added to the favourites!', 'success');
+
+
+    //Get userID for the frontpage
+    const SetFrontPagePart = () => {
+      const user = JSON.parse(localStorage.getItem('user'));
+      const userID = user.payload._id;
+      //const acctype = user.payload.acctype;
+      return userID;
+    }
+    const user=SetFrontPagePart();
+    const SetFrontPagePart2 = () => {
+      const user = JSON.parse(localStorage.getItem('user'));
+      const userType = user.payload.accType;
+      //const acctype = user.payload.acctype;
+      return userType;
+    }
+    const userType = SetFrontPagePart2();
+    console.log(JSON.stringify(userType));
+
+    if(userType == 'user')
+    {
+      console.log("Ready to save DB");
+    }
+    else
+    {
+      console.log("Ready to save DB");
+    }
+  };
 
   return (
     <Container className="content-container">
@@ -162,8 +196,11 @@ const ListingDetails = () => {
           <div>
 
             <ButtonGroup>
-              <Link to={`/listings/`} className="btn btn-secondary">
+              <Link to={`/listings/`} className="btn btn-secondary mr-2">
                 Back
+              </Link>
+              <Link to={``} className={`btn btn-primary ${liked ? 'btn-secondary' : ''}`} onClick={handleLikeClick}>
+                Like
               </Link>
               {editorAllowed &&
                 <Link to={`/listings/${listing._id}/edit`} className="btn btn-primary">

@@ -2,7 +2,7 @@ import React from 'react';
 import utils from "../../../Utils";
 import { Modal, Button, Card } from 'react-bootstrap';
 
-const RowModalUserDelete = ({ show, handleClose, rowData}) => {
+const RowModalUserDelete = ({ show, handleClose, rowData, onDelete}) => {
     if (!rowData) {
         // Return a message or placeholder if rowData is not available
         return (
@@ -50,7 +50,7 @@ const RowModalUserDelete = ({ show, handleClose, rowData}) => {
                 <Button variant="secondary" onClick={handleClose}>
                     Close
                 </Button>
-                <Button variant="danger">
+                <Button variant="danger" onClick={onDelete}>
                     Remove user
                 </Button>
             </Modal.Footer>
