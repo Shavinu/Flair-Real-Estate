@@ -83,6 +83,16 @@ const userSchema = new Schema(
     postcode: {
       type: String,
     },
+    favorites: {
+      default: {
+        listings: [],
+        projects: [],
+      },
+      type: {
+        listings: [String],
+        projects: [String],
+      },
+    },
   },
   { timestamps: true }
 );
