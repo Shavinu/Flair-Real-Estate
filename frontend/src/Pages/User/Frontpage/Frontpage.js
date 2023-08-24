@@ -439,12 +439,11 @@ const Frontpage = () => {
                                 <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
                                     <h6>New projects</h6><br />
                                     <div>
-
                                         <Carousel>
                                             {sortedCreatedProjects.map((project, index) => (
                                                 <Carousel.Item key={index} onClick={() => handleCarouselItemClickProject(project)}>
                                                     <img
-                                                        className="d-block w-50"
+                                                        className="d-block w-20"
                                                         src={FileService.getImageUrl(project?.projectTitleImage)}  // Add the appropriate property for the image URL
                                                         alt={project.projectName}
                                                     />
@@ -475,7 +474,7 @@ const Frontpage = () => {
             </Col>
             <br />
 
-            {/* <Col lg={12}>
+            <Col lg={12}>
                 <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
                     <Row>
                         <h4>Favorites</h4>
@@ -496,7 +495,7 @@ const Frontpage = () => {
                                                     highlightOnHover />
                                             </CardBody>
                                         </Tab>
-                                        <Tab eventKey="Projects" title={titleWithProjectVariable}>
+                                        {/* <Tab eventKey="Projects" title={titleWithProjectVariable}>
                                             <CardBody>
                                                 <DataTable
                                                     columns={projectColumns}
@@ -505,7 +504,7 @@ const Frontpage = () => {
                                                     highlightOnHover
                                                     pagination />
                                             </CardBody>
-                                        </Tab>
+                                        </Tab> */}
                                     </Tabs>
                                 </Card>
                             </Row>
@@ -523,14 +522,14 @@ const Frontpage = () => {
                         </p>
                     </Row>
                 </Card>
-            </Col> */}
+            </Col>
             <br/>
-            <p>{JSON.stringify(filteredProjects)}</p>
+            {/* <p>{JSON.stringify(filteredProjects)}</p>
             <p>{JSON.stringify(filteredFavListingData)}</p>
             <p>{JSON.stringify(projectFavorites)}</p>
             <br/>
             <p>{JSON.stringify(filteredListingDetails)}</p>
-            <p>{JSON.stringify(filteredProjectDetails)}</p>
+            <p>{JSON.stringify(filteredProjectDetails)}</p> */}
         </Container>
     );
 }

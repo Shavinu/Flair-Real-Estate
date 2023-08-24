@@ -180,7 +180,7 @@ const ListingDetails = () => {
     }
     else
     {
-      console.log("Ready to save DB");
+      console.log("Invlid user omit DB save");
     }
   };
 
