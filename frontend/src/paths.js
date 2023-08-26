@@ -479,7 +479,7 @@ export const api = {
     edit: '/api/users/{{id}}',
     approve: '/api/users/approve/',
     addFavorite: '/api/users/addFavorite/',
-    deleteFavourite: '/api/users/deleteFavourite/:userId/:listingType/:listingId',
+    deleteFavourite: '/api/users/deleteFavourite/',
     delete: '/api/users/{{id}}',
     deleteMany: '/api/users/delete-many',
     requestChange: 'api/users/request-change',

@@ -150,39 +150,69 @@ const ListingDetails = () => {
     />;
     </Container>
   }
+  ///////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////LIKE BUTTON/////////////////////////////////////////////////////////
+  const listingID = listing?._id;
+  //Get userID 
+  const SetFrontPagePart = () => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const userID = user.payload._id;
+    return userID;
+  }
+  //Get user type
+  const SetFrontPagePart2 = () => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const userType = user.payload.accType;
+    //const acctype = user.payload.acctype;
+    return userType;
+  }
+  const userID=SetFrontPagePart();
+  const userType = SetFrontPagePart2();
+
   const handleLikeClick = () => {
     console.log("This Listing ID->"+JSON.stringify(listing?._id));
-
     setLiked(true);
     Toast('Listing added to the favourites!', 'success');
 
 
-    //Get userID for the frontpage
-    const SetFrontPagePart = () => {
-      const user = JSON.parse(localStorage.getItem('user'));
-      const userID = user.payload._id;
-      //const acctype = user.payload.acctype;
-      return userID;
-    }
-    const user=SetFrontPagePart();
-    const SetFrontPagePart2 = () => {
-      const user = JSON.parse(localStorage.getItem('user'));
-      const userType = user.payload.accType;
-      //const acctype = user.payload.acctype;
-      return userType;
-    }
-    const userType = SetFrontPagePart2();
+    
+
     console.log(JSON.stringify(userType));
 
     if(userType == 'user')
     {
       console.log("Ready to save DB");
+      onConfirmFavorites();
     }
     else
     {
       console.log("Invlid user omit DB save");
     }
   };
+
+  const onConfirmFavorites = () => {
+
+    const likeData = {
+      id: userID,
+      listingId: listingID,
+    };
+
+    UserService.addFavorite(likeData)
+      .then(() => {
+        //setSelectedRowListing([]);
+        Toast('Listing added to favorites successfully', 'success');
+        //ListingService.getAllListings();//Trying to refresh
+        //window.location.reload();
+
+      })
+      .catch(() => {
+        Toast('Failed approve!', 'danger');
+      })
+      // .finally(() => setShowConfirmApproveModalListing(false))
+      // setShowConfirmApproveModalListing(false);
+  }
+  //////////////////////////////////////////////////////////////////////////////////
+
 
   return (
     <Container className="content-container">
@@ -199,9 +229,11 @@ const ListingDetails = () => {
               <Link to={`/listings/`} className="btn btn-secondary mr-2">
                 Back
               </Link>
-              <Link to={``} className={`btn btn-primary ${liked ? 'btn-secondary' : ''}`} onClick={handleLikeClick}>
+              {userType == 'user' &&
+              <Link to={``} className={`btn btn-primary mr-2 ${liked ? 'btn-secondary' : ''}`} onClick={handleLikeClick}>
                 Like
               </Link>
+              }
               {editorAllowed &&
                 <Link to={`/listings/${listing._id}/edit`} className="btn btn-primary">
                   Edit

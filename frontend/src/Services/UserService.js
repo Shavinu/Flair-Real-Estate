@@ -64,21 +64,13 @@ export const deleteToken = (credentials) => {
     });
 };
 
-export const addFavorite = (id, body) => {
-  // const body = {
-  //   listingId,
-  //   projectId
-  // };
-  return utils.fetch.httpPost(api.users.addFavorite.id, body);
-  // utils.fetch.httpPatch(utils.url.replaceId(api.users.favouriteUser, id), body);
+export const addFavorite = (body) => {
+  console.log(JSON.stringify(body));
+  return utils.fetch.httpPost(api.users.addFavorite, body);
+
 };
 
-export const deleteFavorite = (userId, favoriteType, favoriteId) => {
-  const body = {
-    userId,
-    favoriteType,
-    favoriteId
-  };
-
-  return utils.fetch.httpDelete(api.users.deleteFavorite, body);
+export const deleteFavorite = (body) => {
+  console.log(JSON.stringify(body));
+  return utils.fetch.httpPost(api.users.deleteFavourite, body);
 };

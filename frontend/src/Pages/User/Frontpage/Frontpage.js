@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Col, Card, Carousel, Tab, Tabs  } from "react-bootstrap";
 import { Container, Row } from 'react-bootstrap';
 import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { RowModalListingDelete, RowModalProjectDelete } from './ConfirmModal';
 import { PieChart, Pie } from 'recharts';
 import "./Layout.css";
 import utils from "../../../Utils";
@@ -15,6 +16,7 @@ import Listings from '../../Listing/List';
 import CardBody from "../../../Components/Card/CardBody";
 import { Button, ContentHeader, DatePicker, Dropdown } from "../../../Components";
 import DataTable from 'react-data-table-component';
+import Toast from "../../../Components/Toast";
 
 
 const Frontpage = () => {
@@ -24,6 +26,12 @@ const Frontpage = () => {
     const [listings, setlistings] = useState([])
     const [activeTab, setActiveTab] = useState('Listings');   
     const [titleImageProject, setTitleImageProject] = useState('')
+    const [selectedRowListing, setSelectedRowListing] = useState(null);
+    const [selectedRowProject, setSelectedRowProject] = useState(null);
+    const [showConfirmDeleteModalListing, setShowConfirmDeleteModalListing] = useState(false);
+    const [showConfirmDeleteModalProject, setShowConfirmDeleteModalProject] = useState(false);
+    const [showListingModal, setShowListingModal] = useState(false);
+    const [showProjectModal, setShowProjectModal] = useState(false);
     
     const handleTabChange = (tab) => {
         setActiveTab(tab);
@@ -136,7 +144,7 @@ const Frontpage = () => {
             const timeDifference = today - createdAtDate;
             const daysDifference = timeDifference / (1000 * 60 * 60 * 24); // Convert milliseconds to days
 
-            return daysDifference <= 50; // Keep only listings created within the last 14 days
+            return daysDifference <= 20; // Keep only listings created within the last 14 days
         })
         .map(item => ({
             _id: item._id,
@@ -169,7 +177,7 @@ const Frontpage = () => {
         const timeDifference = today - createdAtDate;
         const daysDifference = timeDifference / (1000 * 60 * 60 * 24); // Convert milliseconds to days
 
-        return daysDifference <= 50; // Keep only listings created within the last 14 days
+        return daysDifference <= 20; // Keep only listings created within the last 14 days
     })
     .map(item => ({
         _id: item._id,
@@ -249,7 +257,7 @@ const Frontpage = () => {
             name: "Actions",
             button: true,
             cell: row => (<>
-                <Button className="btn btn-icon btn-sm btn-flat-danger my-1" onClick={(e) => (row)}>
+                <Button className="btn btn-icon btn-sm btn-flat-danger my-1" onClick={(e) => onListingDelete(row)}>
                     <i className="feather icon-trash-2"></i>
                 </Button>
                 <Link className="btn btn-icon btn-sm btn-flat-primary my-1" to={`/listings/${row._id}`} target="_blank">
@@ -291,7 +299,7 @@ const Frontpage = () => {
             name: "Actions",
             button: true,
             cell: row => (<>
-                <Button className="btn btn-icon btn-sm btn-flat-danger my-1" onClick={(e) => (row)}>
+                <Button className="btn btn-icon btn-sm btn-flat-danger my-1" onClick={(e) => onProjectDelete(row)}>
                     <i className="feather icon-trash-2"></i>
                 </Button>
                 <Link className="btn btn-icon btn-sm btn-flat-primary my-1" to={`/projects/${row._id}`} target="_blank">
@@ -321,6 +329,87 @@ const Frontpage = () => {
 
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //Deleting Listing
+    const handleOpenModalListing = (row) => {
+        //console.log("row", row);
+        setSelectedRowListing(row);
+        setShowListingModal(true);
+      };
+  const onListingDelete = (row) => {
+    setSelectedRowListing(row);
+    setShowConfirmDeleteModalListing(true);
+  }
+
+  const onConfirmDeleteListing = () => {
+    const Listingid = selectedRowListing._id;
+    console.log(Listingid);
+    
+    const dislikeListingData = {
+        userId: ID,
+        favoriteType: "listings",
+        favoriteId: Listingid
+    };
+    UserService.deleteFavorite(dislikeListingData)
+      .then(() => {
+        Toast('Listing removed successfully', 'success');
+        window.location.reload();
+      })
+      .catch(() => {
+        Toast('Removing failed!', 'danger');
+      })
+      .finally(() => setShowConfirmDeleteModalListing(false))
+      setShowConfirmDeleteModalListing(false);
+  }
+
+  const handleCloseListingDelete = () => {
+    setShowConfirmDeleteModalListing(false);
+  };
+  //END of Listing
+
+  //Begin delete project
+
+    //For Project
+    const handleOpenModalProject = (row) => {
+        //console.log("row", row);
+        setSelectedRowProject(row);
+        setShowProjectModal(true);
+      };
+  const onProjectDelete = (row) => {
+    setSelectedRowProject(row);
+    setShowConfirmDeleteModalProject(true);
+  }
+
+  const onConfirmDeleteProject = () => {
+    const Projectid = selectedRowProject._id;
+    console.log(Projectid);
+    const dislikeProjectData = {
+        userId: ID,
+        favoriteType: "projects",
+        favoriteId: Projectid
+    };
+    console.log('Type of myVariable:', typeof Projectid);
+    //console.log(JSON.stringify(objectId));
+    UserService.deleteFavorite(dislikeProjectData)
+      .then(() => {
+        setSelectedRowProject([]);
+        Toast('Project removed successfully', 'success');
+        //ListingService.getAllListings();//Trying to refresh
+        window.location.reload();
+      })
+      .catch(() => {
+        Toast('Removing failed!', 'danger');
+        console.log("NOOOOOOOOOO");
+      })
+      .finally(() => setShowConfirmDeleteModalProject(false))
+    setShowConfirmDeleteModalProject(false);
+  }
+
+  const handleCloseProjectDelete = () => {
+    setShowConfirmDeleteModalProject(false);
+  };
+  /////////////////////////////////////////////////////////////////
+  //END of Project
     return (
         <Container className="content-container">
             <Col lg={12}>
@@ -495,7 +584,7 @@ const Frontpage = () => {
                                                     highlightOnHover />
                                             </CardBody>
                                         </Tab>
-                                        {/* <Tab eventKey="Projects" title={titleWithProjectVariable}>
+                                        <Tab eventKey="Projects" title={titleWithProjectVariable}>
                                             <CardBody>
                                                 <DataTable
                                                     columns={projectColumns}
@@ -504,13 +593,25 @@ const Frontpage = () => {
                                                     highlightOnHover
                                                     pagination />
                                             </CardBody>
-                                        </Tab> */}
+                                        </Tab>
                                     </Tabs>
                                 </Card>
                             </Row>
                         </ResponsiveContainer>
                     </Col>
-                    <br />
+                        <RowModalListingDelete show={showConfirmDeleteModalListing}
+                            setShow={handleOpenModalListing}
+                            onDelete={onConfirmDeleteListing}
+                            handleClose={handleCloseListingDelete}
+                            rowData={selectedRowListing}
+                        />
+                        <RowModalProjectDelete show={showConfirmDeleteModalProject}
+                            setShow={handleOpenModalProject}
+                            onDelete={onConfirmDeleteProject}
+                            handleClose={handleCloseProjectDelete}
+                            rowData={selectedRowProject}
+                        />
+                        <br />
                     </Row>
                     <br />
                     <Row>

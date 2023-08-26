@@ -59,6 +59,6 @@ router.post('/approve', approveUser);
 router.post('/addFavorite', favouriteUser);
 
 // Route to add favorite project/listing to user's favorites
-router.post('/deleteFavorite/:userId/:listingType/:listingId', favouriteUserDelete);
+router.post('/deleteFavourite', favouriteUserDelete);
 
 module.exports = router;
