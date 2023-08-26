@@ -220,6 +220,31 @@ const Frontpage = () => {
     }, [projectByAvailability]);
     //End of projects by availability
 
+
+    //COunting the unapproved projects
+
+    //Extracting the unapproved projects, listing and users
+    const countUnapprovedProjects = (projects.map((item) => {
+        return {
+            projectApproved: item.projectApproved,
+        }
+    }).filter(item => item.projectApproved === false)).length;
+
+    const countUnapprovedListing = (listings.map((item) => {
+        return {
+            listingApproved: item.listingApproved,
+        }
+    }).filter(item => item.listingApproved === false)).length;
+
+    const countUnapprovedUsers = (users.map((item) => {
+        return {
+            verified: item.verified,
+        }
+    }).filter(item => item.verified === false)).length;
+
+    //End of getting the unapproved counts
+
+
     //Listings by region
     useEffect(() => {
         let NewSouthWales = 0,
@@ -371,6 +396,29 @@ const Frontpage = () => {
                                 <h5>Number of listings</h5>
                                 <br />
                                 <p><h1>{Listingcount}</h1></p>
+                            </Card>
+                        </Col>
+                    </Row><br/>
+                    <Row>
+                        <Col lg={4}>
+                            <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
+                                <h5>Number of unapproved users</h5>
+                                <br />
+                                <p><h1>{countUnapprovedUsers}</h1></p>
+                            </Card>
+                        </Col>
+                        <Col lg={4}>
+                            <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
+                                <h5>Number of unapproved projects</h5>
+                                <br />
+                                <p><h1>{countUnapprovedProjects}</h1></p>
+                            </Card>
+                        </Col>
+                        <Col lg={4}>
+                            <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
+                                <h5>Number of unapproved listings</h5>
+                                <br />
+                                <p><h1>{countUnapprovedListing}</h1></p>
                             </Card>
                         </Col>
                     </Row>
@@ -649,8 +697,8 @@ const Frontpage = () => {
                 </Card>
             </Col>
             <br/><br/>
-            <p>{JSON.stringify(ID)}</p>
-            <p>{JSON.stringify(filteredFirstNames)}</p>
+            <p>{JSON.stringify(countUnapprovedProjects)}</p>
+            <p>{JSON.stringify()}</p>
             {/* <Col lg={12}>
                 <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
                     <Row>

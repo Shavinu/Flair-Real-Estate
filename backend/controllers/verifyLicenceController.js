@@ -23,6 +23,7 @@ async function getAccessToken(idType) {
       }
     });
 
+    console.log(response.data);
     access_token = response.data.access_token;
     accessTokenExpiration = new Date(new Date().getTime() + response.data.expires_in * 1000);
 

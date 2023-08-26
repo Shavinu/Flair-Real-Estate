@@ -282,14 +282,14 @@ const Frontpage = () => {
                             <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
                                 <h5>Number of your projects</h5>
                                 <br />
-                                <p><h1>{ProjectcountByOwner} / {Projectcount}</h1></p>
+                                <p><h1>{ProjectcountByOwner}</h1></p>
                             </Card>
                         </Col>
                         <Col lg={4}>
                             <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
                                 <h5>Number of your listings</h5>
                                 <br />
-                                <p><h1>{ListingscountByOwner} / {Listingcount}</h1></p>
+                                <p><h1>{ListingscountByOwner}</h1></p>
                             </Card>
                         </Col>
                     </Row>
@@ -556,14 +556,14 @@ const Frontpage = () => {
             </Col>
             <br />
             <br />
-            <p><h2>User ID - {ID}</h2></p>
+            {/* <p><h2>User ID - {ID}</h2></p>
             <p>{JSON.stringify(filteredLoginUser)}</p>
-            <p>{JSON.stringify(filteredFirstNames)}</p><br />
+            <p>{JSON.stringify(filteredFirstNames)}</p><br /> */}
             {/* <p>{JSON.stringify(projectsByOwner)}</p> */}
             {/* <p>{JSON.stringify(projectsByOwner.projects[0].projectName)}</p>
             <p>{JSON.stringify(projectsByOwner.projects[0].projectLocation[0].locationName)}</p> */}
             <br />
-            <p>{JSON.stringify(filteredListings)}</p>
+            {/* <p>{JSON.stringify(filteredUserListings)}</p> */}
             <p></p>
         </Container>
     );

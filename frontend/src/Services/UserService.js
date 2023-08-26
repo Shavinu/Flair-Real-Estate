@@ -17,6 +17,10 @@ export const updateUser = (id, body) => {
   return utils.fetch.httpPatch(utils.url.replaceId(api.users.edit, id), body);
 };
 
+export const approveUser = (id) => {
+  return utils.fetch.httpPost(api.users.approve, id);
+};
+
 export const deleteUser = (id) => {
   return utils.fetch.httpDelete(utils.url.replaceId(api.users.delete, id));
 };
@@ -58,4 +62,15 @@ export const deleteToken = (credentials) => {
     .then((response) => {
       return response;
     });
+};
+
+export const addFavorite = (body) => {
+  console.log(JSON.stringify(body));
+  return utils.fetch.httpPost(api.users.addFavorite, body);
+
+};
+
+export const deleteFavorite = (body) => {
+  console.log(JSON.stringify(body));
+  return utils.fetch.httpPost(api.users.deleteFavourite, body);
 };

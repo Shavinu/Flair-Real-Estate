@@ -9,7 +9,15 @@ const {
     createListing,
     deleteListing,
     updateListing,
+    getUnapprovedListing,
+    approveListing,
 } = require('../controllers/listingsController')
+
+//Get all the unapproved listings
+router.get('/unapproved', getUnapprovedListing)
+
+//approved listings
+router.post('/approve', approveListing)
 
 //Get all Listings
 router.get('', getListings)

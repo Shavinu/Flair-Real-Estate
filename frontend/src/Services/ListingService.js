@@ -35,6 +35,14 @@ export const getAllListings = async () => {
     return utils.fetch.httpGet(api.listings.getAll);
 };
 
+export const getUnapprovedListings = async () => {
+    return utils.fetch.httpGet(api.listings.getUnapproved);
+};
+
+export const approveListing = async (id) => {
+    return utils.fetch.httpPost(api.listings.approve, id);
+};
+
 export const getDevelopers = async () => {
     return utils.fetch.httpGet(api.listings.getDevelopers);
 };

@@ -174,6 +174,44 @@ const projectController = {
     }
   },
 
+
+  //get notapproved project
+  getUnapprovedProjects: async (req, res) => {
+    try {
+      const projectsQuery = Project.find({projectApproved: false,}).sort({ createdAt: -1 }) ;
+      const projects = await projectsQuery.exec();
+
+      res.status(200).json({projects});
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  },
+
+  approveProjects: async (req, res) => {
+    try{
+    const { id } = req.body;
+    //const filter = new mongoose.Types.ObjectId(id);
+    //const filter = { _id: mongoose.Types.ObjectId(id) };
+    const filter = {_id: id};
+    console.log('Received ID:', id);
+    const update = { projectApproved: true };
+    const approvedProject = await Project.findOneAndUpdate(filter , update, {
+      new: true
+    });
+
+    if (!approvedProject) {
+      return res.status(404).json({ message: 'Project not found or could not be updated.' });
+    }
+    //console.log('Approved Project:', approvedProject);
+    //res.status(200).json(approvedProject);
+    res.status(200).json({ message: "Project Approved!" });
+    }
+    catch (error) {
+      res.status(500).json({ message: 'An error occurred while updating the listing.' });
+      //res.status(500).json({ message: error.message });
+    }
+  },
+
   // Search projects
   searchProjects: async (req, res) => {
     try {

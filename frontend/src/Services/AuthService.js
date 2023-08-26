@@ -100,5 +100,6 @@ export const verifyMobile = (areaCode, number) => {
 };
 
 export const logout = () => {
+  window.location.reload();
   localStorage.clear();
 }

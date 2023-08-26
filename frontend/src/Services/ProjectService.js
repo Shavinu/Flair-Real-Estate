@@ -14,6 +14,14 @@ export const getAllProjects = async () => {
     return utils.fetch.httpGet(api.projects.getAll);
 };
 
+export const getUnapprovedProjects = async () => {
+    return utils.fetch.httpGet(api.projects.getUnapproved);
+};
+
+export const approveProjects = async (id) => {
+    return utils.fetch.httpPost(api.projects.approve, id);
+};
+
 export const updateProject = async (id, data) => {
     const url = utils.url.replaceId(api.projects.update, id);
     return utils.fetch.httpPost(url, data);
@@ -61,6 +69,7 @@ export const getProjectByOwner = async (ownerId, page, limit, search = '', initi
 };
 
 export const deleteProject = async (id) => {
+    console.log(JSON.stringify(id));
     return utils.fetch.httpDelete(utils.url.replaceId(api.projects.delete, id));
 };
 

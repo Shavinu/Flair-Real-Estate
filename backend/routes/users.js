@@ -10,6 +10,9 @@ const {
   requestChange,
   verifyRequest,
   deleteToken,
+  approveUser,
+  favouriteUser,
+  favouriteUserDelete,
 } = require('../controllers/userController')
 
 //Get all users
@@ -49,5 +52,13 @@ router.get('/verify-request/:userId/:token/:company', verifyRequest)
 // delete token
 router.post('/delete-token', deleteToken);
 
+//Approve user
+router.post('/approve', approveUser);
+
+// Route to add favorite project/listing to user's favorites
+router.post('/addFavorite', favouriteUser);
+
+// Route to add favorite project/listing to user's favorites
+router.post('/deleteFavourite', favouriteUserDelete);
 
 module.exports = router;

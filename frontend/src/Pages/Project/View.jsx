@@ -35,6 +35,7 @@ const ProjectDetails = () => {
   const [sortKey, setSortKey] = useState('type');
   const [sortOrder, setSortOrder] = useState('asc');
   const [projectFiles, setProjectFiles] = useState([]);
+  const [liked, setLiked] = useState(false);
   // const [coordinates, setCoordinates] = useState(null);
   // const [coordinates2, setCoordinates2] = useState(null);
   const { id } = useParams();
@@ -194,8 +195,67 @@ const ProjectDetails = () => {
         </div>}
     />;
     </Container>
+
+    
   }
   const [minPrice, maxPrice] = project.projectPriceRange;
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////LIKE BUTTON/////////////////////////////////////////////////////////
+  const projectID = project?._id;
+  //Get userID 
+  const SetFrontPagePart = () => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const userID = user.payload._id;
+    return userID;
+  }
+  //Get user type
+  const SetFrontPagePart2 = () => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const userType = user.payload.accType;
+    //const acctype = user.payload.acctype;
+    return userType;
+  }
+  const userID=SetFrontPagePart();
+  const userType = SetFrontPagePart2();
+
+  const handleLikeClick = () => {
+    console.log("This Project ID->"+JSON.stringify(project?._id));
+    setLiked(true);
+    //Toast('Project added to the favourites!', 'success');  
+
+    console.log(JSON.stringify(userType));
+
+    if(userType == 'user')
+    {
+      console.log("Ready to save DB");
+      onConfirmFavorites();
+    }
+    else
+    {
+      console.log("Invlid user omit DB save");
+    }
+  };
+
+  const onConfirmFavorites = () => {
+
+    const likeData = {
+      id: userID,
+      projectId: projectID,
+    };
+
+    UserService.addFavorite(likeData)
+      .then(() => {
+        Toast('Listing added to favorites successfully', 'success');
+
+      })
+      .catch(() => {
+        Toast('Failed approve!', 'danger');
+      })
+      // .finally(() => setShowConfirmApproveModalListing(false))
+      // setShowConfirmApproveModalListing(false);
+  }
+  //////////////////////////////////////////////////////////////////////////////////
   return (
     <Container className="content-container">
       <ContentHeader headerTitle="View Project"
@@ -211,6 +271,11 @@ const ProjectDetails = () => {
               <Link to={`/projects/`} className="btn btn-primary">
                 Back
               </Link>
+              {userType == 'user' &&
+              <Link to={``} className={`btn btn-primary mr-2 ${liked ? 'btn-secondary' : ''}`} onClick={handleLikeClick}>
+                Like
+              </Link>
+              }
               {editorAllowed &&
                 <Link to={`/projects/${project._id}/edit`} className="btn btn-secondary">
                   Edit

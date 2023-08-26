@@ -17,6 +17,11 @@ const listingSchema = new Schema({
     type: String,
     required: true
   },
+  listingApproved:{
+    type: Boolean,
+    required: false,
+    default: false
+  },
   priceRange: [{
     _id: false,
     minPrice: {

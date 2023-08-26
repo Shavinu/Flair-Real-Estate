@@ -176,6 +176,119 @@ const deleteToken = async (req, res, next) => {
   }
 }
 
+//Approve user
+const approveUser = async (req, res) => {
+  try{
+  const { id } = req.body;
+  const filter = {_id: id};
+  //console.log('Received ID:', id);
+  const update = { verified: true };
+  const approvedUser = await User.findOneAndUpdate(filter, update, {
+    new: true
+  });
+
+  if (!approvedUser) {
+    return res.status(404).json({ message: 'User not found or could not be updated.' });
+  }
+
+  res.status(200).json(approvedUser);
+  //res.status(200).json({ message: "User Approved!" });
+  }
+  catch (error)
+  {
+    res.status(500).json({ message: 'An error occurred while approving the user.' });
+  }
+};
+
+
+// const addFavoriteListing = async (req, res) => {
+//   try {
+//     const { userId, listingId } = req.body;
+//     // Find the user by their ID
+//     const addUserFavourites = await User.findById(userId);
+
+//     if (!addUserFavourites) {
+//       return res.status(404).json({ message: 'User not found.' });
+//     }
+
+//     // Add the listing ID to the favorites array
+//     addUserFavourites.favorites.listings.push(listingId);
+
+//     // Save the updated user document
+//     const updatedUser = await addUserFavourites.save();
+
+//     res.status(200).json(updatedUser);
+//   } catch (error) {
+//     res.status(500).json({ message: 'An error occurred while adding the favorite listing.' });
+//   }
+// };
+
+const favouriteUser = async (req, res) => {
+  try {
+    const { id, projectId, listingId } = req.body;
+
+    // Find the user by their ID
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    if (projectId) {
+      // Add the project ID to the favorite projects array
+      //user.favorites.projects.push(projectId);
+      user.favorites.projects = [...new Set(user.favorites.projects.concat(projectId))];
+    }
+
+    if (listingId) {
+      // Add the listing ID to the favorite listings array
+      //user.favorites.listings.push(listingId);
+      user.favorites.listings = [...new Set(user.favorites.listings.concat(listingId))];
+    }
+
+    // Save the updated user document
+    const updatedUser = await user.save();
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(500).json({ message: 'An error occurred while adding the favorite.' });
+  }
+};
+
+const favouriteUserDelete = async (req, res) => {
+  try {
+    const { userId, favoriteType, favoriteId } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(favoriteId)) {
+      return res.status(404).json({ error: 'Invalid Favourites IDs' });
+    }
+
+    // Find the user by their ID
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    // Determine whether to delete from listings or projects array
+    if (favoriteType === 'listings') {
+      user.favorites.listings = user.favorites.listings.filter(id => id !== favoriteId);
+    } else if (favoriteType === 'projects') {
+      user.favorites.projects = user.favorites.projects.filter(id => id !== favoriteId);
+    } else {
+      return res.status(400).json({ error: 'Invalid favoriteType' });
+    }
+
+    // Save the updated user document
+    const updatedUser = await user.save();
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while deleting from favorites.' });
+  }
+};
+
+
 module.exports = {
   getUsers,
   getaUser,
@@ -186,4 +299,7 @@ module.exports = {
   requestChange,
   verifyRequest,
   deleteToken,
+  approveUser,
+  favouriteUser,
+  favouriteUserDelete,
 };
