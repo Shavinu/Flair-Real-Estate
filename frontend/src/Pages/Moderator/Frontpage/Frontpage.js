@@ -10,6 +10,7 @@ import { PieChart, Pie } from 'recharts';
 import "./Layout.css";
 import { RowModal, ListingRowModal, ProjectRowModal } from './RowModal';
 import { RowModalUserDelete, RowModalUserApprove, RowModalListingApprove, RowModalListingDelete, RowModalProjectApprove, RowModalProjectDelete } from './ConfirmModal';
+import { FavoriteListingRowModal, FavoriteProjectRowModal } from './RowModalFavorites';
 import Toast from "../../../Components/Toast";
 import { Button, ContentHeader, DatePicker, Dropdown } from "../../../Components";
 import { Stack } from 'react-bootstrap';
@@ -46,11 +47,18 @@ const Frontpage = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [selectedRowListing, setSelectedRowListing] = useState(null);
   const [selectedRowProject, setSelectedRowProject] = useState(null);
+  
+  //Arrays to store favorite listings and project row details
+  const [selectedRowFavoriteListing, setSelectedRowFavoriteListing] = useState(null);
+  const [selectedRowFavoriteProject, setSelectedRowFavoriteProject] = useState();
+  const [showFavoriteListingModal, setShowFavoriteListingModal] = useState(false);
+  const [showFavoriteProjectModal, setShowFavoriteProjectModal] = useState(false);
 
   //Boostrap tabs for user, listing and projects
   const [activeTabUser, setActiveTabUser] = useState('unapproved');
   const [activeTabProject, setActiveTabProject] = useState('unapproved');
   const [activeTabListing, setActiveTabListing] = useState('unapproved');
+  const [activeTabFavorites, setActiveTabFavorites] = useState('listings');
 
   const handleTabChangeProject = (tab) => {
     setActiveTabProject(tab);
@@ -62,6 +70,10 @@ const Frontpage = () => {
 
   const handleTabChangeUser = (tab) => {
     setActiveTabUser(tab);
+  };
+
+  const handleTabChangeFavorites = (tab) => {
+    setActiveTabFavorites(tab);
   };
 
   useEffect(() => {
@@ -520,6 +532,152 @@ const Frontpage = () => {
   ], []);
 
 
+  const listingFavoritesColumns = useMemo(() => [
+    {
+      name: 'Name',
+      selector: row => row.firstName + " "+ row.lastName || '--',
+      sortable: true,
+    },
+    {
+      name: 'Email',
+      selector: row => row.email || '--',
+      sortable: true,
+    },
+    {
+      name: 'Phone',
+      selector: row => row.phoneNo || '--',
+      sortable: true,
+    },
+    {
+      name: 'Number of interests',
+      selector: row => row.listingsFavo.length || '--',
+      sortable: true,
+    },
+    {
+      name: "Actions",
+      button: true,
+      cell: row => (<>
+        <Button className="btn btn-icon btn-sm btn-flat-primary my-1" onClick={(e) => handleOpenModalFavoriteListing(row)}>
+          <i className="feather icon-eye"></i>
+        </Button>
+      </>)
+    }
+  ], []);
+
+  const projectFavoritesColumns = useMemo(() => [
+    {
+      name: 'Name',
+      selector: row => row.firstName + " "+ row.lastName || '--',
+      sortable: true,
+    },
+    {
+      name: 'Email',
+      selector: row => row.email || '--',
+      sortable: true,
+    },
+    {
+      name: 'Phone',
+      selector: row => row.phoneNo || '--',
+      sortable: true,
+    },
+    {
+      name: 'Number of interests', // Use a more descriptive name
+      selector: row => row.projects.length || '--',
+      sortable: true,
+    },
+    {
+      name: "Actions",
+      button: true,
+      cell: row => (<>
+        <Button className="btn btn-icon btn-sm btn-flat-primary my-1" onClick={(e) => handleOpenModalFavoriteProject(row)}>
+          <i className="feather icon-eye"></i>
+        </Button>
+      </>)
+    }
+  ], []);
+
+  const filteredUserFavoriteListings = Users2.filter(user => user.accType === "user").map(user => ({
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    phoneNo: user.phoneNo,
+    listings: user.favorites.listings // Assuming you want the "listings" property
+  }));
+
+  const filteredUserFavoriteProjects = Users2.filter(user => user.accType === "user" && user.favorites.projects.length > 0).map(user => ({
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    phoneNo: user.phoneNo,
+    projects: user.favorites.projects // Assuming you want the "listings" property
+  }));
+
+
+  const projectFavorites = filteredUserFavoriteProjects.map(userFavorite => ({
+    firstName: userFavorite.firstName,
+    lastName: userFavorite.lastName,
+    email: userFavorite.email,
+    phoneNo: userFavorite.phoneNo,
+    projects: userFavorite.projects.map(projectId => {
+      const project = projects.find(p => p._id === projectId);
+      if (project) {
+        return {
+          _id: project._id || '',
+          projectName: project.projectName || '',
+          locationName: (project.projectLocation && project.projectLocation[0].locationName) || ''
+        };
+      }
+      return null;
+    })
+  }));
+
+  const userFavoritesWithListings = filteredUserFavoriteListings.map(userFavorite => ({
+    firstName: userFavorite.firstName,
+    lastName: userFavorite.lastName,
+    email: userFavorite.email,
+    phoneNo: userFavorite.phoneNo,
+    listingsFavo: userFavorite.listings.map(listingId => {
+      const listing = listings.find(listing => listing._id === listingId);
+      if (listing) {
+        return {
+          _id: listing._id || '',
+          listingName: listing.listingName || '',
+          streetAddress: listing.streetAddress || '',
+          priceRange: listing.priceRange || '',
+          status: listing.status || ''
+        };
+      }
+      return null;
+    })
+  }));
+
+  //For Favorite Projects
+  const handleOpenModalFavoriteProject = (row) => {
+    console.log("row", row);
+    setSelectedRowFavoriteProject(row);
+    //console.log(JSON.stringify(selectedRowFavoriteProject));
+    setShowFavoriteProjectModal(true);
+  };
+
+  const handleCloseModalFavoriteProject = () => {
+    setShowFavoriteProjectModal([]);
+    setShowFavoriteProjectModal(false);
+  };
+
+  //For Favorite Projects
+  const handleOpenModalFavoriteListing = (row) => {
+    console.log("row", row);
+    //setSelectedRowProject(row);
+    setSelectedRowFavoriteListing(row);
+    //console.log(JSON.stringify(selectedRowFavoriteProject));
+    setShowFavoriteListingModal(true);
+  };
+
+  const handleCloseModalFavoriteListing = () => {
+    setShowFavoriteListingModal([]);
+    setShowFavoriteListingModal(false);
+  };
+  
   //For Users
   const handleOpenModal = (row) => {
     //console.log("row", row);
@@ -601,7 +759,7 @@ const Frontpage = () => {
 
   //For Project
   const handleOpenModalProject = (row) => {
-    //console.log("row", row);
+    console.log("row", row);
     setSelectedRowProject(row);
     setShowProjectModal(true);
   };
@@ -1009,13 +1167,66 @@ const Frontpage = () => {
           </Row><br />
         </Card>
       </Col><br /><br />
+      <Col lg={10} className="mx-auto text-center">
+        <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
+          <Row>
+            <h4>User Favories Insights</h4>
+            <br /><br />
+          </Row>
+          <Row>
+            <br /><br />
+            <Col lg={10} className="mx-auto text-center">
+              <ResponsiveContainer>
+                <Row>
+                  <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
+                    <Tabs activeKey={activeTabFavorites} onSelect={handleTabChangeFavorites}>
+                      <Tab eventKey="listings" title="Listings">
+                        <CardBody>
+                          <DataTable
+                            columns={listingFavoritesColumns}
+                            data={userFavoritesWithListings}
+                            highlightOnHover
+                            pagination />
+                        </CardBody>
+                      </Tab>
+                      <Tab eventKey="projects" title="Projects">
+                        <CardBody>
+                          <DataTable
+                            columns={projectFavoritesColumns}
+                            data={projectFavorites}
+                            highlightOnHover
+                            //onRowClicked={onRowClickedProject}
+                            pagination />
+                        </CardBody>
+                      </Tab>
+                    </Tabs>
+                  </Card>
+                </Row>
+              </ResponsiveContainer>
+            </Col>
+            <FavoriteProjectRowModal show={showFavoriteProjectModal}
+              setShow={handleOpenModalFavoriteProject}
+              handleCloseModalFavoriteProject={handleCloseModalFavoriteProject}
+              rowData={selectedRowFavoriteProject}
+            />
+            <FavoriteListingRowModal show={showFavoriteListingModal}
+              setShow={handleOpenModalFavoriteListing}
+              handleCloseFavoriteListing={handleCloseModalFavoriteListing}
+              rowData={selectedRowFavoriteListing}
+            />
+          </Row><br />
+        </Card>
+      </Col><br /><br />
       {/* <p>{JSON.stringify(listingsWithProjects)}</p><br></br> */}
       {/* <p>{JSON.stringify(filteredunapprovedListingData)}</p> */}
-      {/* <p>{JSON.stringify(listingsWithOwners)}</p><br />
-      <p>{JSON.stringify(filteredunapprovedListingData)}</p>
-<br/><br/>
-      <p>{JSON.stringify(listingsWithProjects)}</p> */}
+      {/* <p>{JSON.stringify(listingsWithOwners)}</p><br /> */}
+      {/* <p>{JSON.stringify(projectFavorites)}</p> */}
+      <br/><br/>
+      {/* <p>{JSON.stringify(listings)}</p> */}
       <br />
+      {/* {JSON.stringify(filteredUserFavoriteListings)}<br/><br/> */}
+
+      {/* {JSON.stringify(userFavoritesWithListings)} */}
     </Container>
   );
 }
