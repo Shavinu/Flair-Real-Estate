@@ -624,6 +624,9 @@ const Frontpage = () => {
         return {
           _id: project._id || '',
           projectName: project.projectName || '',
+          status: project.projectStatus || '',
+          approved: project.projectApproved ? 'Approved' : 'not approved',
+          createdA: project.createdAt || '',
           locationName: (project.projectLocation && project.projectLocation[0].locationName) || ''
         };
       }

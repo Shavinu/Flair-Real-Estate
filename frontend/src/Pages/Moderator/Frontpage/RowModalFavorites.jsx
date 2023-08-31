@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import utils from "../../../Utils";
+import { Link, useParams } from "react-router-dom";
 import { Modal, Button, Card } from 'react-bootstrap';
 
 const FavoriteListingRowModal = ({ show, handleCloseFavoriteListing, rowData}) => {
@@ -51,8 +52,12 @@ const FavoriteListingRowModal = ({ show, handleCloseFavoriteListing, rowData}) =
                     <ol>
             {rowData.listingsFavo.map((listing, index) => (
                 <li key={index}>
-                    <strong>Listing Name:</strong> {listing.listingName}<br />
+                    <strong>Listing Name:</strong> {listing.listingName}
+                    <Link className="btn btn-icon btn-sm btn-flat-primary my-1" to={`/listings/${listing._id}`} target="_blank">
+                        <i className="feather icon-corner-up-right"></i>
+                    </Link><br /><br />
                     <strong>Status:</strong> {listing.status}<br />
+                    <strong>Address:</strong>{listing.streetAddress}<br/>
                     <strong>Price Range:</strong> AUD ${listing.priceRange[0].minPrice} - {listing.priceRange[0].maxPrice}<br/><br/>
                 </li>
             ))}
@@ -106,29 +111,39 @@ const FavoriteProjectRowModal = ({ show, handleCloseModalFavoriteProject, rowDat
                     <strong>ID:</strong> {rowData._id}
                 </div><br/> */}
                 <div>
-                    <strong>Name:</strong> {utils.string.capitalize(rowData.firstName)+" "+utils.string.capitalize(rowData.firstName)}
-                </div><br/>
+                    <strong>Name:</strong> {utils.string.capitalize(rowData.firstName) + " " + utils.string.capitalize(rowData.firstName)}
+                </div><br />
                 <div>
                     <strong>Contact details:</strong>
                     <ul>
                         <li>
-                            Email : {rowData.email  || 'Not available'} 
+                            Email : {rowData.email || 'Not available'}
                         </li>
                         <li>
-                            Phone : {rowData.phoneNo || 'Not available'}    
-                        </li>    
-                    </ul> 
-                </div><br/>
+                            Phone : {rowData.phoneNo || 'Not available'}
+                        </li>
+                    </ul>
+                </div><br />
                 <div>
                     <strong>Interests in projects</strong>
                     <ol> {/* Use <ol> for ordered/numbered list */}
-            {rowData.projects.map((project, index) => (
-                <li key={index}>
-                    {utils.string.capitalize(project.projectName)}
-                </li>
-            ))}
-        </ol>
-                </div><br/>
+                        {rowData.projects.map((project, index) => (
+                            <li key={index}>
+                                <strong>Project Name:</strong> {utils.string.capitalize(project.projectName)} &nbsp;                               
+                                <Link className="btn btn-icon btn-sm btn-flat-primary my-1" to={`/projects/${project._id}`} target="_blank">
+                                    <i className="feather icon-corner-up-right"></i>
+                                </Link><br />
+                                <strong>Status:</strong> {project.status}<br />
+                                <strong>Created At:</strong> {utils.dateFormat(project.createdA)}<br />
+                                <strong>Address:</strong>{utils.string.capitalize(project.locationName)}<br /><br />
+
+                            </li>
+                        ))}
+                    </ol>
+                </div><br />
+                <div>
+
+                </div>
                 {/* Add other properties */}
             </Modal.Body>
             <Modal.Footer>
