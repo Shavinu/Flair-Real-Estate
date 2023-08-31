@@ -1,13 +1,17 @@
 import * as ListingService from '../../../Services/ListingService';
 import * as UserService from '../../../Services/UserService';
 import * as ProjectService from '../../../Services/ProjectService';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Col, Card } from "react-bootstrap";
 import { Container, Row } from 'react-bootstrap';
 import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { PieChart, Pie } from 'recharts';
 import "./Layout.css";
 import { Stack } from 'react-bootstrap';
+import utils from "../../../Utils";
+import { Link, useParams } from "react-router-dom";
+import { Button, ContentHeader, DatePicker, Dropdown } from "../../../Components";
+import DataTable from 'react-data-table-component';
 
 
 const Frontpage = () => {
@@ -16,6 +20,7 @@ const Frontpage = () => {
     const [projects, setProjects] = useState([])
     const [projectByAvailability, setProjectByAvailability] = useState([])
     const [listings, setlistings] = useState([])
+    const [activeTabFavorites, setActiveTabFavorites] = useState('listings');
 
     useEffect(() => {
         UserService.getUserList()
@@ -63,7 +68,7 @@ const Frontpage = () => {
         const averagePrice = ((projects.minPrice + projects.maxPrice) / 2);
         return { projectName: projects.projectName, averagePrice: averagePrice };
     });
-        //End of finding avgPrice of listings
+    //End of finding avgPrice of listings
 
     // Extract listingName and minPrice
     const filteredData = listings.map((item) => {
@@ -88,8 +93,12 @@ const Frontpage = () => {
     // Extract listingName,street address and developer
     const filteredListingDataByOwner = listings.map((item) => {
         return {
+            listingid: item._id,
             listingName: item.listingName,
+            listingStatus: item.listingStatus,
+            listingApproved: item.listingApproved,
             streetAddress: item.streetAddress,
+            createdAt: item.createdAt,
             devloper: item.devloper
         };
     });
@@ -103,8 +112,12 @@ const Frontpage = () => {
     //Extract Project details by Owner
     const filteredProjectDataByOwner = projects.map((item) => {
         return {
+            projectid: item._id || '',
             projectName: item.projectName,
             projectOwner: item.projectOwner._id,
+            projectStatus: item.projectStatus,
+            projectApprove: item.projectApproved,
+            createdAt: item.createdAt,
             location: item.projectLocation[0].locationName
         }
     })
@@ -156,6 +169,78 @@ const Frontpage = () => {
     const filteredOtherBuilders = Users2.filter(type => type.accType === 'builder');
     const otherBuilderCount = filteredOtherBuilders.length;
     //End
+
+
+    const projectColumns = useMemo(() => [
+        {
+            name: 'Project Name',
+            selector: row => row.projectName || '--',
+            sortable: true,
+        },
+        {
+            name: 'Project Status',
+            selector: row => row.projectStatus || '--',
+            cell: row => row.projectStatus ? 'Active' : 'Not active',
+            sortable: true,
+        },
+        {
+            name: 'Project Approved',
+            selector: row => row.projectApproved || '--',
+            cell: row => row.projectApproved ? 'Approved' : 'Not approved',
+            sortable: true,
+        },
+        {
+            name: 'Created At',
+            selector: row => row.createdAt,
+            cell: row => row.createdAt ? utils.dateFormat(row.createdAt) : '--',
+            sortable: true,
+        },
+        {
+            name: "Actions",
+            button: true,
+            cell: row => (<>
+                <Link className="btn btn-icon btn-sm btn-flat-primary my-1" to={`/projects/${row.projectid}`} target="_blank">
+                    <i className="feather icon-corner-up-right"></i>
+                </Link>
+            </>)
+        }
+    ], []);
+
+    const listingColumns = useMemo(() => [
+        {
+            name: 'Listing Name',
+            selector: row => row.listingName || '--',
+            sortable: true,
+        },
+        {
+            name: 'Listing Status',
+            selector: row => row.listingStatus || '--',
+            cell: row => row.listingStatus ? 'Active' : 'Not active',
+            sortable: true,
+        },
+        {
+            name: 'Approved',
+            selector: row => row.listingApproved || '--',
+            cell: row => row.projectApproved ? 'Approved' : 'Not approved',
+            sortable: true,
+        },
+        {
+            name: 'Created At',
+            selector: row => row.updatedAt,
+            cell: row => row.createdAt ? utils.dateFormat(row.createdAt) : '--',
+            sortable: true,
+        },
+        {
+            name: "Actions",
+            button: true,
+            cell: row => (<>
+                <Link className="btn btn-icon btn-sm btn-flat-primary my-1" to={`/listings/${row.listingid}`} target="_blank">
+                    <i className="feather icon-corner-up-right"></i>
+                </Link>
+            </>)
+        }
+    ], []);
+
 
     return (
         <Container className="content-container">
@@ -219,7 +304,7 @@ const Frontpage = () => {
                 </Col>
             </div>
             <br />
-            
+
             <br />
             <Col lg={12}>
                 <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
@@ -236,7 +321,7 @@ const Frontpage = () => {
                                         width={700}
                                         height={300}
                                         data={filteredListings}
-                                        
+
                                     >
                                         <CartesianGrid strokeDasharray="3 3" />
                                         <XAxis dataKey="listingName" />
@@ -332,7 +417,7 @@ const Frontpage = () => {
                                         <XAxis dataKey="projectName" />
 
                                         <Tooltip />
-                                        
+
                                         <Bar dataKey="averagePrice" fill="#FF8042" />
                                     </BarChart>
                                 </Card>
@@ -341,63 +426,35 @@ const Frontpage = () => {
                     </Row><br />
                 </Card>
             </Col>
-            <br/>
+            <br />
             <div class="container">
                 <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
                     <Col lg={12}>
                         <p><h4>Your summary </h4><h3></h3></p>
-                        <div class="row">
-                            <Col lg={6}>
-                                <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
-                                    <Row>
-                                        <h5>Listings summary</h5>
-                                        <br /><br />
-                                        <table>
-                                            <thead>
-                                                <tr>
-                                                    <th>Listing Name</th>
-                                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                                    <th>Location</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {filteredUserListings.map((listing, index) => (
-                                                    <tr key={index}>
-                                                        <td>{listing.listingName}</td>&nbsp;
-                                                        <td>{listing.streetAddress}</td>
-                                                    </tr>
-                                                ))}
-                                            </tbody><br />
-                                        </table>
-                                    </Row>
-                                </Card>
-                            </Col>
-                            <Col lg={6}>
-                                <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
-                                    <Row>
-                                        <h5>Projects summary</h5>
-                                        <br /><br />
-                                        <table>
-                                            <thead>
-                                                <tr>
-                                                    <th>Project Name</th>
-                                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                                    <th>Location</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {filteredUserProjects.map((project, index) => (
-                                                    <tr key={index}>
-                                                        <td>{project.projectName}</td>&nbsp;
-                                                        <td>{project.location}</td>
-                                                    </tr>
-                                                ))}
-                                            </tbody><br />
-                                        </table>
-                                    </Row>
-                                </Card>
-                            </Col>
-                        </div>
+
+                        <Col lg={12}>
+                            <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
+                                <Row>
+                                    <DataTable
+                                        columns={listingColumns}
+                                        data={filteredUserListings}
+                                        pagination
+                                        highlightOnHover />
+                                </Row>
+                            </Card>
+                        </Col><br/><br/>
+                        <Col lg={12}>
+                            <Card className="rounded m-auto pb-0 pt-1 pl-1 pr-1">
+                                <Row>
+                                    <DataTable
+                                        columns={projectColumns}
+                                        data={filteredUserProjects}
+                                        pagination
+                                        highlightOnHover />
+                                </Row>
+                            </Card>
+                        </Col>
+
                     </Col>
                     <br />
                     <p>Description</p>
@@ -406,11 +463,11 @@ const Frontpage = () => {
             </div>
 
             {/* <br /><br /><br />
-            <p>TESTING</p>
-            <p>{JSON.stringify({ filteredUserProjects })}</p>
+            <p>TESTING</p> */}
+            {/* <p>{JSON.stringify({ filteredUserProjects })}</p>
             <p>{JSON.stringify({ filteredLicense })} - {JSON.stringify({})}</p>
-            <p>{JSON.stringify({ filteredLoginUser })}</p>
-            <p>{JSON.stringify({ ID })}</p>
+            <p>{JSON.stringify({ filteredLoginUser })}</p> */}
+            {/* <p>{JSON.stringify({ filteredUserListings })}</p>
             <br /> */}
 
         </Container>

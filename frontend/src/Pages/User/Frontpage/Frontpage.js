@@ -352,7 +352,7 @@ const Frontpage = () => {
     };
     UserService.deleteFavorite(dislikeListingData)
       .then(() => {
-        Toast('Listing removed successfully', 'success');
+       Toast('Listing removed successfully', 'success');
         window.location.reload();
       })
       .catch(() => {
@@ -394,7 +394,7 @@ const Frontpage = () => {
       .then(() => {
         setSelectedRowProject([]);
         Toast('Project removed successfully', 'success');
-        //ListingService.getAllListings();//Trying to refresh
+        ListingService.getAllListings();//Trying to refresh
         window.location.reload();
       })
       .catch(() => {
