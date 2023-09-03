@@ -618,7 +618,7 @@ const Frontpage = () => {
             {/* <p>{JSON.stringify(projectsByOwner.projects[0].projectName)}</p>
             <p>{JSON.stringify(projectsByOwner.projects[0].projectLocation[0].locationName)}</p> */}
             <br />
-            <p>{JSON.stringify(filteredUserListings)}</p>
+            {/* <p>{JSON.stringify(filteredUserListings)}</p> */}
             <p></p>
         </Container>
     );
