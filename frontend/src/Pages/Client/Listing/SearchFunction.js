@@ -7,11 +7,14 @@ import { Link } from "react-router-dom";
 import * as ListingService from "../../../Services/ListingService";
 import * as FileService from "../../../Services/FileService";
 import SearchLocations from "../../../Components/Maps/SearchBased";
+import SearchPlaces from "../../../Components/Maps/SearchPlace";
 import { PriceRangeInput } from "../../Listing/Search";
 import { CheckBox, Label } from "../../../Components/Form";
 import CardBody from "../../../Components/Card/CardBody";
+import Popup from "./Popup";
 
 const SearchFunction = ({ onSearch, all = true }) => {
+  const [buttonPopup, setButtonPopup] = useState(false);
   const initialState = {
     listingName: '',
     type: '',
@@ -19,6 +22,12 @@ const SearchFunction = ({ onSearch, all = true }) => {
     priceRange: {
       minPrice: '',
       maxPrice: ''
+    },
+    address: {
+      streetAddress: '',
+      postcode: '',
+      suburb: '',
+      region: '',
     },
     streetAddress: '',
     postcode: '',
@@ -44,6 +53,12 @@ const SearchFunction = ({ onSearch, all = true }) => {
     priceRange: {
       minPrice: '',
       maxPrice: ''
+    },
+    address: {
+      streetAddress: '',
+      postcode: '',
+      suburb: '',
+      region: '',
     },
     streetAddress: '',
     postcode: '',
@@ -113,10 +128,8 @@ const SearchFunction = ({ onSearch, all = true }) => {
   const bedroomsOptions = [{ value: '', label: 'Any' }, { value: 1, label: 'Less than 1' }, { value: 2, label: 'Less than 2' }, { value: 3, label: 'Less than 3' }, { value: 4, label: 'Less than 4' }, { value: 5, label: 'Less than 5' }];
   const carSpacesOptions = [{ value: '', label: 'Any' }, { value: 1, label: 'Less than 1' }, { value: 2, label: 'Less than 2' }, { value: 3, label: 'Less than 3' }, { value: 4, label: 'Less than 4' }, { value: 5, label: 'Less than 5' }];
   const bathroomsOptions = [{ value: '', label: 'Any' }, { value: 1, label: 'Less than 1' }, { value: 2, label: 'Less than 2' }, { value: 3, label: 'Less than 3' }, { value: 4, label: 'Less than 4' }, { value: 5, label: 'Less than 5' }];
-  const developerOptions = developers;
-  const listingCommissionExist = [{ value: '', label: 'Any' }, { value: true, label: 'Yes' }, { value: false, label: 'No' }];
-  const listingCommissionTypes = [{ value: '', label: 'Any' }, { value: 'fixed', label: 'Fixed' }, { value: 'percentage', label: 'Percentage' }];
-
+  
+  
   useEffect(() => {
     if (reset) {
       setReset(false);
@@ -164,43 +177,63 @@ const SearchFunction = ({ onSearch, all = true }) => {
     });
   };
 
+  
+  
+
+  const CustomControl = ({ Icon, ...props }) => (
+    <components.Control {...props}>
+      <Icon style={{ marginLeft: '10px' }} />
+      {props.children}
+    </components.Control>
+  );
+
+  
+
 
   return (
     <>
            <Container>
+           <Accordion defaultActiveKey="1" activeKey={activeKey} className="w-100 m-1 p-0">
             <Card className="p-4">
+              
               <CardBody>
               <Form onSubmit={e => { e.preventDefault(); onSearch(search); }} className="w-100"> 
+
+              
+                
                 <InputGroup className="rounded">
                   <Form.Control
                     type="text"
                     placeholder="Search"
-                    name="listingName"
-                    value={search.listingName}
+                    name="streetAddress"
+                    value={search.streetAddress}
                     onChange={handleInputChange}
                     className="rounded-0"
                   />
                 
                   <Button variant="secondary" type="submit">
                   Search</Button>
+                  <Button variant="secondary" type="submit" onClick={() => setButtonPopup(true)}>
+                  Filter</Button>
                 
                 </InputGroup>
 
-                <Form.Group className="mt-2">
-                  <CheckBox label="Surrounding Suburbs" />
-                </Form.Group>
-
-                <Form.Group>
-                  <Row>
-                  </Row>
-                </Form.Group>
-
-                <Form.Group>
-                  <Row>
-                    <Col sm={6}>
-                      <Form.Group>
-                        <Label>Project Type</Label>
-                        <Select
+                </Form>
+              </CardBody>
+              
+            
+            <Popup trigger={buttonPopup} setTrigger={setButtonPopup}>
+            
+        
+            <Form onSubmit={e => { e.preventDefault(); onSearch(search); }} className="w-100">
+              <Row className="m-0 p-0">
+                <Col xs={12} md={12}>
+                  <Row className="my-1">
+                    <Col xs={12} md={12}> 
+                      <p style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#333' }}>Project Type</p>
+                    </Col>
+                    <Col xs={12} md={12}> 
+                      <Select
                         value={search.type ? { value: search.type, label: search.type } : null }
                         options={typeOptions}
                         isClearable
@@ -216,11 +249,34 @@ const SearchFunction = ({ onSearch, all = true }) => {
                           singleValue: base => ({ ...base, fontSize: 12 })
                         }}
                       />
-                      </Form.Group>
                     </Col>
-                    <Col sm={6}>
-                      <Label>Project Price Range</Label>
-                      <PriceRangeInput
+                  </Row>
+                  <Row className="my-1">
+                    <Col xs={12} md={12}> 
+                      <p style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#333' }}>Listing Status</p>
+                    </Col>
+                    <Col xs={12} md={12}> 
+                      <Select
+                        value={search.status ? { value: search.status, label: search.status } : null }
+                        options={statusOptions}
+                        isClearable
+                        name="status"
+                        onChange={handleSelectChange}
+                        placeholder="Status"
+                        menuPortalTarget={document.body}
+                        menuPosition={'fixed'}
+                        styles={{
+                          menuPortal: base => ({ ...base, zIndex: 9999 }),
+                          control: base => ({ ...base, fontSize: 12 }),
+                          option: base => ({ ...base, fontSize: 12 }),
+                          singleValue: base => ({ ...base, fontSize: 12 })
+                        }}
+                      />
+                    </Col>
+                  </Row>
+                  <Row className="my-1">
+                    <p style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#333' }}>Price Range</p>
+                    <PriceRangeInput
                         min={0}
                         max={2000000}
                         step={[
@@ -232,13 +288,116 @@ const SearchFunction = ({ onSearch, all = true }) => {
                         onChange={handlePriceRangeChange}
                         parentMinPrice={priceRange.minPrice}
                         parentMaxPrice={priceRange.maxPrice}
+                        reset={reset}
+                      />
+                  </Row>
+                  <Row className="my-1">
+                    <Col xs={12} md={12}> 
+                      <p style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#333' }}>Land Size</p>
+                    </Col>
+                    <Col xs={12} md={12}> 
+                    <InputGroup className="rounded">
+                        <InputGroup.Text className="rounded-0">
+                          <i className="fa fa-arrows-alt"></i>
+                        </InputGroup.Text>
+                        <Form.Control placeholder="Land Size less than" name="landSize" value={search.landSize} onChange={handleInputChange} className="rounded-0" />
+                        <InputGroup.Text className="rounded-0">m&sup2;</InputGroup.Text>
+                      </InputGroup>
+                    </Col>
+                  </Row>
+                  <Row className="my-1">
+                    <Col xs={12} md={12}> 
+                      <p style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#333' }}>Bedrooms</p>
+                    </Col>
+                    <Col xs={12} md={12}> 
+                      <Select
+                        value={search.bedrooms !== (null || '') ? { value: search.bedrooms, label: `Less than ${search.bedrooms}` } : { value: '', label: 'Any' }}
+                        options={bedroomsOptions}
+                        isClearable
+                        name="bedrooms"
+                        onChange={handleSelectChange}
+                        placeholder="Bedrooms"
+                        menuPortalTarget={document.body}
+                        menuPosition={'fixed'}
+                        components={{ Control: (props) => <CustomControl {...props} Icon={FaBed} /> }}
+                        styles={{
+                          menuPortal: base => ({ ...base, zIndex: 9999 }),
+                          control: base => ({ ...base, fontSize: 12 }),
+                          option: base => ({ ...base, fontSize: 12 }),
+                          singleValue: base => ({ ...base, fontSize: 12 })
+                        }}
                       />
                     </Col>
                   </Row>
-                </Form.Group>
-                </Form>
-              </CardBody>
+                  <Row className="my-1">
+                    <Col xs={12} md={12}> 
+                      <p style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#333' }}>Bathrooms</p>
+                    </Col>
+                    <Col xs={12} md={12}> 
+                      <Select
+                        value={search.bathrooms !== (null || '') ? { value: search.bathrooms, label: `Less than ${search.bathrooms}` } : { value: '', label: 'Any' }}
+                        options={bathroomsOptions}
+                        isClearable
+                        name="bathrooms"
+                        onChange={handleSelectChange}
+                        placeholder="Bathrooms"
+                        menuPortalTarget={document.body}
+                        menuPosition={'fixed'}
+                        components={{ Control: (props) => <CustomControl {...props} Icon={FaBath} /> }}
+                        styles={{
+                          menuPortal: base => ({ ...base, zIndex: 9999 }),
+                          control: base => ({ ...base, fontSize: 12 }),
+                          option: base => ({ ...base, fontSize: 12 }),
+                          singleValue: base => ({ ...base, fontSize: 12 })
+                        }}
+                      />
+                    </Col>
+                  </Row>
+                  <Row className="my-1">
+                    <Col xs={12} md={12}> 
+                      <p style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#333' }}>Parking slot</p>
+                    </Col>
+                    <Col xs={12} md={12}> 
+                      <Select
+                        value={search.carSpaces !== (null || '') ? { value: search.carSpaces, label: `Less than ${search.carSpaces}` } : { value: '', label: 'Any' }}
+                        options={carSpacesOptions}
+                        isClearable
+                        name="carSpaces"
+                        onChange={handleSelectChange}
+                        placeholder="Car Spaces"
+                        menuPortalTarget={document.body}
+                        menuPosition={'fixed'}
+                        components={{ Control: (props) => <CustomControl {...props} Icon={FaCar} /> }}
+                        styles={{
+                          menuPortal: base => ({ ...base, zIndex: 9999 }),
+                          control: base => ({ ...base, fontSize: 12 }),
+                          option: base => ({ ...base, fontSize: 12 }),
+                          singleValue: base => ({ ...base, fontSize: 12 })
+                        }}
+                      />
+                    </Col>
+                  </Row>
+                 
+                </Col>
+              </Row>
+                <Button variant="secondary" className="mt-2 mb-0 mr-1" type="submit">
+                  Search
+                </Button>
+              
+                <Button variant="secondary" onClick={resetForm} className="mt-2 mb-0 mr-1">
+                  Reset
+                </Button>
+              
+
+            </Form>
+            
+            </Popup>
+
+       
+
             </Card>
+            
+            </Accordion>
           </Container>
     </>
   );

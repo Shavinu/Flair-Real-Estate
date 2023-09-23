@@ -82,6 +82,7 @@ const ListingPage = () => {
             <p>Choose Your New Estate with Real Estate.</p>
             
           </Container>
+          
         </div>
       </div>
       
