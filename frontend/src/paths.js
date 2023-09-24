@@ -139,12 +139,6 @@ export const views = [
     element: SetFrontPagePart(),
   },
   {
-    name: 'Users',
-    action: '/users',
-    icon: 'feather icon-user',
-    element: <Users.List />,
-  },
-  {
     name: 'Create Users',
     action: '/users/create',
     icon: 'feather icon-user',
@@ -180,12 +174,6 @@ export const views = [
     isRoute: true,
   },
   {
-    name: 'User Groups',
-    action: '/groups',
-    icon: 'feather icon-users',
-    element: <Groups.List />,
-  },
-  {
     name: 'Create User Group',
     action: '/groups/create',
     element: <Groups.Create />,
@@ -196,6 +184,24 @@ export const views = [
     action: '/groups/:id',
     element: <Groups.Edit />,
     isRoute: true,
+  },
+  {
+    name: 'Users and Groups',
+    icon: 'feather icon-user',
+    children: [
+      {
+        name: 'Users',
+        action: '/users',
+        icon: 'feather icon-user',
+        element: <Users.List />,
+      },
+      {
+        name: 'User Groups',
+        action: '/groups',
+        icon: 'feather icon-users',
+        element: <Groups.List />,
+      }
+    ]
   },
   {
     name: 'Projects',
